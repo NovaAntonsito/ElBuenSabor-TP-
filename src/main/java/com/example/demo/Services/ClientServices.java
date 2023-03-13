@@ -1,11 +1,10 @@
 package com.example.demo.Services;
 
-import com.example.demo.Entitys.Clients;
-import org.springframework.data.domain.Page;
+import com.example.demo.Entitys.Client;
 
 import java.util.List;
 
 
-public interface ClientServices extends BaseServices<Clients,Long>{
-    List<Clients> searchClientes(String name) throws Exception;
+public interface ClientServices extends BaseServices<Client,Long>{
+    List<Client> searchClientes(String name) throws Exception;
 }

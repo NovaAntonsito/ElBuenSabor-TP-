@@ -1,6 +1,6 @@
 package com.example.demo.Contollers;
 
-import com.example.demo.Entitys.Clients;
+import com.example.demo.Entitys.Client;
 import com.example.demo.Services.ClientServicesImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "api/v1/clients")
-public class ClientsController extends BaseControllerImpl<Clients,ClientServicesImpl>{
+public class ClientsController extends BaseControllerImpl<Client,ClientServicesImpl>{
 
     private final ClientServicesImpl clientServicesImpl;
 
