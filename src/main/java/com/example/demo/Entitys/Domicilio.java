@@ -18,5 +18,5 @@ public class Domicilio extends Base{
 
     @OneToOne
     @JoinColumn(name = "cliente_id")
-    private Client cliente;
+    private Cliente cliente;
 }

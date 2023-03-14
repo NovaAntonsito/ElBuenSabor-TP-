@@ -1,9 +1,6 @@
 package com.example.demo.Entitys;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -11,10 +8,11 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Client extends Base {
+public class Cliente extends Base {
     private String nombre;
     private String apelido;
     private Long telefono;
+    @Column(unique = true)
     private String email;
 
     @OneToOne

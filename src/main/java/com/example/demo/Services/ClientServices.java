@@ -1,10 +1,10 @@
 package com.example.demo.Services;
 
-import com.example.demo.Entitys.Client;
+import com.example.demo.Entitys.Cliente;
 
 import java.util.List;
 
 
-public interface ClientServices extends BaseServices<Client,Long>{
-    List<Client> searchClientes(String name) throws Exception;
+public interface ClientServices extends BaseServices<Cliente,Long>{
+    List<Cliente> searchClientes(String name) throws Exception;
 }
