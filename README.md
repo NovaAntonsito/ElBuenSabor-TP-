@@ -10,7 +10,7 @@ Este es el proyecto integrador para metodología, nuestros integrantes son Marco
 
 ## Integrantes
 
-Jesus Gambaro (Front-end y Scrum Master)
-Agustin Recabarren (Front-end)
-Franco Gonzalez (Back-End)
-Marcos Anton (Back-end)
+1. Jesus Gambaro (Front-end y Scrum Master)
+2. Agustin Recabarren (Front-end)
+3. Franco Gonzalez (Back-End)
+4. Marcos Anton (Back-end)
