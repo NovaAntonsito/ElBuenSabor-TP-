@@ -17,7 +17,7 @@ public class ClientsController extends BaseControllerImpl<Cliente,ClientServices
         this.clientServicesImpl = clientServicesImpl;
     }
 
-    @GetMapping("/searchC")
+    @GetMapping("/")
     public ResponseEntity<?> searchArtista(@RequestParam(required = false) String name) {
         try {
             if(clientServicesImpl.searchClientes(name).isEmpty()){
