@@ -17,16 +17,6 @@ public abstract class BaseServiceImpl<E extends Base, ID extends Serializable> i
     }
 
 
-    //Aqui le poneemos su funcionamiento respectivo, Sacamos sus metodos desde BaseServices
-    @Override
-    @Transactional
-    public List<E> findAll() throws Exception {
-        try {
-            return BaseRepository.findAll();
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
     @Override
     @Transactional
     public Page<E> findAllPaged(Pageable pageable) throws Exception {
