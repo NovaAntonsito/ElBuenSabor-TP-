@@ -12,8 +12,6 @@ public interface BaseServices <E extends Base, ID extends Serializable>{
     //Estas son nuestros metodos base para el CRUD
 
 
-    //Get All
-    public List<E> findAll() throws Exception;
     //Get all Paged
     public Page<E> findAllPaged(Pageable pageable) throws Exception;
     //Get One
