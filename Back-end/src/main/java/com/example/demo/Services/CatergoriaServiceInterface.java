@@ -18,5 +18,7 @@ public interface CatergoriaServiceInterface {
 
     Categoria findbyID (Long id);
 
+    Page<Categoria> findParentAndName (Long id, String nombre, Pageable pageable) throws Exception;
+
 
 }

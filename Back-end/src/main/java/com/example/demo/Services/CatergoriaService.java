@@ -59,5 +59,10 @@ public class CatergoriaService implements CatergoriaServiceInterface {
         return categoriaRepository.findByID(id);
     }
 
+    @Override
+    public Page<Categoria> findParentAndName(Long id, String nombre, Pageable pageable) throws Exception {
+        return categoriaRepository.findParentAndName(id, nombre, pageable);
+    }
+
 
 }

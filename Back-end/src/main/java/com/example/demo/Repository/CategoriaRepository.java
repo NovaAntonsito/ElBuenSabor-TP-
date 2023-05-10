@@ -14,6 +14,7 @@ public interface CategoriaRepository extends BaseRepository<Categoria,Long>{
     @Query(value = "select * from categoria c where c.categoria_padre = :id", nativeQuery = true)
     Page<Categoria> findParent (@Param("id") Long id, Pageable page);
 
-
+    @Query(value = "SELECT * FROM categoria c WHERE (c.categoria_padre = :id OR c.categoria_padre IS NULL) AND (c.nombre LIKE :nombre or c.nombre IS NULL)", nativeQuery = true)
+    Page<Categoria> findParentAndName (@Param("id") Long id,@Param("nombre") String nombre, Pageable pageable);
 
 }
