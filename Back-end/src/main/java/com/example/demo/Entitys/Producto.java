@@ -1,9 +1,7 @@
 package com.example.demo.Entitys;
 
 import com.example.demo.Entitys.Enum.Baja_Alta;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,11 +17,13 @@ import java.util.Date;
 @Setter
 public class Producto extends Base{
     String nombre;
-    @Column(name = "url_Imagen",unique = true)
-    String imagen;
+    @Lob
+    @Column(name = "imagen_Blob", columnDefinition = "BLOB")
+    Byte[] imagenBlob;
     String descripcion;
     Long tiempoCocina;
     String receta;
     Baja_Alta alta;
-
+    @ManyToOne
+    Categoria productoCategoria;
 }

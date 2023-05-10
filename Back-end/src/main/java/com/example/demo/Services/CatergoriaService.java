@@ -54,4 +54,10 @@ public class CatergoriaService implements CatergoriaServiceInterface {
         return categoriaRepository.findParent(id, page);
     }
 
+    @Override
+    public Categoria findbyID(Long id) {
+        return categoriaRepository.findByID(id);
+    }
+
+
 }

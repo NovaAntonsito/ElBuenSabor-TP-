@@ -18,7 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Categoria extends Base{
-    Baja_Alta alta = Baja_Alta.ALTA;
+    Baja_Alta alta;
 
     String nombre;
 
@@ -27,7 +27,6 @@ public class Categoria extends Base{
     @JsonBackReference
     Categoria categoriaPadre;
 
-    @JsonIgnoreProperties(value = {"categoriaPadre"}, allowGetters = true)
     @OneToMany(mappedBy = "categoriaPadre", fetch = FetchType.EAGER)
     @JsonManagedReference
     List<Categoria> subCategoria;

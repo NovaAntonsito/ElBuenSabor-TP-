@@ -6,9 +6,6 @@ import lombok.Getter;
 @Getter
 public enum Baja_Alta {
 
- ALTA("No Disponible"),BAJA("Disponible");
+ DISPONIBLE,NO_DISPONIBLE
 
-    Baja_Alta(String disponible) {
-
-    }
 }

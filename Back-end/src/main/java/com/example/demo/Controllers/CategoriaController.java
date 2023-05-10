@@ -1,5 +1,6 @@
 package com.example.demo.Controllers;
 
+import com.example.demo.Controllers.DTOS.CategoriaDTO;
 import com.example.demo.Entitys.Categoria;
 import com.example.demo.Services.CatergoriaService;
 import lombok.RequiredArgsConstructor;
@@ -17,15 +18,17 @@ public class CategoriaController {
     private final CatergoriaService catergoriaService;
 
     @GetMapping("/all")
-    public ResponseEntity<Page<Categoria>> getAllCategorias(@PageableDefault(page = 0, size = 10)Pageable page) throws Exception {
+    public ResponseEntity<Page<CategoriaDTO>> getAllCategorias(@PageableDefault(page = 0, size = 10) Pageable page) throws Exception {
         Page<Categoria> categorias = catergoriaService.getAllCategoria(page);
-        return ResponseEntity.status(HttpStatus.OK).body(categorias);
-
+        Page<CategoriaDTO> categoriasDTO = categorias.map(this::toDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(categoriasDTO);
     }
+
     @PostMapping("")
-    public ResponseEntity<Categoria> crearNuevaCategoria(@RequestBody Categoria categoria) throws Exception{
+    public ResponseEntity<CategoriaDTO> crearNuevaCategoria(@RequestBody CategoriaDTO categoriaDTO) throws Exception {
+        Categoria categoria = toEntity(categoriaDTO);
         catergoriaService.crearCategoria(categoria);
-        return ResponseEntity.status(HttpStatus.OK).body(categoria);
+        return ResponseEntity.status(HttpStatus.OK).body(toDTO(categoria));
     }
 
     @GetMapping(value = "")
@@ -42,5 +45,24 @@ public class CategoriaController {
     public ResponseEntity<?> deleteCategoria(@RequestParam("id") Long ID) throws Exception{
         catergoriaService.deleteCategoria(ID);
         return ResponseEntity.status(HttpStatus.OK).body("El objeto fue borrado con exito");
+    }
+    private CategoriaDTO toDTO(Categoria categoria) {
+        CategoriaDTO dto = new CategoriaDTO();
+        dto.setNombre(categoria.getNombre());
+        dto.setEstado(categoria.getAlta());
+        if (categoria.getCategoriaPadre() != null) {
+            dto.setCategoriaPadre(categoria.getCategoriaPadre().getID());
+        }
+        return dto;
+    }
+    private Categoria toEntity(CategoriaDTO dto) {
+        Categoria categoria = new Categoria();
+        categoria.setNombre(dto.getNombre());
+        categoria.setAlta(dto.getEstado());
+        if (dto.getCategoriaPadre() != null) {
+            Categoria categoriaPadre = catergoriaService.findbyID(dto.getCategoriaPadre());
+            categoria.setCategoriaPadre(categoriaPadre);
+        }
+        return categoria;
     }
 }
