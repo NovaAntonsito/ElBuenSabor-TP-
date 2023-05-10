@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductoController {
     private final ProductoService productoService;
     private final CatergoriaService catergoriaService;
+
     @GetMapping("")
     public ResponseEntity<Page<Producto>> getAllinAlta(@PageableDefault(value = 10, page = 0)Pageable page) throws Exception{
         Page<Producto> prodsInAlta = productoService.getAll(page);
@@ -36,15 +37,18 @@ public class ProductoController {
         Categoria cateFound = catergoriaService.findbyID(productoDTO.getProductoCategoria());
         System.out.println(cateFound.getNombre());
         Producto newProd = newProdDTO.toEntity(productoDTO,cateFound);
-        Producto newProducto = productoService.crearProducto(newProd,file);
-        return ResponseEntity.status(HttpStatus.OK).body(newProducto);
+        newProd = productoService.crearProducto(newProd,file);
+        return ResponseEntity.status(HttpStatus.OK).body(newProd);
     }
-
-    @PostMapping("/upload")
-    public ResponseEntity<?> uploadImg (@RequestParam("file") MultipartFile file) throws Exception{
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Work in progress");
+    @PutMapping("/{id}")
+    public ResponseEntity<Producto> updateProducto(@PathVariable("id") Long ID, @RequestBody ProductoDTO productoDTO) throws Exception {
+        ProductoDTO newProdDTO = new ProductoDTO();
+        Producto updatedProducto = productoService.updateProducto(ID, newProdDTO.toEntity(productoDTO, catergoriaService.findbyID(productoDTO.getProductoCategoria())));
+        return ResponseEntity.status(HttpStatus.OK).body(updatedProducto);
     }
-
-
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProducto(@PathVariable("id")Long ID) throws Exception{
+        productoService.deleteSoftProducto(ID);
+        return ResponseEntity.status(HttpStatus.OK).body("El objeto se borro existosamente");
+    }
 }
