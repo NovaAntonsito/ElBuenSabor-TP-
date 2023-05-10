@@ -23,6 +23,12 @@ public class CategoriaController {
         Page<CategoriaDTO> categoriasDTO = categorias.map(this::toDTO);
         return ResponseEntity.status(HttpStatus.OK).body(categoriasDTO);
     }
+    @GetMapping("/filter")
+    public ResponseEntity<Page<CategoriaDTO>> findByIDandName(@RequestParam("id")Long id, @RequestParam("name") String nombre, @PageableDefault(page = 0, size = 10) Pageable page) throws Exception{
+        Page<Categoria> categorias = catergoriaService.findParentAndName(id, nombre, page);
+        Page<CategoriaDTO> categoriaDTOPage = categorias.map(this::toDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(categoriaDTOPage);
+    }
 
     @PostMapping("")
     public ResponseEntity<CategoriaDTO> crearNuevaCategoria(@RequestBody CategoriaDTO categoriaDTO) throws Exception {
