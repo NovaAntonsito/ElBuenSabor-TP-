@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CategoriaDTO {
+    private Long id;
     private String nombre;
     private Baja_Alta estado;
     private Long categoriaPadre;

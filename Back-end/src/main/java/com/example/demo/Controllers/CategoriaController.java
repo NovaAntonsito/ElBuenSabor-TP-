@@ -56,6 +56,7 @@ public class CategoriaController {
         CategoriaDTO dto = new CategoriaDTO();
         dto.setNombre(categoria.getNombre());
         dto.setEstado(categoria.getAlta());
+        dto.setId(categoria.getID());
         if (categoria.getCategoriaPadre() != null) {
             dto.setCategoriaPadre(categoria.getCategoriaPadre().getID());
         }
