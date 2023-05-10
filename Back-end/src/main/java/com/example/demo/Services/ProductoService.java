@@ -6,16 +6,24 @@ import com.example.demo.Entitys.Producto;
 
 import com.example.demo.Repository.CategoriaRepository;
 import com.example.demo.Repository.ProductoRepository;
+import com.example.demo.Utils.ImagenUtils;
 import jakarta.transaction.Transactional;
-import lombok.Data;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Getter
@@ -31,17 +39,29 @@ public class ProductoService implements ProductoServiceInterface{
 
     @Override
     public Page<Producto> getAll(Pageable page) throws Exception {
-        return productoRepository.findAllinAlta(page);
+        Page <Producto> prodCompress = productoRepository.findAllinAlta(page);
+        List<Producto> prodList = new ArrayList<>();
+        for (Producto list : prodCompress) {
+            list.setImagenBlob(descargarImg(list.getID()));
+            prodList.add(list);
+        }
+        Page<Producto> prodDecompress = new PageImpl<>(prodList,prodCompress.getPageable(), prodCompress.getTotalPages());
+        return prodDecompress;
     }
 
     @Override
-    public Producto crearProducto(Producto newProducto) throws Exception {
+    public Producto crearProducto(Producto newProducto, MultipartFile file) throws Exception {
         Categoria cateFound = categoriaRepository.findByID(newProducto.getProductoCategoria().getID());
-        log.info(cateFound.getNombre());
+        BufferedImage bi = ImageIO.read(file.getInputStream());
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bi, "png", byteArrayOutputStream);
+        byte[] imageData = byteArrayOutputStream.toByteArray();
+        newProducto.setImagenBlob(ImagenUtils.compressImage(imageData));
         newProducto.setProductoCategoria(cateFound);
         productoRepository.save(newProducto);
         return newProducto;
     }
+
 
     @Override
     public void deleteSoftProducto(Long ID) throws Exception {
@@ -66,5 +86,11 @@ public class ProductoService implements ProductoServiceInterface{
     @Override
     public Page<Producto> getProductosByCategoria(String name) throws Exception {
         return null;
+    }
+
+    public byte[] descargarImg(Long ID){
+        Producto prodFound = productoRepository.findByID(ID);
+        byte[] imgActual = ImagenUtils.decompressImage(prodFound.getImagenBlob());
+        return imgActual;
     }
 }

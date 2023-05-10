@@ -18,8 +18,8 @@ import java.util.Date;
 public class Producto extends Base{
     String nombre;
     @Lob
-    @Column(name = "imagen_Blob", columnDefinition = "BLOB")
-    Byte[] imagenBlob;
+    @Column(name = "imagen_Blob", columnDefinition = "MEDIUMBLOB")
+    byte[] imagenBlob;
     String descripcion;
     Long tiempoCocina;
     String receta;
