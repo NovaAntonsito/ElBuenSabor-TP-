@@ -4,14 +4,17 @@ package com.example.demo.Controllers.DTOS;
 import com.example.demo.Entitys.Categoria;
 import com.example.demo.Entitys.Enum.Baja_Alta;
 
+import com.example.demo.Entitys.Insumo;
 import com.example.demo.Entitys.Producto;
-import com.example.demo.Services.CatergoriaService;
-import com.example.demo.Services.ProductoService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,18 +22,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Setter
 public class ProductoDTO {
 
-    Long id;
-    String nombre;
-    String descripcion;
-    Long tiempoCocina;
-    String receta;
-    Baja_Alta alta;
-    Long productoCategoria;
+    private Long id;
+    private String nombre;
+    private String descripcion;
+    private Long tiempoCocina;
+    private String receta;
+    private Baja_Alta alta;
+    private Long productoCategoria;
+    private List<Long> insumosIDS;
 
 
 
     public ProductoDTO toDTO(Producto producto) {
         ProductoDTO dto = new ProductoDTO();
+        List<Long> prodsID = new ArrayList<>();
         dto.setId(producto.getID());
         dto.setNombre(producto.getNombre());
         dto.setDescripcion(producto.getDescripcion());
@@ -39,9 +44,13 @@ public class ProductoDTO {
         if(producto.getProductoCategoria().getID() != null){
             dto.setProductoCategoria(producto.getProductoCategoria().getID());
         }
+        for(Insumo insumo : producto.getInsumoSet()){
+            prodsID.add(insumo.getID());
+        }
+        dto.setInsumosIDS(prodsID);
         return dto;
     }
-    public Producto toEntity(ProductoDTO dto, Categoria categoria) {
+    public Producto toEntity(ProductoDTO dto, Categoria categoria, List<Insumo> insumoList) {
         Producto producto = new Producto();
         producto.setID(dto.getId());
         producto.setNombre(dto.getNombre());
@@ -52,6 +61,7 @@ public class ProductoDTO {
         if(dto.getProductoCategoria() != null){
             producto.setProductoCategoria(categoria);
         }
+        producto.setInsumoSet(insumoList);
         return producto;
     }
 

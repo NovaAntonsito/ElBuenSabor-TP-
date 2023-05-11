@@ -1,13 +1,14 @@
 package com.example.demo.Entitys;
 
 import com.example.demo.Entitys.Enum.Baja_Alta;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.List;
 
-import java.util.Date;
 
 @Entity
 @Table(name = "Producto_Manufacturado")
@@ -16,14 +17,19 @@ import java.util.Date;
 @Getter
 @Setter
 public class Producto extends Base{
-    String nombre;
+    private String nombre;
     @Lob
     @Column(name = "imagen_Blob", columnDefinition = "MEDIUMBLOB")
-    byte[] imagenBlob;
-    String descripcion;
-    Long tiempoCocina;
-    String receta;
-    Baja_Alta alta;
+    private byte[] imagenBlob;
+    private String descripcion;
+    private Long tiempoCocina;
+    private String receta;
+    private Baja_Alta alta;
     @ManyToOne
-    Categoria productoCategoria;
+    private Categoria productoCategoria;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "producto_insumo",
+            joinColumns = @JoinColumn(),
+            inverseJoinColumns = @JoinColumn())
+    private List<Insumo> insumoSet;
 }

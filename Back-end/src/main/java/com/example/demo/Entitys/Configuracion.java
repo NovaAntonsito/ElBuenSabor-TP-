@@ -15,8 +15,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Table(name = "Configuracion")
 public class Configuracion extends Base {
-    Long cantCocineros;
-    String emailEmpresa;
+    private Long cantCocineros;
+    private String emailEmpresa;
     @Column(unique = true,name = "token_secret_MP")
-    String token_MP;
+    private String token_MP;
 }

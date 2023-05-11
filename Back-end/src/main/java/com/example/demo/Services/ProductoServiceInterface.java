@@ -17,4 +17,6 @@ public interface ProductoServiceInterface {
 
     Page<Producto> getProductosByCategoria(String name) throws Exception;
 
+    Producto findbyID (Long ID) throws Exception;
+
 }

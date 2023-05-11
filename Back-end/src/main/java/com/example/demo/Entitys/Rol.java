@@ -15,6 +15,6 @@ import lombok.*;
 @ToString
 public class Rol extends Base{
 
-    String nombreRol;
+   private String nombreRol;
 
 }

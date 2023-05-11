@@ -1,14 +1,12 @@
 package com.example.demo.Entitys;
 
 import com.example.demo.Entitys.Enum.Baja_Alta;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -24,5 +22,8 @@ public class Insumo extends Base{
     Double stockActual;
     Baja_Alta alta;
     Double costo;
-    //TODO Relacion entre tabla entre producto insumo
+    @ManyToMany(mappedBy = "insumoSet")
+    @JsonIgnore
+    List<Producto> productoSet;
+
 }

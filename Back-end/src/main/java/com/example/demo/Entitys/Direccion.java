@@ -11,10 +11,10 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class Direccion extends Base {
-    String calleNombre;
-    String departamento;
-    Long numeracion;
-    String aclaracion;
-    Long nroPiso;
+    private String calleNombre;
+    private String departamento;
+    private Long numeracion;
+    private String aclaracion;
+    private Long nroPiso;
 
 }

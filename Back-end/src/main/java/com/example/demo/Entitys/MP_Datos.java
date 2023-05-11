@@ -15,10 +15,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MP_Datos extends Base {
-    Date fecha_Creacion;
-    Date fecha_Aprobacion;
-    String forma_Pago;
-    String metodo_Pago;
-    Long nroTarjeta;
-    EstadoMP estado;
+    private Date fecha_Creacion;
+    private Date fecha_Aprobacion;
+    private String forma_Pago;
+    private String metodo_Pago;
+    private Long nroTarjeta;
+    private EstadoMP estado;
 }
