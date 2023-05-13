@@ -24,6 +24,7 @@ public class ProductoDTO {
 
     private Long id;
     private String nombre;
+    private String imgURL;
     private String descripcion;
     private Long tiempoCocina;
     private String receta;
@@ -50,10 +51,11 @@ public class ProductoDTO {
         dto.setInsumosIDS(prodsID);
         return dto;
     }
-    public Producto toEntity(ProductoDTO dto, Categoria categoria, List<Insumo> insumoList) {
+    public Producto toEntity(ProductoDTO dto, Categoria categoria, List<Insumo> insumoList,String URL) {
         Producto producto = new Producto();
         producto.setID(dto.getId());
         producto.setNombre(dto.getNombre());
+        producto.setImgURL(URL);
         producto.setDescripcion(dto.getDescripcion());
         producto.setTiempoCocina(dto.getTiempoCocina());
         producto.setReceta(dto.getReceta());

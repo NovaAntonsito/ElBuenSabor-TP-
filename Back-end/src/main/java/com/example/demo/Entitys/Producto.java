@@ -18,9 +18,7 @@ import java.util.List;
 @Setter
 public class Producto extends Base{
     private String nombre;
-    @Lob
-    @Column(name = "imagen_Blob", columnDefinition = "MEDIUMBLOB")
-    private byte[] imagenBlob;
+    private String imgURL;
     private String descripcion;
     private Long tiempoCocina;
     private String receta;

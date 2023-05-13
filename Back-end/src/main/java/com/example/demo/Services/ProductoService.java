@@ -6,7 +6,6 @@ import com.example.demo.Entitys.Producto;
 
 import com.example.demo.Repository.CategoriaRepository;
 import com.example.demo.Repository.ProductoRepository;
-import com.example.demo.Utils.ImagenUtils;
 import jakarta.transaction.Transactional;
 
 
@@ -31,23 +30,13 @@ public class ProductoService implements ProductoServiceInterface{
     @Override
     public Page<Producto> getAll(Pageable page) throws Exception {
         Page <Producto> prodCompress = productoRepository.findAllinAlta(page);
-//        List<Producto> prodList = new ArrayList<>();
-//        for (Producto list : prodCompress) {
-//            list.setImagenBlob(descargarImg(list.getID()));
-//            prodList.add(list);
-//        }
-//        Page<Producto> prodDecompress = new PageImpl<>(prodList,prodCompress.getPageable(), prodCompress.getTotalPages());
         return prodCompress;
     }
 
     @Override
     public Producto crearProducto(Producto newProducto, MultipartFile file) throws Exception {
         Categoria cateFound = categoriaRepository.findByID(newProducto.getProductoCategoria().getID());
-//        BufferedImage bi = ImageIO.read(file.getInputStream());
-//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//        ImageIO.write(bi, "png", byteArrayOutputStream);
-//        byte[] imageData = byteArrayOutputStream.toByteArray();
-        newProducto.setImagenBlob(new byte[0]);
+
         newProducto.setProductoCategoria(cateFound);
         productoRepository.save(newProducto);
         return newProducto;
@@ -65,7 +54,6 @@ public class ProductoService implements ProductoServiceInterface{
     public Producto updateProducto(Long ID, Producto newProducto) throws Exception {
         Producto prodFound = productoRepository.findByID(ID);
         prodFound.setNombre(newProducto.getNombre());
-        prodFound.setImagenBlob(newProducto.getImagenBlob());
         prodFound.setDescripcion(newProducto.getDescripcion());
         prodFound.setTiempoCocina(newProducto.getTiempoCocina());
         prodFound.setAlta(newProducto.getAlta());
@@ -82,11 +70,5 @@ public class ProductoService implements ProductoServiceInterface{
     @Override
     public Producto findbyID(Long ID) throws Exception {
         return productoRepository.findByID(ID);
-    }
-
-    public byte[] descargarImg(Long ID){
-        Producto prodFound = productoRepository.findByID(ID);
-        byte[] imgActual = ImagenUtils.decompressImage(prodFound.getImagenBlob());
-        return imgActual;
     }
 }
