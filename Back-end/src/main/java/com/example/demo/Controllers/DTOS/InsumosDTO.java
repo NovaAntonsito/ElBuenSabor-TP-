@@ -13,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InsumosDTO {
+    private Long ID;
     private String nombre;
     private String imagen;
     private Double stockMinimo;
@@ -23,6 +24,7 @@ public class InsumosDTO {
 
     public InsumosDTO toDTO (Insumo insumo){
         InsumosDTO newDTO = new InsumosDTO();
+        newDTO.setID(insumo.getID());
         newDTO.setNombre(insumo.getNombre());
         newDTO.setImagen(insumo.getImagen());
         newDTO.setStockActual(insumo.getStockActual());
@@ -40,7 +42,6 @@ public class InsumosDTO {
         newInsumo.setStockActual(dto.getStockActual());
         newInsumo.setAlta(dto.getEstado());
         newInsumo.setCosto(dto.getCosto());
-
         return newInsumo;
     }
 }

@@ -38,7 +38,15 @@ public class InsumoService implements InsumoServiceInterface {
 
     @Override
     public Insumo updateInsumo(Long ID, Insumo insumo) throws Exception {
-        return null;
+        Insumo insumoFound = insumoRepository.findByID(ID);
+        insumoFound.setNombre(insumo.getNombre());
+        insumoFound.setCosto(insumo.getCosto());
+        insumoFound.setStockActual(insumo.getStockActual());
+        insumoFound.setStockMinimo(insumo.getStockMinimo());
+        insumoFound.setProductoSet(insumo.getProductoSet());
+        insumoFound.setImagen(insumo.getImagen());
+        insumoRepository.save(insumoFound);
+        return insumoFound;
     }
 
     @Override

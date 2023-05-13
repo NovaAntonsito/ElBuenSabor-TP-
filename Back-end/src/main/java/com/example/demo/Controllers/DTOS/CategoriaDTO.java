@@ -2,19 +2,16 @@ package com.example.demo.Controllers.DTOS;
 
 import com.example.demo.Entitys.Categoria;
 import com.example.demo.Entitys.Enum.Baja_Alta;
-import com.example.demo.Services.CatergoriaService;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-
 public class CategoriaDTO {
     private Long id;
     private String nombre;

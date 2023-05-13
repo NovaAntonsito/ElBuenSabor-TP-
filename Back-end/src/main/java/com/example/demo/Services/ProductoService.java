@@ -29,8 +29,7 @@ public class ProductoService implements ProductoServiceInterface{
 
     @Override
     public Page<Producto> getAll(Pageable page) throws Exception {
-        Page <Producto> prodCompress = productoRepository.findAllinAlta(page);
-        return prodCompress;
+        return productoRepository.findAllinAlta(page);
     }
 
     @Override
@@ -54,6 +53,7 @@ public class ProductoService implements ProductoServiceInterface{
     public Producto updateProducto(Long ID, Producto newProducto) throws Exception {
         Producto prodFound = productoRepository.findByID(ID);
         prodFound.setNombre(newProducto.getNombre());
+        prodFound.setImgURL(newProducto.getImgURL());
         prodFound.setDescripcion(newProducto.getDescripcion());
         prodFound.setTiempoCocina(newProducto.getTiempoCocina());
         prodFound.setAlta(newProducto.getAlta());

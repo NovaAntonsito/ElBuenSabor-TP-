@@ -2,6 +2,7 @@ package com.example.demo.Entitys;
 
 import com.example.demo.Entitys.Enum.Baja_Alta;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,8 +25,9 @@ public class Producto extends Base{
     private String receta;
     private Baja_Alta alta;
     @ManyToOne
+    @JsonIgnoreProperties({"subCategoria","hibernateLazyInitializer"})
     private Categoria productoCategoria;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "producto_insumo",
             joinColumns = @JoinColumn(),
             inverseJoinColumns = @JoinColumn())

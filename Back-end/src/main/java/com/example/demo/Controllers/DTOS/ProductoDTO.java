@@ -28,7 +28,7 @@ public class ProductoDTO {
     private String descripcion;
     private Long tiempoCocina;
     private String receta;
-    private Baja_Alta alta;
+    private Baja_Alta estado;
     private Long productoCategoria;
     private List<Long> insumosIDS;
 
@@ -41,7 +41,7 @@ public class ProductoDTO {
         dto.setNombre(producto.getNombre());
         dto.setDescripcion(producto.getDescripcion());
         dto.setReceta(producto.getReceta());
-        dto.setAlta(producto.getAlta());
+        dto.setEstado(producto.getAlta());
         if(producto.getProductoCategoria().getID() != null){
             dto.setProductoCategoria(producto.getProductoCategoria().getID());
         }
@@ -59,7 +59,7 @@ public class ProductoDTO {
         producto.setDescripcion(dto.getDescripcion());
         producto.setTiempoCocina(dto.getTiempoCocina());
         producto.setReceta(dto.getReceta());
-        producto.setReceta(producto.getReceta());
+        producto.setAlta(dto.getEstado());
         if(dto.getProductoCategoria() != null){
             producto.setProductoCategoria(categoria);
         }

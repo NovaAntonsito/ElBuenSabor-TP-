@@ -38,7 +38,7 @@ public class InsumoController {
     @PutMapping("/{id}")
     public ResponseEntity<Insumo> updateInsumo (@RequestBody InsumosDTO insumosDTO, @PathVariable("id") Long ID) throws Exception{
         Insumo insumo = insumosDTO.toEntity(insumosDTO);
-        insumoService.updateInsumo(ID, insumo);
+        insumo = insumoService.updateInsumo(ID, insumo);
         return ResponseEntity.status(HttpStatus.OK).body(insumo);
     }
     @DeleteMapping("/{id}")
