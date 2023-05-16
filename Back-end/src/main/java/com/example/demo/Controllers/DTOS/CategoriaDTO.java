@@ -21,7 +21,7 @@ public class CategoriaDTO {
     public static CategoriaDTO toDTO(Categoria categoria) {
         CategoriaDTO dto = new CategoriaDTO();
         dto.setNombre(categoria.getNombre());
-        dto.setEstado(categoria.getAlta());
+        dto.setEstado(categoria.getEstado());
         dto.setId(categoria.getID());
         if (categoria.getCategoriaPadre() != null) {
             dto.setCategoriaPadre(categoria.getCategoriaPadre().getID());
@@ -31,7 +31,7 @@ public class CategoriaDTO {
     public Categoria toEntity(CategoriaDTO dto, Categoria categoriaPadre) {
         Categoria categoria = new Categoria();
         categoria.setNombre(dto.getNombre());
-        categoria.setAlta(dto.getEstado());
+        categoria.setEstado(dto.getEstado());
         if (dto.getCategoriaPadre() != null) {
             categoria.setCategoriaPadre(categoriaPadre);
         }

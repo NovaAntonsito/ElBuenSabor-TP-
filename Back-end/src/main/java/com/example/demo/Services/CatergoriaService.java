@@ -41,7 +41,7 @@ public class CatergoriaService implements CatergoriaServiceInterface {
             throw new Exception("No existe la categoria");
         }
         cateFound.setNombre(categoria.getNombre());
-        cateFound.setAlta(categoria.getAlta());
+        cateFound.setEstado(categoria.getEstado());
         cateFound.setCategoriaPadre(categoria.getCategoriaPadre());
         cateFound.setSubCategoria(categoria.getSubCategoria());
         categoriaRepository.save(cateFound);

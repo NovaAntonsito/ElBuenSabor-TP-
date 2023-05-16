@@ -33,7 +33,7 @@ public class InsumoService implements InsumoServiceInterface {
     @Override
     public void deleteInsumo(Long ID) throws Exception {
         Insumo insumoSoftDeleted = insumoRepository.findByID(ID);
-        insumoSoftDeleted.setAlta(Baja_Alta.NO_DISPONIBLE);
+        insumoSoftDeleted.setEstado(Baja_Alta.NO_DISPONIBLE);
     }
 
     @Override
@@ -41,6 +41,7 @@ public class InsumoService implements InsumoServiceInterface {
         Insumo insumoFound = insumoRepository.findByID(ID);
         insumoFound.setNombre(insumo.getNombre());
         insumoFound.setCosto(insumo.getCosto());
+        insumoFound.setEstado(insumo.getEstado());
         insumoFound.setStockActual(insumo.getStockActual());
         insumoFound.setStockMinimo(insumo.getStockMinimo());
         insumoFound.setProductoSet(insumo.getProductoSet());

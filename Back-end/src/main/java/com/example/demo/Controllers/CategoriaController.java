@@ -26,8 +26,13 @@ public class CategoriaController {
         Page<CategoriaDTO> categoriasDTO = categorias.map(CategoriaDTO::toDTO);
         return ResponseEntity.status(HttpStatus.OK).body(categoriasDTO);
     }
+
     @GetMapping("/filter")
-    public ResponseEntity<Page<CategoriaDTO>> findByIDandName(@RequestParam("id")Long id, @RequestParam("name") String nombre, @PageableDefault(page = 0, size = 10) Pageable page) throws Exception{
+    public ResponseEntity<Page<CategoriaDTO>> findByIDandName(
+            //OPTIONAL PARAMS
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String nombre,
+            @PageableDefault(page = 0, size = 10) Pageable page) throws Exception {
         CategoriaDTO dto = new CategoriaDTO();
         Page<Categoria> categorias = catergoriaService.findParentAndName(id, nombre, page);
         Page<CategoriaDTO> categoriaDTOPage = categorias.map(CategoriaDTO::toDTO);
@@ -37,23 +42,25 @@ public class CategoriaController {
     @PostMapping("")
     public ResponseEntity<CategoriaDTO> crearNuevaCategoria(@RequestBody CategoriaDTO categoriaDTO) throws Exception {
         CategoriaDTO dto = new CategoriaDTO();
-        Categoria categoria = dto.toEntity(categoriaDTO,catergoriaService.findbyID(categoriaDTO.getCategoriaPadre()));
+        Categoria categoria = dto.toEntity(categoriaDTO, catergoriaService.findbyID(categoriaDTO.getCategoriaPadre()));
         catergoriaService.crearCategoria(categoria);
         return ResponseEntity.status(HttpStatus.OK).body(CategoriaDTO.toDTO(categoria));
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<Page<Categoria>> getChildren(@RequestParam("id") Long ID, @PageableDefault(page = 0,size = 10)Pageable pageable) throws Exception{
-        Page<Categoria> categoriasChildrens = catergoriaService.findParent(ID,pageable);
+    public ResponseEntity<Page<Categoria>> getChildren(@RequestParam("id") Long ID, @PageableDefault(page = 0, size = 10) Pageable pageable) throws Exception {
+        Page<Categoria> categoriasChildrens = catergoriaService.findParent(ID, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(categoriasChildrens);
     }
+
     @PutMapping(value = "/{id}")
     public ResponseEntity<Categoria> updateCategoria(@PathVariable("id") Long ID, @RequestBody Categoria categoria) throws Exception {
-        Categoria updatedCategoria = catergoriaService.updateCategoria(categoria,ID);
+        Categoria updatedCategoria = catergoriaService.updateCategoria(categoria, ID);
         return ResponseEntity.status(HttpStatus.OK).body(updatedCategoria);
     }
+
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteCategoria(@PathVariable("id") Long ID) throws Exception{
+    public ResponseEntity<?> deleteCategoria(@PathVariable("id") Long ID) throws Exception {
         catergoriaService.deleteCategoria(ID);
         return ResponseEntity.status(HttpStatus.OK).body("El objeto fue borrado con exito");
     }

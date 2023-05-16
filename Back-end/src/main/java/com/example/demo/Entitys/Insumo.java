@@ -20,7 +20,7 @@ public class Insumo extends Base{
     String imagen;
     Double stockMinimo;
     Double stockActual;
-    Baja_Alta alta;
+    Baja_Alta estado;
     Double costo;
     @ManyToMany(mappedBy = "insumoSet")
     @JsonIgnore

@@ -18,7 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Categoria extends Base{
-    private Baja_Alta alta;
+    private Baja_Alta estado;
 
     private String nombre;
 

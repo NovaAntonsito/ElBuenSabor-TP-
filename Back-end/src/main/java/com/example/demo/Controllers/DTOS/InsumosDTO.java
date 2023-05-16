@@ -29,7 +29,7 @@ public class InsumosDTO {
         newDTO.setImagen(insumo.getImagen());
         newDTO.setStockActual(insumo.getStockActual());
         newDTO.setStockMinimo(insumo.getStockMinimo());
-        newDTO.setEstado(insumo.getAlta());
+        newDTO.setEstado(insumo.getEstado());
         newDTO.setCosto(insumo.getCosto());
         return newDTO;
     }
@@ -40,7 +40,7 @@ public class InsumosDTO {
         newInsumo.setImagen(dto.getImagen());
         newInsumo.setStockMinimo(dto.getStockMinimo());
         newInsumo.setStockActual(dto.getStockActual());
-        newInsumo.setAlta(dto.getEstado());
+        newInsumo.setEstado(dto.getEstado());
         newInsumo.setCosto(dto.getCosto());
         return newInsumo;
     }
