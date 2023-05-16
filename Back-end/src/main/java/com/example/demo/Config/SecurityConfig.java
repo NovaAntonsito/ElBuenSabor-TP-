@@ -27,15 +27,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .cors().and()
-                .authorizeHttpRequests()
-                .requestMatchers("/**").permitAll()
-                .and().oauth2ResourceServer()
-                .jwt()
-                .decoder(jwtDecoder())
-                .jwtAuthenticationConverter(jwtAuthenticationConverter());
+        http.authorizeHttpRequests()
+                .requestMatchers("*").permitAll()
+                .requestMatchers("api/v1/private").authenticated()
+                .requestMatchers("api/v1/admin-only").hasAuthority("SCOPE_read:messages")
+                .and()
+                .oauth2ResourceServer().jwt();
         return http.build();
     }
 
