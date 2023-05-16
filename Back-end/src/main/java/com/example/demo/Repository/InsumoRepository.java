@@ -7,9 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface InsumoRepository extends BaseRepository<Insumo, Long> {
-    Insumo findByID(Long ID);
+public interface InsumoRepository extends BaseRepository<Insumo,Long>{
+    Insumo findByID (Long ID);
 
-    @Query(value = "Select * from insumo",nativeQuery = true)
-    Page<Insumo> getAllInsumosInAlta(Pageable page);
+    @Query(value ="Select * from insumo where alta = 0" ,nativeQuery = true)
+    Page<Insumo> getAllInsumosInAlta (Pageable page);
+
+    //TODO Crear query para filtrar por nombre y categoria
+
 }

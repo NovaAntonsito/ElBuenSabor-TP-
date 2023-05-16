@@ -71,4 +71,9 @@ public class ProductoService implements ProductoServiceInterface{
     public Producto findbyID(Long ID) throws Exception {
         return productoRepository.findByID(ID);
     }
+
+    @Override
+    public Page<Producto> findByIDandCategoria(Long ID, String nombre, Pageable page) throws Exception {
+        return productoRepository.findByNameAndCategoria(ID,nombre,page);
+    }
 }

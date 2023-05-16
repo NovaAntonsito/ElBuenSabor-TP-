@@ -34,10 +34,10 @@ public class InsumosDTO {
         return newDTO;
     }
 
-    public Insumo toEntity (InsumosDTO dto){
+    public Insumo toEntity (InsumosDTO dto, String url){
         Insumo newInsumo = new Insumo();
         newInsumo.setNombre(dto.getNombre());
-        newInsumo.setImagen(dto.getImagen());
+        newInsumo.setImagen(url);
         newInsumo.setStockMinimo(dto.getStockMinimo());
         newInsumo.setStockActual(dto.getStockActual());
         newInsumo.setEstado(dto.getEstado());

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,9 @@ import java.util.List;
 @Slf4j
 @CrossOrigin(origins = "*")
 public class ProductoController {
+
     private final ProductoService productoService;
+
     private final CatergoriaService catergoriaService;
 
     private final CloudinaryServices cloudServices;
@@ -56,7 +59,7 @@ public class ProductoController {
             log.info(insumoadd.getNombre());
             insumoList.add(insumoadd);
         }
-        String url =(String)result.get("url");
+        var url = (String)result.get("url");
         Producto newProd = productoDTO.toEntity(productoDTO,cateFound,insumoList,url);
         log.info(cateFound.getNombre()+ "<-------------- Hasta aca todo bien x2");
         newProd = productoService.crearProducto(newProd,file);
@@ -79,5 +82,13 @@ public class ProductoController {
     public ResponseEntity<?> deleteProducto(@PathVariable("id")Long ID) throws Exception{
         productoService.deleteSoftProducto(ID);
         return ResponseEntity.status(HttpStatus.OK).body("El objeto se borro existosamente");
+    }
+    @GetMapping("/search")
+    public ResponseEntity<Page<Producto>> searchProducto
+            (@RequestParam(required = false, value = "id") Long id,
+             @RequestParam(required = false, value = "nombre") String nombre,
+             Pageable page) throws Exception{
+        Page<Producto> productoPage = productoService.findByIDandCategoria(id,nombre,page);
+        return ResponseEntity.status(HttpStatus.OK).body(productoPage);
     }
 }

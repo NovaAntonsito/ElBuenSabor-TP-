@@ -65,4 +65,5 @@ public class CategoriaController {
         return ResponseEntity.status(HttpStatus.OK).body("El objeto fue borrado con exito");
     }
 
+
 }
