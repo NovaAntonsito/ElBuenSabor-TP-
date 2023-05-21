@@ -29,7 +29,7 @@ public class InsumoController {
     private final CloudinaryServices cloudServices;
     private final InsumoService insumoService;
     @PostMapping("")
-    public ResponseEntity<Insumo> crearInsumo (@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart("img")MultipartFile file) throws Exception{
+    public ResponseEntity<Insumo> crearInsumo (@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart(value = "img", required = false)MultipartFile file) throws Exception{
         BufferedImage imgActual = ImageIO.read(file.getInputStream());
         var result = cloudServices.UploadIMG(file);
         String url =(String)result.get("url");
@@ -55,5 +55,13 @@ public class InsumoController {
     public ResponseEntity<?> deleteInsumo (@PathVariable("id") Long ID) throws Exception{
         insumoService.deleteInsumo(ID);
         return ResponseEntity.status(HttpStatus.OK).body("Se borro el elemento correctamente");
+    }
+    @GetMapping("/searchby")
+    public ResponseEntity<Page<Insumo>> getInsumoByName(@RequestParam(value = "nombre",required = false)String name,
+                                                        @RequestParam(value = "id",required = false)Long id,
+                                                        Pageable page) throws Exception{
+        Page<Insumo> insumoPage = insumoService.getInsumoByName(name, id, page);
+        return ResponseEntity.status(HttpStatus.OK).body(insumoPage);
+
     }
 }
