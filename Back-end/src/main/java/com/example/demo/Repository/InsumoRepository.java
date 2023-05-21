@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface InsumoRepository extends BaseRepository<Insumo,Long>{
     Insumo findByID (Long ID);
 
-    @Query(value ="Select * from insumo where alta = 0" ,nativeQuery = true)
+    @Query(value ="Select * from insumo where estado = 0" ,nativeQuery = true)
     Page<Insumo> getAllInsumosInAlta (Pageable page);
 
     //TODO Crear query para filtrar por nombre y categoria
