@@ -51,7 +51,6 @@ public class ProductoController {
     public ResponseEntity<Producto> createProducto(@RequestPart("producto") ProductoDTO productoDTO, @RequestPart("imagen") MultipartFile file) throws Exception {
         List<Insumo> insumoList = new ArrayList<>();
         Categoria cateFound = catergoriaService.findbyID(productoDTO.getProductoCategoria());
-        log.info(cateFound.getNombre()+ "<-------------- Hasta aca todo bien");
         BufferedImage imgActual = ImageIO.read(file.getInputStream());
         var result = cloudServices.UploadIMG(file);
         for(Long id : productoDTO.getInsumosIDS()){
@@ -61,7 +60,6 @@ public class ProductoController {
         }
         var url = (String)result.get("url");
         Producto newProd = productoDTO.toEntity(productoDTO,cateFound,insumoList,url);
-        log.info(cateFound.getNombre()+ "<-------------- Hasta aca todo bien x2");
         newProd = productoService.crearProducto(newProd,file);
         return ResponseEntity.status(HttpStatus.OK).body(newProd);
     }
