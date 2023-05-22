@@ -31,18 +31,18 @@ public class SecurityConfig {
     private String issuer;
 
 
-    private String corsAllowedOrigins = "http://127.0.0.1:5173";
+    private String corsAllowedOrigins = "http://localhost:5173";
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests()
-                .requestMatchers("/v1/api/**").permitAll()
-                .and()
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .csrf().disable()
-                .httpBasic().disable()
-                .formLogin().disable()
-                .oauth2ResourceServer().disable();
+                .requestMatchers("api/v1/**").permitAll()
+                .requestMatchers("v1/api/**").permitAll()
+                .requestMatchers("api/v1/private").authenticated()
+                .requestMatchers("api/v1/admin-only").hasAuthority("read:messages")
+                .and().cors().configurationSource(corsConfigurationSource())
+                .and().csrf().disable()
+                .oauth2ResourceServer().jwt();
         return http.build();
     }
 
@@ -69,6 +69,7 @@ public class SecurityConfig {
         jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
         return jwtConverter;
     }
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

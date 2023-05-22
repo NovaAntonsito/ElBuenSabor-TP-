@@ -28,38 +28,43 @@ import java.awt.image.BufferedImage;
 public class InsumoController {
     private final CloudinaryServices cloudServices;
     private final InsumoService insumoService;
-    @PostMapping("")
-    public ResponseEntity<Insumo> crearInsumo (@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart(value = "img", required = false)MultipartFile file) throws Exception{
+
+    @PostMapping(value = "", consumes = {"multipart/form-data"})
+    public ResponseEntity<Insumo> crearInsumo(@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart(value = "img", required = false) MultipartFile file) throws Exception {
         BufferedImage imgActual = ImageIO.read(file.getInputStream());
         var result = cloudServices.UploadIMG(file);
-        String url =(String)result.get("url");
+        String url = (String) result.get("url");
         Insumo newInsumo = insumosDTO.toEntity(insumosDTO, url);
         insumoService.createInsumo(newInsumo);
         return ResponseEntity.status(HttpStatus.OK).body(newInsumo);
     }
+
     @GetMapping()
-    public ResponseEntity<Page<Insumo>> viewAllinsumosInAlta(@PageableDefault(page = 0, size = 10 )Pageable page) throws Exception{
+    public ResponseEntity<Page<Insumo>> viewAllinsumosInAlta(@PageableDefault(page = 0, size = 10) Pageable page) throws Exception {
         Page<Insumo> allInsumos = insumoService.getAllInsumos(page);
         return ResponseEntity.status(HttpStatus.OK).body(allInsumos);
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Insumo> updateInsumo (@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart("img") MultipartFile file, @PathVariable("id") Long ID) throws Exception{
+    public ResponseEntity<Insumo> updateInsumo(@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart("img") MultipartFile file, @PathVariable("id") Long ID) throws Exception {
         BufferedImage imgActual = ImageIO.read(file.getInputStream());
         var result = cloudServices.UploadIMG(file);
-        String url =(String)result.get("url");
-        Insumo insumo = insumosDTO.toEntity(insumosDTO,url);
+        String url = (String) result.get("url");
+        Insumo insumo = insumosDTO.toEntity(insumosDTO, url);
         insumo = insumoService.updateInsumo(ID, insumo);
         return ResponseEntity.status(HttpStatus.OK).body(insumo);
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteInsumo (@PathVariable("id") Long ID) throws Exception{
+    public ResponseEntity<?> deleteInsumo(@PathVariable("id") Long ID) throws Exception {
         insumoService.deleteInsumo(ID);
         return ResponseEntity.status(HttpStatus.OK).body("Se borro el elemento correctamente");
     }
-    @GetMapping("/searchby")
-    public ResponseEntity<Page<Insumo>> getInsumoByName(@RequestParam(value = "nombre",required = false)String name,
-                                                        @RequestParam(value = "id",required = false)Long id,
-                                                        Pageable page) throws Exception{
+
+    @GetMapping("/filter")
+    public ResponseEntity<Page<Insumo>> getInsumoByName(@RequestParam(value = "nombre", required = false) String name,
+                                                        @RequestParam(value = "id", required = false) Long id,
+                                                        Pageable page) throws Exception {
         Page<Insumo> insumoPage = insumoService.getInsumoByName(name, id, page);
         return ResponseEntity.status(HttpStatus.OK).body(insumoPage);
 
