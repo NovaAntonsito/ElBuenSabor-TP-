@@ -37,12 +37,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests()
                 .requestMatchers("api/v1/**").permitAll()
-                .requestMatchers("v1/api/**").permitAll()
                 .requestMatchers("api/v1/private").authenticated()
                 .requestMatchers("api/v1/admin-only").hasAuthority("read:messages")
                 .and().cors().configurationSource(corsConfigurationSource())
                 .and().csrf().disable()
-                .oauth2ResourceServer().jwt();
+                .oauth2ResourceServer().disable();
         return http.build();
     }
 
