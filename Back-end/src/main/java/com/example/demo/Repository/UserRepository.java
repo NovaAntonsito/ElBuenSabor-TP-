@@ -1,11 +1,13 @@
 package com.example.demo.Repository;
 
 import com.example.demo.Entitys.Usuario;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-
-//Razon porque no es generico, la id de Auth0 es un String que es Unica, No un long
-//Se la extraemos de JWT que nos genera Auth0 y la vinculamos al propio usuario
 public interface UserRepository extends JpaRepository<Usuario, String> {
-
+    @Query(value = "Select * from users u where (:nombre is null or :nombre like u.username) order by u.username", nativeQuery = true )
+    Page<Usuario> filterUsers(@Param("username") String nombre, Pageable page);
 }

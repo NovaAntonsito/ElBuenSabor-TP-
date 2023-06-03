@@ -7,25 +7,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "Usuario")
+@Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
-public class Usuario{
+public class Usuario {
     @Id
-    @Column(unique = true,nullable = true)
-    private String Auth0ID;
+    private String id;
 
+    private String username;
 
+    private String email;
 
-
-
+    private String password;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "usuario_direccion",
             joinColumns = {@JoinColumn(name = "id_usuario_fk")},
             inverseJoinColumns = {@JoinColumn(name = "id_direccion_fk")})
     private List<Direccion> direccionList = new ArrayList<Direccion>();
+
+    private Boolean bloqueado;
 
 }
