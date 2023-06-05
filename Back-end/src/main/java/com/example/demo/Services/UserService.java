@@ -25,8 +25,8 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public Page<Usuario> filterUsuarios(String nombre, Pageable pageable) throws Exception {
-        return userRepository.filterUsers(nombre, pageable)
+    public Page<Usuario> filterUsuarios(String username, Pageable pageable) throws Exception {
+        return userRepository.filterUsers(username, pageable);
     }
 
 

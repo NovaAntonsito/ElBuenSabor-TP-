@@ -42,7 +42,8 @@ public class CategoriaController {
     @PostMapping("")
     public ResponseEntity<CategoriaDTO> crearNuevaCategoria(@RequestBody CategoriaDTO categoriaDTO) throws Exception {
         CategoriaDTO dto = new CategoriaDTO();
-        Categoria categoria = dto.toEntity(categoriaDTO, catergoriaService.findbyID(categoriaDTO.getCategoriaPadre().getId()));
+        //System.out.println("Id Categoria Padre: "+categoriaDTO.getCategoriaPadre());
+        Categoria categoria = dto.toEntity(categoriaDTO, catergoriaService.findbyID(categoriaDTO.getCategoriaPadre() != null ? categoriaDTO.getCategoriaPadre().getId() : -1));
         catergoriaService.crearCategoria(categoria);
         return ResponseEntity.status(HttpStatus.OK).body(CategoriaDTO.toDTO(categoria));
     }

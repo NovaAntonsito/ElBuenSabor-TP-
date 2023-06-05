@@ -35,11 +35,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests()
-                .requestMatchers("api/v1/**").permitAll()
-                .requestMatchers("api/v1/private").authenticated()
-                .requestMatchers("api/v1/admin-only").hasAuthority("read:messages")
-                .and().cors().configurationSource(corsConfigurationSource())
+        http.cors().configurationSource(corsConfigurationSource())
                 .and().csrf().disable()
                 .oauth2ResourceServer().disable();
         return http.build();

@@ -37,8 +37,8 @@ public class Auth0Controller {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<Usuario>> searchUsuarios(@PageableDefault(value = 10, page = 0) Pageable page,@RequestParam("nombre")String nombre) throws Exception{
-        Page<Usuario> usuarioPage = userService.filterUsuarios(nombre,page);
+    public ResponseEntity<Page<Usuario>> searchUsuarios(@PageableDefault(value = 10, page = 0) Pageable page,@RequestParam("username")String username) throws Exception{
+        Page<Usuario> usuarioPage = userService.filterUsuarios(username,page);
         return ResponseEntity.status(HttpStatus.OK).body(usuarioPage);
     }
 }
