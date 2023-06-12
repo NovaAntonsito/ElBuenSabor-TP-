@@ -16,6 +16,7 @@ public class Usuario {
     @Id
     private String id;
 
+    @Column(unique = true)
     private String username;
 
     private String email;
@@ -28,6 +29,7 @@ public class Usuario {
             inverseJoinColumns = {@JoinColumn(name = "id_direccion_fk")})
     private List<Direccion> direccionList = new ArrayList<Direccion>();
 
+    @Column(columnDefinition = "false")
     private Boolean bloqueado;
 
 }

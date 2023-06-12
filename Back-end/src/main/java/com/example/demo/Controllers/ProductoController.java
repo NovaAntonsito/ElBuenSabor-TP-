@@ -47,6 +47,12 @@ public class ProductoController {
         return ResponseEntity.status(HttpStatus.OK).body(prodsInAlta);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Producto> getOneProducto(@PathVariable("id") Long id) throws Exception{
+        Producto productoFound = productoService.findbyID(id);
+        return ResponseEntity.status(HttpStatus.OK).body(productoFound);
+    }
+
     @PostMapping("")
     public ResponseEntity<Producto> createProducto(@RequestPart("producto") ProductoDTO productoDTO, @RequestPart("imagen") MultipartFile file) throws Exception {
         List<Insumo> insumoList = new ArrayList<>();

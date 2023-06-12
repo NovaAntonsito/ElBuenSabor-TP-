@@ -1,5 +1,6 @@
 package com.example.demo.Services;
 
+import com.example.demo.Entitys.Direccion;
 import com.example.demo.Entitys.Usuario;
 import com.example.demo.Repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -27,6 +28,23 @@ public class UserService implements UserServiceInterface {
     @Override
     public Page<Usuario> filterUsuarios(String username, Pageable pageable) throws Exception {
         return userRepository.filterUsers(username, pageable);
+    }
+
+    @Override
+    public Usuario userbyID(String username) throws Exception {
+        return userRepository.userFound(username);
+    }
+
+    @Override
+    public Usuario userbyUsername(String username) throws Exception {
+        return userRepository.getUserbyUsername(username);
+    }
+
+    @Override
+    public Usuario addAddressToUser(String username, Direccion direccion) throws Exception {
+        Usuario userFound = userRepository.userFound(username);
+        userFound.getDireccionList().add(direccion);
+        return userFound;
     }
 
 

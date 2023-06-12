@@ -9,7 +9,6 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class Direccion extends Base {
     private String calleNombre;
     private String departamento;
