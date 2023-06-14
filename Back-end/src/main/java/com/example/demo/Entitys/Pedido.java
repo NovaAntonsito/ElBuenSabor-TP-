@@ -18,10 +18,13 @@ public class Pedido extends Base{
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_direccion_fk")
     private Direccion direccionPedido;
+    @ManyToOne
+    @JoinColumn
+    private Carrito carritoComprado;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_estado_fk")
     private Estado estado;
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_MP_datos_fk")
+    @JoinColumn(name = "id_MP_datos_fk", nullable = true)
     private MP_Datos MercadoPagoDatos;
 }

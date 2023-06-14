@@ -29,7 +29,7 @@ public class Usuario {
             inverseJoinColumns = {@JoinColumn(name = "id_direccion_fk")})
     private List<Direccion> direccionList = new ArrayList<Direccion>();
 
-    @Column(columnDefinition = "false")
+    @Column()
     private Boolean bloqueado;
 
 }

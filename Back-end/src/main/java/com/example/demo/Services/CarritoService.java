@@ -16,6 +16,12 @@ public class CarritoService implements CarritoServiceInterface{
     private final CarritoRepository carritoRepository;
     @Override
     public Carrito cartSave(Carrito cart) throws Exception {
+        log.info(cart.getProductosComprados().get(0).getNombre());
         return carritoRepository.save(cart);
+    }
+
+    @Override
+    public Carrito getCarritobyUserID(String id) throws Exception {
+        return carritoRepository.getCarritoByUserID(id);
     }
 }

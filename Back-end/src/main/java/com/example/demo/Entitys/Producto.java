@@ -29,7 +29,7 @@ public class Producto extends Base{
     private Categoria productoCategoria;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "producto_insumo",
-            joinColumns = @JoinColumn(),
-            inverseJoinColumns = @JoinColumn())
+            joinColumns = @JoinColumn(name = "producto_id"),
+            inverseJoinColumns = @JoinColumn(name = "insumo_id"))
     private List<Insumo> insumoSet;
 }

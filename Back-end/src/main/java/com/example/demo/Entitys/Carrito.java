@@ -1,6 +1,6 @@
 package com.example.demo.Entitys;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,16 +10,19 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-@Table(name = "Cart")
+@Table(name = "cart")
 @NoArgsConstructor
 @Getter
 @Setter
 @AllArgsConstructor
 public class Carrito extends Base {
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    List<Producto> productosComprados;
+    @ManyToMany
+    @JoinTable(name = "carrito_producto",
+            joinColumns = @JoinColumn(name = "carrito_id"),
+            inverseJoinColumns = @JoinColumn(name = "producto_id"))
+    private List<Producto> productosComprados;
 
     @OneToOne
-    Usuario usuarioAsignado;
+    private Usuario usuarioAsignado;
 }
