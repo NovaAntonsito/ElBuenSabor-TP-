@@ -53,11 +53,9 @@ public class CarritoController {
             Carrito carritoFound = carritoService.getCarritobyUserID(sub);
             List<ProductosCarritoDTO> dtoList = newDTO.toDTO(carritoFound.getProductosComprados());
             return ResponseEntity.status(HttpStatus.OK).body(dtoList);
-        }catch (Exception error){
-            String mensajeError = error.getMessage();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    Map.of("success", false, "msg", mensajeError)
-            );
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
 }

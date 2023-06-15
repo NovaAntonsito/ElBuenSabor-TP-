@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import com.mashape.unirest.http.HttpResponse;
 
 import java.text.ParseException;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,33 +37,57 @@ public class Auth0Controller {
 
 
     @GetMapping("/getUsers")
-    public ResponseEntity<Page<Usuario>> getUsersFromAuth0(@PageableDefault(value = 10, page = 0) Pageable page) throws Exception {
+    public ResponseEntity<?> getUsersFromAuth0(@PageableDefault(value = 10, page = 0) Pageable page) throws Exception {
+        try {
             Page<Usuario> allUsuarios = userService.viewAllUsuarios(page);
-        return ResponseEntity.status(HttpStatus.OK).body(allUsuarios);
+            Page<Auth0DTO> allUsuariosDTO = allUsuarios.map(usuario -> {
+                Auth0DTO usuarioDTO = new Auth0DTO();
+                return usuarioDTO.toDTO(usuario);
+            });
+            return ResponseEntity.status(HttpStatus.OK).body(allUsuariosDTO);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+
     }
 
+
     @GetMapping("/search")
-    public ResponseEntity<Page<Usuario>> searchUsuarios(@PageableDefault(value = 10, page = 0) Pageable page,@RequestParam("username")String username) throws Exception{
-        Page<Usuario> usuarioPage = userService.filterUsuarios(username,page);
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioPage);
+    public ResponseEntity<?> searchUsuarios(@PageableDefault(value = 10, page = 0) Pageable page,@RequestParam("username")String username) throws Exception{
+        try {
+            Page<Usuario> usuarioPage = userService.filterUsuarios(username,page);
+            return ResponseEntity.status(HttpStatus.OK).body(usuarioPage);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+
     }
     @GetMapping("/{username}")
-    public ResponseEntity<Auth0DTO> getOneUsuario(@PathVariable("username") String username)throws Exception{
-        username = username.replace('_', '|');
-        Usuario userFound = userService.userbyID(username);
-        Auth0DTO userProccesed = new Auth0DTO();
-        return ResponseEntity.status(HttpStatus.OK).body(userProccesed.toDTO(userFound));
+    public ResponseEntity<?> getOneUsuario(@PathVariable("username") String username)throws Exception{
+        try {
+            username = username.replace('_', '|');
+            Usuario userFound = userService.userbyID(username);
+            Auth0DTO userProccesed = new Auth0DTO();
+            return ResponseEntity.status(HttpStatus.OK).body(userProccesed.toDTO(userFound));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+
     }
 
     @PutMapping("/addDireccion/{id}")
-    public ResponseEntity<Usuario> addDireccionToUser(@RequestBody Direccion direccion,@PathVariable("id") String userSub) throws Exception{
+    public ResponseEntity<?> addDireccionToUser(@RequestBody Direccion direccion,@PathVariable("id") String userSub) throws Exception{
         try {
             userSub = userSub.replace('_', '|');
             Direccion newDireccion = direccionService.saveDireccion(direccion);
             Usuario userFound = userService.addAddressToUser(userSub, newDireccion);
             return ResponseEntity.status(HttpStatus.OK).body(userFound);
         }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
 }

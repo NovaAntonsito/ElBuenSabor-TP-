@@ -14,7 +14,6 @@ public class Pedido extends Base{
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_usuario_fk")
     private Usuario usuarioPedido;
-    private Double total;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_direccion_fk")
     private Direccion direccionPedido;
@@ -27,4 +26,5 @@ public class Pedido extends Base{
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_MP_datos_fk", nullable = true)
     private MP_Datos MercadoPagoDatos;
+    private Double total;
 }

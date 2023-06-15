@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 
 
 @RestController
@@ -30,43 +31,72 @@ public class InsumoController {
     private final InsumoService insumoService;
 
     @PostMapping(value = "", consumes = {"multipart/form-data"})
-    public ResponseEntity<Insumo> crearInsumo(@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart(value = "img", required = false) MultipartFile file) throws Exception {
-        BufferedImage imgActual = ImageIO.read(file.getInputStream());
-        var result = cloudServices.UploadIMG(file);
-        String url = (String) result.get("url");
-        Insumo newInsumo = insumosDTO.toEntity(insumosDTO, url);
-        insumoService.createInsumo(newInsumo);
-        return ResponseEntity.status(HttpStatus.OK).body(newInsumo);
+    public ResponseEntity<?> crearInsumo(@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart(value = "img", required = false) MultipartFile file) throws Exception {
+        try {
+            BufferedImage imgActual = ImageIO.read(file.getInputStream());
+            var result = cloudServices.UploadIMG(file);
+            String url = (String) result.get("url");
+            Insumo newInsumo = insumosDTO.toEntity(insumosDTO, url);
+            insumoService.createInsumo(newInsumo);
+            return ResponseEntity.status(HttpStatus.OK).body(newInsumo);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
     }
 
     @GetMapping()
-    public ResponseEntity<Page<Insumo>> viewAllinsumosInAlta(@PageableDefault(page = 0, size = 10) Pageable page) throws Exception {
-        Page<Insumo> allInsumos = insumoService.getAllInsumos(page);
-        return ResponseEntity.status(HttpStatus.OK).body(allInsumos);
+    public ResponseEntity<?> viewAllinsumosInAlta(@PageableDefault(page = 0, size = 10) Pageable page) throws Exception {
+        try {
+            Page<Insumo> allInsumos = insumoService.getAllInsumos(page);
+            return ResponseEntity.status(HttpStatus.OK).body(allInsumos);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Insumo> updateInsumo(@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart("img") MultipartFile file, @PathVariable("id") Long ID) throws Exception {
-        BufferedImage imgActual = ImageIO.read(file.getInputStream());
-        var result = cloudServices.UploadIMG(file);
-        String url = (String) result.get("url");
-        Insumo insumo = insumosDTO.toEntity(insumosDTO, url);
-        insumo = insumoService.updateInsumo(ID, insumo);
-        return ResponseEntity.status(HttpStatus.OK).body(insumo);
+    public ResponseEntity<?> updateInsumo(@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart("img") MultipartFile file, @PathVariable("id") Long ID) throws Exception {
+        try {
+            BufferedImage imgActual = ImageIO.read(file.getInputStream());
+            var result = cloudServices.UploadIMG(file);
+            String url = (String) result.get("url");
+            Insumo insumo = insumosDTO.toEntity(insumosDTO, url);
+            insumo = insumoService.updateInsumo(ID, insumo);
+            return ResponseEntity.status(HttpStatus.OK).body(insumo);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteInsumo(@PathVariable("id") Long ID) throws Exception {
-        insumoService.deleteInsumo(ID);
-        return ResponseEntity.status(HttpStatus.OK).body("Se borro el elemento correctamente");
+        try {
+            insumoService.deleteInsumo(ID);
+            return ResponseEntity.status(HttpStatus.OK).body("Se borro el elemento correctamente");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<Page<Insumo>> getInsumoByName(@RequestParam(value = "nombre", required = false) String name,
+    public ResponseEntity<?> getInsumoByName(@RequestParam(value = "nombre", required = false) String name,
                                                         @RequestParam(value = "id", required = false) Long id,
                                                         Pageable page) throws Exception {
-        Page<Insumo> insumoPage = insumoService.getInsumoByName(name, id, page);
-        return ResponseEntity.status(HttpStatus.OK).body(insumoPage);
+        try {
+            Page<Insumo> insumoPage = insumoService.getInsumoByName(name, id, page);
+            return ResponseEntity.status(HttpStatus.OK).body(insumoPage);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+
 
     }
 }
