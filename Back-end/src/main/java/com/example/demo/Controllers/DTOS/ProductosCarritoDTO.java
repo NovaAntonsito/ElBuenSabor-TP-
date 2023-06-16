@@ -20,10 +20,11 @@ import java.util.List;
 public class ProductosCarritoDTO {
 
     private String producto;
+    private Long productoId;
     private Long cantidad;
     private Double precioUnitario;
     private Double precioTotal;
-
+    private String imgURL;
     public List<ProductosCarritoDTO> toDTO(List<Producto> productosComprados) {
         List<ProductosCarritoDTO> productosCarritoDTOList = new ArrayList<>();
 
@@ -47,6 +48,8 @@ public class ProductosCarritoDTO {
                 nuevoProducto.setCantidad(1L);
                 nuevoProducto.setPrecioUnitario(producto.getInsumoSet().get(0).getCosto()); // Suponemos que solo tiene un insumo
                 nuevoProducto.setPrecioTotal(producto.getInsumoSet().get(0).getCosto()); // Suponemos que solo tiene un insumo
+                nuevoProducto.setImgURL(producto.getImgURL());
+                nuevoProducto.setProductoId(producto.getID());
                 productosCarritoDTOList.add(nuevoProducto);
             }
         }

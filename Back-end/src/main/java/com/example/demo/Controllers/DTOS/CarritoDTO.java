@@ -15,12 +15,13 @@ import java.util.List;
 @Getter
 @Setter
 public class CarritoDTO {
-    List<Producto> productosComprados;
-
+    List<ProductosCarritoDTO> productosComprados;
+    private  int totalCompra;
     public Carrito toEntity(List<Producto> productosComprados, Usuario usuario) throws Exception{
         Carrito newCart = new Carrito();
         newCart.setProductosComprados(productosComprados);
         newCart.setUsuarioAsignado(usuario);
         return newCart;
     }
+
 }
