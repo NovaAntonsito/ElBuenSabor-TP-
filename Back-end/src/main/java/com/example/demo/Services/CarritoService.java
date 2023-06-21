@@ -16,7 +16,7 @@ public class CarritoService implements CarritoServiceInterface{
     private final CarritoRepository carritoRepository;
     @Override
     public Carrito cartSave(Carrito cart) throws Exception {
-        log.info(cart.getProductosComprados().get(0).getNombre());
+        //System.out.println("cartSave: "+cart.getProductosComprados().size());
         return carritoRepository.save(cart);
     }
 

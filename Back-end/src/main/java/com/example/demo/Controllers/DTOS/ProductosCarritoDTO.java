@@ -32,7 +32,7 @@ public class ProductosCarritoDTO {
             // Verificar si el producto ya existe en la lista
             boolean existeProducto = false;
             for (ProductosCarritoDTO dto : productosCarritoDTOList) {
-                if (dto.getProducto().equals(producto.getNombre())) {
+                if (dto.getProductoId().equals(producto.getID())) {
                     // El producto ya existe en la lista, aumentar la cantidad y actualizar el precio total
                     dto.setCantidad(dto.getCantidad() + 1);
                     dto.setPrecioTotal(dto.getPrecioTotal() + producto.getInsumoSet().get(0).getCosto()); // Suponemos que solo tiene un insumo

@@ -41,8 +41,8 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public Usuario addAddressToUser(String username, Direccion direccion) throws Exception {
-        Usuario userFound = userRepository.userFound(username);
+    public Usuario addAddressToUser(String id, Direccion direccion) throws Exception {
+        Usuario userFound = userRepository.userFound(id);
         userFound.getDireccionList().add(direccion);
         return userFound;
     }

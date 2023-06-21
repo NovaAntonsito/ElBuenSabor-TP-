@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -15,13 +16,8 @@ import java.util.List;
 @Getter
 @Setter
 public class CarritoDTO {
-    List<ProductosCarritoDTO> productosComprados;
+    List<ProductosCarritoDTO> productosComprados = new ArrayList<ProductosCarritoDTO>();
     private  int totalCompra;
-    public Carrito toEntity(List<Producto> productosComprados, Usuario usuario) throws Exception{
-        Carrito newCart = new Carrito();
-        newCart.setProductosComprados(productosComprados);
-        newCart.setUsuarioAsignado(usuario);
-        return newCart;
-    }
+
 
 }
