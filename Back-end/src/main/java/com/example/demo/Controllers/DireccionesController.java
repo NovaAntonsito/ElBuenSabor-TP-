@@ -22,13 +22,14 @@ import java.util.Map;
 public class DireccionesController {
     private final UserService userService;
     private final DireccionService direccionService;
-    @PutMapping("/addDireccion")
+    @PostMapping("/addDireccion")
     public ResponseEntity<?> addDireccionToUser(@RequestBody Direccion direccion, @RequestHeader("Authorization") String token) throws Exception{
         String jwtToken = token.substring(7);
         try {
 
             JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
             String sub = decodedJWT.getSubject();
+            System.out.println(direccion);
             Direccion newDireccion = direccionService.saveDireccion(direccion);
             Usuario userFound = userService.addAddressToUser(sub,newDireccion);
             return ResponseEntity.status(HttpStatus.OK).body(userFound.getDireccionList());
