@@ -24,4 +24,9 @@ public class CarritoService implements CarritoServiceInterface{
     public Carrito getCarritobyUserID(String id) throws Exception {
         return carritoRepository.getCarritoByUserID(id);
     }
+
+    @Override
+    public void deleteCarritoPostCompra(Carrito cart) throws Exception {
+        carritoRepository.delete(cart);
+    }
 }

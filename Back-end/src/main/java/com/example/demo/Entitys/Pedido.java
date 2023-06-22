@@ -1,7 +1,10 @@
 package com.example.demo.Entitys;
 
+import com.example.demo.Entitys.Enum.EstadoPedido;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Date;
 
 @Entity
 @Table(name = "Pedido")
@@ -11,7 +14,7 @@ import lombok.*;
 @Setter
 @ToString
 public class Pedido extends Base{
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @OneToOne
     @JoinColumn(name = "id_usuario_fk")
     private Usuario usuarioPedido;
     @ManyToOne(cascade = CascadeType.ALL)
@@ -20,11 +23,16 @@ public class Pedido extends Base{
     @ManyToOne
     @JoinColumn
     private Carrito carritoComprado;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_estado_fk")
-    private Estado estado;
+
+    private EstadoPedido estado;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_MP_datos_fk", nullable = true)
     private MP_Datos MercadoPagoDatos;
+
+    private Date fechaInicio;
+
+    private Date fechaFinal;
+
     private Double total;
 }
