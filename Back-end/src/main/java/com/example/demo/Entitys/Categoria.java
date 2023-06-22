@@ -29,5 +29,6 @@ public class Categoria extends Base{
 
     @OneToMany(mappedBy = "categoriaPadre", fetch = FetchType.EAGER)
     @JsonManagedReference
+    @Column(nullable = true)
     private List<Categoria> subCategoria;
 }

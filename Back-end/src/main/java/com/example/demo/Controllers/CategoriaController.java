@@ -57,7 +57,7 @@ public class CategoriaController {
     public ResponseEntity<?> crearNuevaCategoria(@RequestBody CategoriaDTO categoriaDTO) throws Exception {
         try {
             CategoriaDTO dto = new CategoriaDTO();
-            Categoria categoria = dto.toEntity(categoriaDTO, catergoriaService.findbyID(categoriaDTO.getCategoriaPadre() != null ? categoriaDTO.getCategoriaPadre().getId() : -1));
+            Categoria categoria = dto.toEntity(categoriaDTO, catergoriaService.findbyID(categoriaDTO.getCategoriaPadre()));
             catergoriaService.crearCategoria(categoria);
             return ResponseEntity.status(HttpStatus.OK).body(CategoriaDTO.toDTO(categoria));
         }catch (Exception e){

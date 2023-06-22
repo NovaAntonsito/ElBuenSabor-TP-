@@ -16,14 +16,16 @@ public class CategoriaDTO {
     private Long id;
     private String nombre;
     private Baja_Alta estado;
-    private CategoriaDTO categoriaPadre;
+    private Long categoriaPadre;
 
     public static CategoriaDTO toDTO(Categoria categoria) {
         CategoriaDTO dto = new CategoriaDTO();
         dto.setNombre(categoria.getNombre());
         dto.setEstado(categoria.getEstado());
         dto.setId(categoria.getID());
-        dto.setCategoriaPadre(categoria.getCategoriaPadre() == null ? null : toDTO(categoria.getCategoriaPadre()));
+        if (categoria.getCategoriaPadre() != null) {
+            dto.setCategoriaPadre(categoria.getCategoriaPadre().getID());
+        }
         return dto;
     }
     public Categoria toEntity(CategoriaDTO dto, Categoria categoriaPadre) {
