@@ -1,17 +1,21 @@
 package com.example.demo.Controllers.Auth0;
 
 import com.example.demo.Controllers.Auth0.Auth0Classes.Auth0DTO;
+import com.example.demo.Controllers.Auth0.Auth0Classes.UserAuth0;
+import com.example.demo.Controllers.Auth0.Auth0Utils.JWTManager;
 import com.example.demo.Entitys.Direccion;
 import com.example.demo.Entitys.Usuario;
 import com.example.demo.Services.DireccionService;
 import com.example.demo.Services.UserService;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +39,40 @@ public class Auth0Controller {
     private final UserService userService;
     private final DireccionService direccionService;
 
+    @Value("${auth0.m2m.ClientID}")
+    private String clientID;
+
+    @Value("${auth0.m2m.Secret}")
+    private String clientSecret;
+
+    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+    private String auth0Domain;
+
+
+    //SOLO UTILIZABLE EN AUTH0 IDS, No googleIDS o otras redes sociales
+    @PutMapping("/changeUser/{idUser}")
+    public ResponseEntity<?> changeUser(@RequestBody UserAuth0 userAuth0, @PathVariable("idUser") String idUser) throws Exception{
+        try {
+            JWTManager newJWT = new JWTManager();
+            String newIdUser = idUser.replace('_' , '|');
+            String JWTActual = newJWT.getJWTFromAuth0(clientID, clientSecret);
+            String putUserURL = auth0Domain.concat("api/v2/users/"+newIdUser);
+            Gson newJson = new Gson();
+            String jsonBody = newJson.toJson(userAuth0);
+            log.info(putUserURL);
+            HttpResponse<String> response = Unirest.patch(putUserURL)
+                    .header("content-type", "application/json")
+                    .header("accept", "application/json")
+                    .header("authorization", "Bearer " + JWTActual)
+                    .body(jsonBody)
+                    .asString();
+            return ResponseEntity.status(HttpStatus.OK).body(response.getBody());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
 
     @GetMapping("/getUsers")
     public ResponseEntity<?> getUsersFromAuth0(@PageableDefault(value = 10, page = 0) Pageable page) throws Exception {
@@ -51,6 +89,49 @@ public class Auth0Controller {
         }
 
     }
+
+    @GetMapping("/getRoles")
+    public ResponseEntity<?> getRoles() throws Exception{
+        try {
+            JWTManager newJWT = new JWTManager();
+            String JWT = newJWT.getJWTFromAuth0(clientID, clientSecret);
+            String getRolesURL = auth0Domain.concat("/api/v2/roles");
+            HttpResponse<String> response = Unirest.get(getRolesURL)
+                    .header("content-type", "application/json")
+                    .header("authorization", "Bearer " + JWT)
+                    .header("cache-control", "no-cache")
+                    .asString();
+            String allRoles = response.getBody();
+            return ResponseEntity.status(HttpStatus.OK).body(allRoles);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/addRole")
+    public ResponseEntity<?> createRole(@RequestBody Map<String, String> requestBody) throws Exception{
+        try {
+            JWTManager newJWT = new JWTManager();
+            String JWT = newJWT.getJWTFromAuth0(clientID, clientSecret);
+            String roleName = requestBody.get("nombre");
+            String roleDescription = requestBody.get("desc");
+            String getRolesURL = auth0Domain.concat("/api/v2/roles");
+            HttpResponse<String> response = Unirest.post(getRolesURL)
+                    .header("content-type", "application/json")
+                    .header("authorization", "Bearer " + JWT)
+                    .header("cache-control", "no-cache")
+                    .body("{ \"name\": \"" + roleName + "\", \"description\": \"" +  roleDescription + "\" }")
+                    .asString();
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Map.of("success", true, "message", "Rol creado"));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+
+    }
+
 
 
     @GetMapping("/search")
@@ -78,16 +159,4 @@ public class Auth0Controller {
 
     }
 
-    @PutMapping("/addDireccion/{id}")
-    public ResponseEntity<?> addDireccionToUser(@RequestBody Direccion direccion,@PathVariable("id") String userSub) throws Exception{
-        try {
-            userSub = userSub.replace('_', '|');
-            Direccion newDireccion = direccionService.saveDireccion(direccion);
-            Usuario userFound = userService.addAddressToUser(userSub, newDireccion);
-            return ResponseEntity.status(HttpStatus.OK).body(userFound);
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("success", false, "message", e.getMessage()));
-        }
-    }
 }
