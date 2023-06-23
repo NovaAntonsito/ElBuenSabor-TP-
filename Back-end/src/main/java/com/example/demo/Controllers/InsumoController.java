@@ -54,7 +54,11 @@ public class InsumoController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
+    }
 
+    @GetMapping("/allWOPage")
+    public ResponseEntity<?> getAllInsumos() throws Exception {
+        return ResponseEntity.status(HttpStatus.OK).body(insumoService.getAllInsumosWOPage());
     }
 
     @PutMapping("/{id}")

@@ -25,6 +25,11 @@ public class InsumoService implements InsumoServiceInterface {
     }
 
     @Override
+    public Iterable<Insumo> getAllInsumosWOPage() throws Exception {
+        return insumoRepository.findAll();
+    }
+
+    @Override
     public Insumo createInsumo(Insumo insumo) throws Exception {
         insumoRepository.save(insumo);
         return insumo;

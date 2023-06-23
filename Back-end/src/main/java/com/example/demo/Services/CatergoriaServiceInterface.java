@@ -4,6 +4,8 @@ import com.example.demo.Entitys.Categoria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface CatergoriaServiceInterface {
 
     Page<Categoria> getAllCategoria (Pageable page) throws Exception;
@@ -20,5 +22,5 @@ public interface CatergoriaServiceInterface {
 
     Page<Categoria> findParentAndName (Long id, String nombre, Pageable pageable) throws Exception;
 
-
+    List<Categoria> getAllCategoriaList () throws Exception;
 }

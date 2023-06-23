@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("v1/api/categoria")
@@ -53,6 +55,14 @@ public class CategoriaController {
 
     }
 
+    //GET ALL CATEGORIAS WITHOUT pagination
+    @GetMapping("/allWOPage")
+    public ResponseEntity<List<Categoria>> getAllCategorias() throws Exception {
+        CategoriaDTO dto = new CategoriaDTO();
+        List<Categoria> categorias = catergoriaService.getAllCategoriaList();
+        return ResponseEntity.status(HttpStatus.OK).body(categorias);
+    }
+
     @PostMapping("")
     public ResponseEntity<?> crearNuevaCategoria(@RequestBody CategoriaDTO categoriaDTO) throws Exception {
         try {
@@ -60,11 +70,10 @@ public class CategoriaController {
             Categoria categoria = dto.toEntity(categoriaDTO, catergoriaService.findbyID(categoriaDTO.getCategoriaPadre()));
             catergoriaService.crearCategoria(categoria);
             return ResponseEntity.status(HttpStatus.OK).body(CategoriaDTO.toDTO(categoria));
-        }catch (Exception e){
+        } catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
-
     }
 
     @GetMapping(value = "")
@@ -102,5 +111,9 @@ public class CategoriaController {
         }
     }
 
-
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Categoria> getCategoria(@PathVariable("id") Long ID) throws Exception {
+        Categoria categoria = catergoriaService.findbyID(ID);
+        return ResponseEntity.status(HttpStatus.OK).body(categoria);
+    }
 }

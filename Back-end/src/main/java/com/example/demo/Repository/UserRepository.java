@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<Usuario, String> {
-    @Query(value = "Select * from users u where (:username is null or :username like u.username) order by u.username", nativeQuery = true )
+    @Query(value = "SELECT * FROM users u WHERE (:username is null or :username LIKE CONCAT('%', u.username,'%')) order by u.username", nativeQuery = true )
     Page<Usuario> filterUsers(@Param("username") String username, Pageable page);
 
     @Query(value = "SELECT * FROM users u WHERE (:username is null or :username like u.id) limit 1", nativeQuery = true)

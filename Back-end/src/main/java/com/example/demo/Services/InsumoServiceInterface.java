@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface InsumoServiceInterface {
     Page<Insumo> getAllInsumos (Pageable page) throws Exception;
+
+    Iterable<Insumo> getAllInsumosWOPage () throws Exception;
     Insumo createInsumo(Insumo insumo) throws Exception;
     void deleteInsumo(Long ID) throws Exception;
     Insumo updateInsumo (Long ID, Insumo insumo) throws Exception;

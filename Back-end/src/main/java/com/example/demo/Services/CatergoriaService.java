@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -21,6 +23,7 @@ public class CatergoriaService implements CatergoriaServiceInterface {
         log.info("Entre a Get All");
         return categoriaRepository.findAll(page);
     }
+
 
     @Override
     public Categoria crearCategoria(Categoria categoria) throws Exception {
@@ -64,5 +67,9 @@ public class CatergoriaService implements CatergoriaServiceInterface {
         return categoriaRepository.findParentAndName(id, nombre, pageable);
     }
 
+    @Override
+    public List<Categoria> getAllCategoriaList() throws Exception {
+        return categoriaRepository.findAll();
+    }
 
 }
