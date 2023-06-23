@@ -5,9 +5,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface ProductoServiceInterface {
 
     Page<Producto> getAll (Pageable pageable) throws Exception;
+    List<Producto> getAllNoPage () throws Exception;
 
     Producto crearProducto (Producto newProducto, MultipartFile file) throws Exception;
 
@@ -20,5 +23,6 @@ public interface ProductoServiceInterface {
     Producto findbyID (Long ID) throws Exception;
 
     Page<Producto> findByIDandCategoria (Long ID, String nombre, Pageable page) throws Exception;
+    List<Producto> searchByNameAndCategoria (Long ID, String nombre) throws Exception;
 
 }

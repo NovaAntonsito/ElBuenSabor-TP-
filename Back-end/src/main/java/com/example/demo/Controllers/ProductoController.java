@@ -45,20 +45,24 @@ public class ProductoController {
     @GetMapping("")
     public ResponseEntity<?> getAllinAlta(@PageableDefault(value = 10, page = 0)Pageable page) throws Exception{
         try {
-            Page<Producto> prodsInAlta = productoService.getAll(page);
-            return ResponseEntity.status(HttpStatus.OK).body(prodsInAlta);
+            List<Producto> prodsInAlta = productoService.getAllNoPage();
+            List<ProductoDTO> prodsDto = new ArrayList<>();
+            for (Producto p : prodsInAlta){
+                ProductoDTO pDto = new ProductoDTO();
+                prodsDto.add(pDto.toDTO(p));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(prodsDto);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
-
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getOneProducto(@PathVariable("id") Long id) throws Exception{
         try {
             Producto productoFound = productoService.findbyID(id);
-            return ResponseEntity.status(HttpStatus.OK).body(productoFound);
+            ProductoDTO pDto = new ProductoDTO();
+            return ResponseEntity.status(HttpStatus.OK).body(pDto.toDTO(productoFound));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
@@ -125,12 +129,62 @@ public class ProductoController {
              @RequestParam(required = false, value = "nombre") String nombre,
              Pageable page) throws Exception{
         try {
-            Page<Producto> productoPage = productoService.findByIDandCategoria(id,nombre,page);
-            return ResponseEntity.status(HttpStatus.OK).body(productoPage);
+            List<Producto> productoPage;
+            productoPage = productoService.searchByNameAndCategoria(id, nombre);
+            /*if (id != null){
+                productoPage = new ArrayList<>();
+            }else {
+                productoPage = productoService.searchByNameAndCategoria(null, nombre);
+            }
+            Categoria categoriaFound = catergoriaService.findbyID(id);
+            processedProducts.clear();
+
+            if (categoriaFound != null){
+                productoPage.addAll(fillProductoPageRecursive(productoPage,categoriaFound.getID(),nombre));
+            }*/
+            List<ProductoDTO> prodsDto = new ArrayList<>();
+            for (Producto p : productoPage){
+                ProductoDTO pDto = new ProductoDTO();
+                prodsDto.add(pDto.toDTO(p));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(prodsDto);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
-
     }
+    List<Long> processedProducts = new ArrayList<>();
+    public List<Producto> fillProductoPageRecursive(List<Producto> returnProducts,Long categoriaId, String nombre) throws Exception {
+            Categoria categoriaFound = catergoriaService.findbyID(categoriaId);
+            if (categoriaFound != null) {
+                // Buscar productos por nombre y categoría
+                List<Categoria> subCategorias =categoriaFound.getSubCategoria();
+                if (subCategorias.size() > 0){
+
+                    // Recorrer las subcategorías y llamar recursivamente
+                    for (Categoria cat : subCategorias) {
+                        System.out.println(cat.getNombre());
+                        List<Producto> addedProducts = fillProductoPageRecursive(returnProducts,cat.getID(), nombre);
+                        for (Producto p : addedProducts){
+                            if (!processedProducts.contains(p.getID())) {
+                                processedProducts.add(p.getID());
+                                returnProducts.add(p);
+                            }
+
+                        }
+                    }
+                }else{
+                    List<Producto> pLista = productoService.searchByNameAndCategoria(categoriaFound.getID(), nombre);
+                    for (Producto pNuevo : pLista) {
+                        if (!processedProducts.contains(pNuevo.getID())) {
+                            processedProducts.add(pNuevo.getID());
+                            returnProducts.add(pNuevo);
+                        }
+                    }
+
+                }
+            }
+            return returnProducts;
+    }
+
 }
