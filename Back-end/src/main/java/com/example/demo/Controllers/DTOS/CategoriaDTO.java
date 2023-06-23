@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,12 +19,14 @@ public class CategoriaDTO {
     private String nombre;
     private Baja_Alta estado;
     private Long categoriaPadre;
+    private List<Categoria> subCategoria;
 
     public static CategoriaDTO toDTO(Categoria categoria) {
         CategoriaDTO dto = new CategoriaDTO();
         dto.setNombre(categoria.getNombre());
         dto.setEstado(categoria.getEstado());
         dto.setId(categoria.getID());
+        dto.setSubCategoria(categoria.getSubCategoria());
         if (categoria.getCategoriaPadre() != null) {
             dto.setCategoriaPadre(categoria.getCategoriaPadre().getID());
         }

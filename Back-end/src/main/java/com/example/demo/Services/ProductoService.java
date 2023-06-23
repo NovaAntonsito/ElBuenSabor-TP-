@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Slf4j
 @Service
@@ -31,7 +33,10 @@ public class ProductoService implements ProductoServiceInterface{
     public Page<Producto> getAll(Pageable page) throws Exception {
         return productoRepository.findAllinAlta(page);
     }
-
+    @Override
+    public List<Producto> getAllNoPage() throws Exception {
+        return productoRepository.findAllinAltaNoPage();
+    }
     @Override
     public Producto crearProducto(Producto newProducto, MultipartFile file) throws Exception {
         Categoria cateFound = categoriaRepository.findByID(newProducto.getProductoCategoria().getID());
@@ -75,5 +80,9 @@ public class ProductoService implements ProductoServiceInterface{
     @Override
     public Page<Producto> findByIDandCategoria(Long ID, String nombre, Pageable page) throws Exception {
         return productoRepository.findByNameAndCategoria(ID,nombre,page);
+    }
+    @Override
+    public List<Producto> searchByNameAndCategoria(Long ID, String nombre) throws Exception {
+        return productoRepository.searchByNameAndCategoria(ID,nombre);
     }
 }

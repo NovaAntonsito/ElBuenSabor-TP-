@@ -31,7 +31,7 @@ public class ProductoDTO {
     private Baja_Alta estado;
     private Long productoCategoria;
     private List<Long> insumosIDS;
-
+    private Double precio;
 
 
     public ProductoDTO toDTO(Producto producto) {
@@ -42,12 +42,17 @@ public class ProductoDTO {
         dto.setDescripcion(producto.getDescripcion());
         dto.setReceta(producto.getReceta());
         dto.setEstado(producto.getAlta());
+        dto.setImgURL(producto.getImgURL());
+        dto.setTiempoCocina(producto.getTiempoCocina());
         if(producto.getProductoCategoria().getID() != null){
             dto.setProductoCategoria(producto.getProductoCategoria().getID());
         }
+        Double precio =  (double)0;
         for(Insumo insumo : producto.getInsumoSet()){
             prodsID.add(insumo.getID());
+            precio += insumo.getCosto();
         }
+        dto.setPrecio(precio);
         dto.setInsumosIDS(prodsID);
         return dto;
     }
