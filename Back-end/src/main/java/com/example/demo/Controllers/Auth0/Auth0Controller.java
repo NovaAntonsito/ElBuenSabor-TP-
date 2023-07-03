@@ -3,19 +3,18 @@ package com.example.demo.Controllers.Auth0;
 import com.example.demo.Controllers.Auth0.Auth0Classes.Auth0DTO;
 import com.example.demo.Controllers.Auth0.Auth0Classes.UserAuth0;
 import com.example.demo.Controllers.Auth0.Auth0Utils.JWTManager;
-import com.example.demo.Entitys.Direccion;
+
 import com.example.demo.Entitys.Usuario;
 import com.example.demo.Services.DireccionService;
+import com.example.demo.Services.RolService;
 import com.example.demo.Services.UserService;
 import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+
 import com.nimbusds.jose.shaded.gson.Gson;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.JWTParser;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.mashape.unirest.http.HttpResponse;
+import com.example.demo.Entitys.Rol;
 
-import java.text.ParseException;
 import java.util.Map;
 
 @RestController
@@ -47,6 +46,8 @@ public class Auth0Controller {
 
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String auth0Domain;
+
+    private final RolService rolService;
 
 
     //SOLO UTILIZABLE EN AUTH0 IDS, No googleIDS o otras redes sociales
@@ -91,17 +92,9 @@ public class Auth0Controller {
     }
 
     @GetMapping("/getRoles")
-    public ResponseEntity<?> getRoles() throws Exception{
+    public ResponseEntity<?> getRoles(@PageableDefault(value = 10, page = 0) Pageable page) throws Exception{
         try {
-            JWTManager newJWT = new JWTManager();
-            String JWT = newJWT.getJWTFromAuth0(clientID, clientSecret);
-            String getRolesURL = auth0Domain.concat("/api/v2/roles");
-            HttpResponse<String> response = Unirest.get(getRolesURL)
-                    .header("content-type", "application/json")
-                    .header("authorization", "Bearer " + JWT)
-                    .header("cache-control", "no-cache")
-                    .asString();
-            String allRoles = response.getBody();
+            Page<Rol> allRoles = rolService.rolPage(page);
             return ResponseEntity.status(HttpStatus.OK).body(allRoles);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
