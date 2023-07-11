@@ -12,6 +12,8 @@ import lombok.Setter;
 public class UserAuth0 {
     private String name;
     private String username;
+    private String rolID;
+    private String connection;
     private String email;
     private String phone_number;
     private String given_name;

@@ -12,9 +12,13 @@ import com.mashape.unirest.http.Unirest;
 
 import com.nimbusds.jose.shaded.gson.Gson;
 
+import com.nimbusds.jose.shaded.gson.JsonArray;
+import com.nimbusds.jose.shaded.gson.JsonObject;
+import com.nimbusds.jose.shaded.gson.JsonPrimitive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 import com.mashape.unirest.http.HttpResponse;
 import com.example.demo.Entitys.Rol;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -73,6 +79,58 @@ public class Auth0Controller {
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
+
+    @PostMapping("/createUser")
+    public ResponseEntity<?> createUser(@RequestBody UserAuth0 user) throws Exception{
+        try {
+            //Creacion de usuario
+            user.setConnection("email");
+            JWTManager newJTW = new JWTManager();
+            String JWTActual = newJTW.getJWTFromAuth0(clientID, clientSecret);
+            String postUserURL = auth0Domain.concat("api/v2/users");
+            // Crear un nuevo objeto JSON con email y conexión
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("email", user.getEmail());
+            jsonObject.addProperty("connection", user.getConnection());
+
+            // Convertir el nuevo objeto JSON a cadena JSON
+            Gson gson = new Gson();
+            String nuevoJson = gson.toJson(jsonObject);
+            HttpResponse<String> response = Unirest.post(postUserURL)
+                    .header("content-type", "application/json")
+                    .header("accept", "application/json")
+                    .header("authorization", "Bearer " + JWTActual)
+                    .body(nuevoJson)
+                    .asString();
+            String responseBody = response.getBody();
+            JSONObject json = new JSONObject(responseBody);
+            String userId = json.getString("user_id");
+            log.info(userId);
+
+            //Asignacion de rol
+
+            JsonObject rol = new JsonObject();
+            JsonArray rolesArray = new JsonArray();
+            rolesArray.add(user.getRolID());
+            log.info(user.getRolID());
+            rol.add("roles", rolesArray);
+            // Obvio que hay que cambiar los nombres a las variables pero no me salia un mejor nombre
+            String newJson = gson.toJson(rol);
+            log.info(newJson.toString());
+            String asignarRolURL = auth0Domain.concat("/api/v2/users/"+userId+"/roles");
+            HttpResponse<String> asignar = Unirest.post(asignarRolURL)
+                    .header("content-type", "application/json")
+                    .header("accept", "application/json")
+                    .header("authorization", "Bearer " + JWTActual)
+                    .body(newJson)
+                    .asString();
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "El usuario creado y asignado el rol"));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
 
 
     @GetMapping("/getUsers")

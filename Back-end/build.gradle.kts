@@ -22,6 +22,7 @@ repositories {
 }
 
 dependencies {
+    implementation("jakarta.mail:jakarta.mail-api:2.1.2")
     implementation("commons-fileupload:commons-fileupload:1.4")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -35,6 +36,9 @@ dependencies {
     implementation("org.springframework.security:spring-security-oauth2-resource-server")
     implementation("org.springframework.security:spring-security-oauth2-jose")
     implementation("com.cloudinary:cloudinary-http44:1.24.0")
+    implementation("org.apache.httpcomponents.core5:httpcore5:5.2")
+    implementation("org.apache.httpcomponents.core5:httpcore5:5.2")
+    implementation("org.apache.httpcomponents.core5:httpcore5:5.2")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j")

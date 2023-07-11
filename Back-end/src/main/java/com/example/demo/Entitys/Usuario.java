@@ -2,6 +2,7 @@ package com.example.demo.Entitys;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.example.demo.Entitys.Rol;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,5 +32,9 @@ public class Usuario {
 
     @Column()
     private Boolean bloqueado;
+
+    @ManyToOne
+    @JoinColumn(nullable = true, name = "RolAsignado")
+    private Rol rol;
 
 }
