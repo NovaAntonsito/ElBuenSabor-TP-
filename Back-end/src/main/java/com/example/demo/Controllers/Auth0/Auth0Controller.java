@@ -29,9 +29,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.mashape.unirest.http.HttpResponse;
 import com.example.demo.Entitys.Rol;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -80,7 +77,7 @@ public class Auth0Controller {
         }
     }
 
-    @PostMapping("/createUser")
+    @PostMapping("/createUserAdmin")
     public ResponseEntity<?> createUser(@RequestBody UserAuth0 user) throws Exception{
         try {
             //Creacion de usuario
@@ -105,7 +102,7 @@ public class Auth0Controller {
             String responseBody = response.getBody();
             JSONObject json = new JSONObject(responseBody);
             String userId = json.getString("user_id");
-            log.info(userId);
+
 
             //Asignacion de rol
 
@@ -124,7 +121,15 @@ public class Auth0Controller {
                     .header("authorization", "Bearer " + JWTActual)
                     .body(newJson)
                     .asString();
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "El usuario creado y asignado el rol"));
+
+            if(userService.existsbyID(userId)){
+                Usuario userFound = userService.userbyID(userId);
+                Rol rolFound = rolService.findbyID(user.getRolID());
+                userFound.setRol(rolFound);
+                userService.saveUser(userFound);
+                return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "El usuario creado y asignado el rol"));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "Usuario creado pero no existe en nuestra base de datos"));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));

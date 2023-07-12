@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserAuth0 {
+    private String userID;
     private String name;
     private String username;
     private String rolID;

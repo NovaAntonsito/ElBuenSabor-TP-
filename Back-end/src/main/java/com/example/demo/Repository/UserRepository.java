@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<Usuario, String> {
 
     @Query(value = "SELECT * FROM users u WHERE (:username is null or :username like u.username) limit 1", nativeQuery = true)
     Usuario getUserbyUsername(@Param("username") String username);
+
+    boolean existsById (String userID);
 }

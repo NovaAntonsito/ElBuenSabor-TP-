@@ -47,5 +47,15 @@ public class UserService implements UserServiceInterface {
         return userFound;
     }
 
+    @Override
+    public Boolean existsbyID(String userID) throws Exception {
+        return userRepository.existsById(userID);
+    }
+
+    @Override
+    public Usuario saveUser(Usuario newUser) throws Exception {
+        return userRepository.save(newUser);
+    }
+
 
 }

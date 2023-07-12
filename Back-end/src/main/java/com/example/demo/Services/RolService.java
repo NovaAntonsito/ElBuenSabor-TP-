@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @Slf4j
@@ -31,4 +33,11 @@ public class RolService implements RolServiceInterface{
     public Page<Rol> rolPage(Pageable page) throws Exception {
         return rolesRepository.findAll(page);
     }
+
+    @Override
+    public Rol findbyID(String id) throws Exception {
+        return rolesRepository.findRolbyID(id);
+    }
+
+
 }

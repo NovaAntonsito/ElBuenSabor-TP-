@@ -17,5 +17,9 @@ public interface UserServiceInterface {
 
     Usuario addAddressToUser (String username, Direccion direccion) throws Exception;
 
+    Boolean existsbyID (String userID) throws Exception;
+
+    Usuario saveUser (Usuario newUser) throws Exception;
+
 
 }
