@@ -22,6 +22,8 @@ public class Producto extends Base{
     private String imgURL;
     private String descripcion;
     private Long tiempoCocina;
+    private Long descuento;
+    private Double valoracion;
     private String receta;
     private Baja_Alta alta;
     @ManyToOne
