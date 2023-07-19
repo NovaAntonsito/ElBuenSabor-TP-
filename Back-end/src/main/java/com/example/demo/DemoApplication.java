@@ -1,20 +1,31 @@
 package com.example.demo;
 
-
-
 import com.mercadopago.MercadoPagoConfig;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+
 
 
 @SpringBootApplication()
 
 public class DemoApplication {
 
+
+    @Value("${MP_Access_Key}")
+    private String MPAccessKey;
+
     public static void main(String[] args) {
-        MercadoPagoConfig.setAccessToken("TEST-8272760350171751-071819-25984858eda3a978a6d45725363e7021-715685796");
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication app = new SpringApplication(DemoApplication.class);
+        app.run(args);
+    }
+    @PostConstruct
+    public void init() {
+        try {
+            MercadoPagoConfig.setAccessToken(MPAccessKey);
+        } catch (Exception e) {
+            throw new IllegalStateException("Error al configurar el token de acceso de MercadoPago.", e);
+        }
     }
 }
