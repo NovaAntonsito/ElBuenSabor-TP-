@@ -27,16 +27,13 @@ import java.util.Map;
 @RequestMapping("v1/api/insumo")
 @Slf4j
 public class InsumoController {
-    private final CloudinaryServices cloudServices;
+
     private final InsumoService insumoService;
 
-    @PostMapping(value = "", consumes = {"multipart/form-data"})
-    public ResponseEntity<?> crearInsumo(@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart(value = "img", required = false) MultipartFile file) throws Exception {
+    @PostMapping(value = "", consumes = {"application/json"})
+    public ResponseEntity<?> crearInsumo(@RequestBody InsumosDTO insumosDTO) throws Exception {
         try {
-            BufferedImage imgActual = ImageIO.read(file.getInputStream());
-            var result = cloudServices.UploadIMG(file);
-            String url = (String) result.get("url");
-            Insumo newInsumo = insumosDTO.toEntity(insumosDTO, url);
+            Insumo newInsumo = insumosDTO.toEntity(insumosDTO);
             insumoService.createInsumo(newInsumo);
             return ResponseEntity.status(HttpStatus.OK).body(newInsumo);
         }catch (Exception e){
@@ -62,12 +59,9 @@ public class InsumoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateInsumo(@RequestPart("insumo") InsumosDTO insumosDTO, @RequestPart("img") MultipartFile file, @PathVariable("id") Long ID) throws Exception {
+    public ResponseEntity<?> updateInsumo(@RequestBody InsumosDTO insumosDTO, @PathVariable("id") Long ID) throws Exception {
         try {
-            BufferedImage imgActual = ImageIO.read(file.getInputStream());
-            var result = cloudServices.UploadIMG(file);
-            String url = (String) result.get("url");
-            Insumo insumo = insumosDTO.toEntity(insumosDTO, url);
+            Insumo insumo = insumosDTO.toEntity(insumosDTO);
             insumo = insumoService.updateInsumo(ID, insumo);
             return ResponseEntity.status(HttpStatus.OK).body(insumo);
         }catch (Exception e){

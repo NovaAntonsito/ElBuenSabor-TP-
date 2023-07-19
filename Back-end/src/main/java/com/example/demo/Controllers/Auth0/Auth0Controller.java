@@ -139,7 +139,7 @@ public class Auth0Controller {
 
 
     @GetMapping("/getUsers")
-    public ResponseEntity<?> getUsersFromAuth0(@PageableDefault(value = 10, page = 0) Pageable page) throws Exception {
+    public ResponseEntity<?> getUsers(@PageableDefault(value = 10, page = 0) Pageable page) throws Exception {
         try {
             Page<Usuario> allUsuarios = userService.viewAllUsuarios(page);
             Page<Auth0DTO> allUsuariosDTO = allUsuarios.map(usuario -> {
@@ -151,7 +151,21 @@ public class Auth0Controller {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
+    }
 
+    @GetMapping("/ForceBringUsersAuth0")
+    public ResponseEntity<?> forceGetUsersAuth0(){
+        try {
+            JWTManager jwtManager = new JWTManager();
+            String newJWT = jwtManager.getJWTFromAuth0(clientID,clientSecret);
+            
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Map.of("success", true, "message", "Los usuarios fueron traidos"));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
     }
 
     @GetMapping("/getRoles")

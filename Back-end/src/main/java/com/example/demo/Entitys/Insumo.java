@@ -16,8 +16,6 @@ import java.util.List;
 @Setter
 public class Insumo extends Base{
     String nombre;
-    @Column(name = "imagen_URL")
-    String imagen;
     Double stockMinimo;
     Double stockActual;
     Baja_Alta estado;

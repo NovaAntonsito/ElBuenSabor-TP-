@@ -16,6 +16,7 @@ import lombok.Setter;
 @Table(name = "Configuracion")
 public class Configuracion extends Base {
     private Long cantCocineros;
+    private Double precioPorTiempo;
     private String emailEmpresa;
     @Column(unique = true,name = "token_secret_MP")
     private String token_MP;

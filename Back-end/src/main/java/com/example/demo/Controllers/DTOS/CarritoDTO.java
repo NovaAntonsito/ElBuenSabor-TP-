@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 public class CarritoDTO {
     List<ProductosCarritoDTO> productosComprados = new ArrayList<ProductosCarritoDTO>();
-    private  int totalCompra;
+    private  Double totalCompra;
 
 
 }

@@ -15,7 +15,6 @@ import lombok.Setter;
 public class InsumosDTO {
     private Long ID;
     private String nombre;
-    private String imagen;
     private Double stockMinimo;
     private Double stockActual;
     private Baja_Alta estado;
@@ -26,7 +25,6 @@ public class InsumosDTO {
         InsumosDTO newDTO = new InsumosDTO();
         newDTO.setID(insumo.getID());
         newDTO.setNombre(insumo.getNombre());
-        newDTO.setImagen(insumo.getImagen());
         newDTO.setStockActual(insumo.getStockActual());
         newDTO.setStockMinimo(insumo.getStockMinimo());
         newDTO.setEstado(insumo.getEstado());
@@ -34,10 +32,9 @@ public class InsumosDTO {
         return newDTO;
     }
 
-    public Insumo toEntity (InsumosDTO dto, String url){
+    public Insumo toEntity (InsumosDTO dto){
         Insumo newInsumo = new Insumo();
         newInsumo.setNombre(dto.getNombre());
-        newInsumo.setImagen(url);
         newInsumo.setStockMinimo(dto.getStockMinimo());
         newInsumo.setStockActual(dto.getStockActual());
         newInsumo.setEstado(dto.getEstado());

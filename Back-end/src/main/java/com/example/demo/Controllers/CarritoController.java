@@ -7,6 +7,7 @@ import com.example.demo.Entitys.Carrito;
 import com.example.demo.Entitys.Producto;
 import com.example.demo.Entitys.Usuario;
 import com.example.demo.Services.CarritoService;
+import com.example.demo.Services.ConfigLocalService;
 import com.example.demo.Services.UserService;
 import com.example.demo.Services.ProductoService;
 
@@ -32,6 +33,7 @@ public class CarritoController {
     private final CarritoService carritoService;
     private final ProductoService productoService;
     private final UserService userService;
+    private final ConfigLocalService configService;
 
     @PutMapping("/addProduct/{productoId}")
     public ResponseEntity<?> addProduct(@PathVariable("productoId") Long productoId, @RequestHeader("Authorization") String token) throws Exception {
@@ -43,17 +45,19 @@ public class CarritoController {
             Carrito cart = carritoService.getCarritobyUserID(userFound.getId());
             Producto nuevoProducto = productoService.findbyID(productoId);
             cart.getProductosComprados().add(nuevoProducto);
-
-            //Lo seteamos y guardamos en la base de datos
             carritoService.cartSave(cart);
             ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
             List<ProductosCarritoDTO> dtoList = newDTO.toDTO(cart.getProductosComprados());
-            int precioTotal = 0;
+            Double precioTotal = 0D;
+            Double tiempoEnCocina = 0D;
             for (ProductosCarritoDTO productosCarritoDTO : dtoList) {
                 precioTotal += productosCarritoDTO.getPrecioTotal();
+                tiempoEnCocina += productoService
+                        .findbyID(productosCarritoDTO.getProductoId())
+                        .getTiempoCocina();
             }
+            precioTotal += configService.getPrecioPorTiempo(tiempoEnCocina);
             CarritoDTO carritoDTO = new CarritoDTO(dtoList,precioTotal);
-
             return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -74,7 +78,7 @@ public class CarritoController {
             carritoService.cartSave(cart);
             ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
             List<ProductosCarritoDTO> dtoList = newDTO.toDTO(cart.getProductosComprados());
-            int precioTotal = 0;
+            Double precioTotal = 0D;
             for (ProductosCarritoDTO productosCarritoDTO : dtoList) {
                 precioTotal += productosCarritoDTO.getPrecioTotal();
             }
@@ -95,21 +99,18 @@ public class CarritoController {
             String sub = decodedJWT.getSubject();
             Usuario userFound = userService.userbyID(sub);
             Carrito cart = carritoService.getCarritobyUserID(userFound.getId());
-
             cart.getProductosComprados().clear();
             carritoService.cartSave(cart);
             ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
             List<ProductosCarritoDTO> dtoList = new ArrayList<ProductosCarritoDTO>();
-            int precioTotal = 0;
+            Double precioTotal = 0D;
             CarritoDTO carritoDTO = new CarritoDTO(dtoList,precioTotal);
-
             return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
-
 
     @GetMapping("/getCarrito")
     public ResponseEntity<?> getCarritoUser (@RequestHeader("Authorization") String token) throws Exception{
@@ -127,17 +128,30 @@ public class CarritoController {
                 carritoFound.setUsuarioAsignado(userService.userbyID(sub));
                 carritoService.cartSave(carritoFound);
                 List<ProductosCarritoDTO> dtoList = new ArrayList<ProductosCarritoDTO>();
-                int precioTotal = 0;
+                Double precioTotal = 0D;
+                Double tiempoEnCocina = 0D;
+                for (ProductosCarritoDTO productosCarritoDTO : dtoList) {
+                    precioTotal += productosCarritoDTO.getPrecioTotal();
+                    tiempoEnCocina += productoService
+                            .findbyID(productosCarritoDTO.getProductoId())
+                            .getTiempoCocina();
+                }
+                precioTotal += configService.getPrecioPorTiempo(tiempoEnCocina);
                 CarritoDTO carritoDTO = new CarritoDTO();
                 carritoDTO.setTotalCompra(precioTotal);
                 return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
             }else{
-
                 List<ProductosCarritoDTO> dtoList = newDTO.toDTO(carritoFound.getProductosComprados());
-                int precioTotal = 0;
+                Double precioTotal = 0D;
+                Double tiempoEnCocina = 0D;
                 for (ProductosCarritoDTO productosCarritoDTO : dtoList) {
                     precioTotal += productosCarritoDTO.getPrecioTotal();
+                    tiempoEnCocina += productoService
+                            .findbyID(productosCarritoDTO.getProductoId())
+                            .getTiempoCocina();
                 }
+                log.info(tiempoEnCocina.toString());
+                precioTotal += configService.getPrecioPorTiempo(tiempoEnCocina);
                 CarritoDTO carritoDTO = new CarritoDTO(dtoList,precioTotal);
                 return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
             }

@@ -19,6 +19,7 @@ import java.util.List;
 @Setter
 public class Producto extends Base{
     private String nombre;
+    @Column(nullable = true)
     private String imgURL;
     private String descripcion;
     private Long tiempoCocina;

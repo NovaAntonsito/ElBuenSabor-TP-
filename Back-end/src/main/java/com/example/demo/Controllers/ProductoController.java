@@ -71,19 +71,24 @@ public class ProductoController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createProducto(@RequestPart("producto") ProductoDTO productoDTO, @RequestPart("imagen") MultipartFile file) throws Exception {
+    public ResponseEntity<?> createProducto(@RequestPart("producto") ProductoDTO productoDTO, @RequestPart(value = "imagen", required = false) MultipartFile file) throws Exception {
 
         try {
             List<Insumo> insumoList = new ArrayList<>();
             Categoria cateFound = catergoriaService.findbyID(productoDTO.getProductoCategoria());
-            BufferedImage imgActual = ImageIO.read(file.getInputStream());
-            var result = cloudServices.UploadIMG(file);
-            for(Long id : productoDTO.getInsumosIDS()){
+            String url = null;
+
+            if (file != null) {
+                BufferedImage imgActual = ImageIO.read(file.getInputStream());
+                var result = cloudServices.UploadIMG(file);
+                url = (String) result.get("url");
+            }
+
+            for (Long id : productoDTO.getInsumosIDS()) {
                 Insumo insumoadd = insumoService.findByID(id);
                 log.info(insumoadd.getNombre());
                 insumoList.add(insumoadd);
             }
-            var url = (String)result.get("url");
             Producto newProd = productoDTO.toEntity(productoDTO,cateFound,insumoList,url);
             newProd = productoService.crearProducto(newProd,file);
             return ResponseEntity.status(HttpStatus.OK).body(newProd);
@@ -98,11 +103,20 @@ public class ProductoController {
         try {
             ProductoDTO newProdDTO = new ProductoDTO();
             List<Insumo> insumoSet = new ArrayList<>();
-            BufferedImage imgActual = ImageIO.read(file.getInputStream());
-            var result = cloudServices.UploadIMG(file);
-            String url =(String)result.get("url");
-            for (Long id: productoDTO.getInsumosIDS()) {
-                insumoSet.add(insumoService.findByID(id));
+            List<Insumo> insumoList = new ArrayList<>();
+            Categoria cateFound = catergoriaService.findbyID(productoDTO.getProductoCategoria());
+            String url = null;
+
+            if (file != null) {
+                BufferedImage imgActual = ImageIO.read(file.getInputStream());
+                var result = cloudServices.UploadIMG(file);
+                url = (String) result.get("url");
+            }
+
+            for (Long id : productoDTO.getInsumosIDS()) {
+                Insumo insumoadd = insumoService.findByID(id);
+                log.info(insumoadd.getNombre());
+                insumoList.add(insumoadd);
             }
             Producto updatedProducto = productoService.updateProducto(ID, newProdDTO.toEntity(productoDTO, catergoriaService.findbyID(productoDTO.getProductoCategoria()),insumoSet,url));
             return ResponseEntity.status(HttpStatus.OK).body(updatedProducto);

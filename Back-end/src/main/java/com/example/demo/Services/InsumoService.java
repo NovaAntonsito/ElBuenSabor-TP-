@@ -50,7 +50,6 @@ public class InsumoService implements InsumoServiceInterface {
         insumoFound.setStockActual(insumo.getStockActual());
         insumoFound.setStockMinimo(insumo.getStockMinimo());
         insumoFound.setProductoSet(insumo.getProductoSet());
-        insumoFound.setImagen(insumo.getImagen());
         insumoRepository.save(insumoFound);
         return insumoFound;
     }

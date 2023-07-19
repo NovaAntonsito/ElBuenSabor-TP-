@@ -22,6 +22,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.mercadopago:sdk-java:2.1.11")
     implementation("jakarta.mail:jakarta.mail-api:2.1.2")
     implementation("commons-fileupload:commons-fileupload:1.4")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -30,6 +31,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     implementation("com.mashape.unirest:unirest-java:1.4.9")
+    implementation ("org.springframework.boot:spring-boot-starter-websocket")
     implementation("org.springframework.security:spring-security-core:6.0.2")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
