@@ -10,6 +10,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -26,6 +33,20 @@ public class PedidoService implements PedidoServiceInterface{
     @Override
     public Page<Pedido> getAllPedidos(Pageable page) throws Exception {
         return pedidoRepository.findAll(page);
+    }
+
+    @Override
+    public Map<String, Integer> cantidadPedidosporMes() throws Exception {
+        List<Integer> cantidadDePedidos = pedidoRepository.obtenerPedidosPorMes();
+        if(cantidadDePedidos.size() == 0) throw new Exception("No existe ningun pedido");
+        Map<String, Integer> resultado = new LinkedHashMap<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM");
+        LocalDate actualDate = LocalDate.now();
+        for(int i = 0 ; i < 3; i++) {
+            String nombreMes = actualDate.minusMonths(i).format(formatter);
+            resultado.put(nombreMes, cantidadDePedidos.get(i));
+        }
+        return resultado;
     }
 
 
