@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,10 +86,9 @@ public class InsumoController {
 
     @GetMapping("/filter")
     public ResponseEntity<?> getInsumoByName(@RequestParam(value = "nombre", required = false) String name,
-                                                        @RequestParam(value = "id", required = false) Long id,
-                                                        Pageable page) throws Exception {
+                                             @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable page) throws Exception {
         try {
-            Page<Insumo> insumoPage = insumoService.getInsumoByName(name, id, page);
+            Page<Insumo> insumoPage = insumoService.getInsumoByName(name, page);
             return ResponseEntity.status(HttpStatus.OK).body(insumoPage);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

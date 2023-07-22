@@ -11,6 +11,6 @@ public interface InsumoServiceInterface {
     Insumo createInsumo(Insumo insumo) throws Exception;
     void deleteInsumo(Long ID) throws Exception;
     Insumo updateInsumo (Long ID, Insumo insumo) throws Exception;
-    Page<Insumo> getInsumoByName (String name, Long id, Pageable page) throws Exception;
+    Page<Insumo> getInsumoByName (String name, Pageable page) throws Exception;
     Insumo findByID (Long ID) throws Exception;
 }

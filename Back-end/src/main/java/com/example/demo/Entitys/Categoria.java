@@ -1,6 +1,7 @@
 package com.example.demo.Entitys;
 
 import com.example.demo.Entitys.Enum.Baja_Alta;
+import com.example.demo.Entitys.Enum.TipoCategoria;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -22,6 +23,8 @@ public class Categoria extends Base{
 
     private String nombre;
 
+    private TipoCategoria tipo;
+
     @ManyToOne()
     @JoinColumn(name = "categoria_padre")
     @JsonBackReference
@@ -31,4 +34,15 @@ public class Categoria extends Base{
     @JsonManagedReference
     @Column(nullable = true)
     private List<Categoria> subCategoria;
+
+    @Override
+    public String toString() {
+        return "Categoria{" +
+                ", nombre='" + nombre + '\'' +
+                ", estado=" + estado +
+                ", tipo=" + tipo +
+                ", categoriaPadre=" + categoriaPadre +
+                ", subCategoria=" + subCategoria +
+                '}';
+    }
 }

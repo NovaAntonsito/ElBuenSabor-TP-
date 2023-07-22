@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CatergoriaServiceInterface {
 
-    Page<Categoria> getAllCategoria (Pageable page) throws Exception;
+    List<Categoria> getAllCategoriaProductos () throws Exception;
 
     Categoria crearCategoria (Categoria categoria) throws Exception;
 

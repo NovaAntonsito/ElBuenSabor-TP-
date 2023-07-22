@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CategoriaRepository extends BaseRepository<Categoria, Long> {
     Categoria findByID(Long ID);
@@ -24,4 +26,6 @@ public interface CategoriaRepository extends BaseRepository<Categoria, Long> {
     )
     Page<Categoria> findParentAndName(@Param("id") Long id, @Param("nombre") String nombre, Pageable pageable);
 
+    @Query(value = "SELECT * FROM categoria WHERE categoria_padre IS NULL AND tipo = 0", nativeQuery = true)
+    List<Categoria> findCategoriaProductos();
 }

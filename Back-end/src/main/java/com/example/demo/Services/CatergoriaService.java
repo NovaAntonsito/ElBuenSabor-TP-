@@ -19,9 +19,8 @@ public class CatergoriaService implements CatergoriaServiceInterface {
 
 
     @Override
-    public Page<Categoria> getAllCategoria(Pageable page) throws Exception {
-        log.info("Entre a Get All");
-        return categoriaRepository.findAll(page);
+    public List<Categoria> getAllCategoriaProductos() throws Exception {
+        return categoriaRepository.findCategoriaProductos();
     }
 
 
@@ -45,6 +44,7 @@ public class CatergoriaService implements CatergoriaServiceInterface {
         }
         cateFound.setNombre(categoria.getNombre());
         cateFound.setEstado(categoria.getEstado());
+        cateFound.setTipo(categoria.getTipo());
         cateFound.setCategoriaPadre(categoria.getCategoriaPadre());
         cateFound.setSubCategoria(categoria.getSubCategoria());
         categoriaRepository.save(cateFound);

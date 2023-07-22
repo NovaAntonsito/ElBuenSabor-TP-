@@ -55,8 +55,8 @@ public class InsumoService implements InsumoServiceInterface {
     }
 
     @Override
-    public Page<Insumo> getInsumoByName(String name, Long id, Pageable page) throws Exception {
-        return insumoRepository.getInsumoByName(name, id, page);
+    public Page<Insumo> getInsumoByName(String name, Pageable page) throws Exception {
+        return insumoRepository.getInsumoByName(name, page);
     }
 
     @Override
