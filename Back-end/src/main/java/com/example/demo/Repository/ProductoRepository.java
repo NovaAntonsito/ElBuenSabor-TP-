@@ -24,9 +24,21 @@ public interface ProductoRepository extends BaseRepository<Producto,Long>{
            " and (p.producto_categoria_id is null or producto_categoria_id = :id)",nativeQuery = true)
     Page<Producto> findByNameAndCategoria(@Param("id")Long ID,@Param("nombre") String Nombre, Pageable page);
 
-    @Query(value = "select * from producto_manufacturado p where alta = 0 and " +
-            "(:nombre is null or p.nombre like concat('%', :nombre, '%'))" +
-            " and (:id is null or p.producto_categoria_id is null or producto_categoria_id = :id)",nativeQuery = true)
+    @Query(value = "WITH RECURSIVE subcategorias AS (\n" +
+            "    SELECT id\n" +
+            "    FROM categoria\n" +
+            "    WHERE id = :id OR :id IS NULL  -- Aquí traerá todos los registros si :id es NULL\n" +
+            "    UNION ALL\n" +
+            "    SELECT c.id\n" +
+            "    FROM categoria c\n" +
+            "    INNER JOIN subcategorias s ON c.categoria_padre = s.id\n" +
+            ")\n" +
+            "SELECT DISTINCT p.*\n" +
+            "FROM producto_manufacturado p\n" +
+            "JOIN categoria c ON p.producto_categoria_id = c.id\n" +
+            "JOIN subcategorias s ON c.id = s.id OR c.categoria_padre = s.id\n" +
+            "WHERE p.alta = 0\n" +
+            "  AND (:nombre IS NULL OR p.nombre LIKE CONCAT('%', :nombre, '%'));\n",nativeQuery = true)
     List<Producto> searchByNameAndCategoria(@Param("id") Long ID, @Param("nombre") String nombre);
 
 }
