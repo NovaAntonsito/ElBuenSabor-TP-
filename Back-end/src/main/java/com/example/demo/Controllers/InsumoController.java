@@ -1,8 +1,10 @@
 package com.example.demo.Controllers;
 
 import com.example.demo.Controllers.DTOS.InsumosDTO;
+import com.example.demo.Entitys.Categoria;
 import com.example.demo.Entitys.Insumo;
 
+import com.example.demo.Services.CatergoriaService;
 import com.example.demo.Services.CloudinaryServices;
 import com.example.demo.Services.InsumoService;
 
@@ -30,11 +32,14 @@ import java.util.Map;
 public class InsumoController {
 
     private final InsumoService insumoService;
+    private final CatergoriaService catergoriaService;
 
     @PostMapping(value = "", consumes = {"application/json"})
     public ResponseEntity<?> crearInsumo(@RequestBody InsumosDTO insumosDTO) throws Exception {
         try {
-            Insumo newInsumo = insumosDTO.toEntity(insumosDTO);
+            Categoria cateFound = catergoriaService.findbyID(insumosDTO.getCategoria().getId());
+            if(cateFound == null) throw new RuntimeException("No existe esa categoria");
+            Insumo newInsumo = insumosDTO.toEntity(insumosDTO,cateFound);
             insumoService.createInsumo(newInsumo);
             return ResponseEntity.status(HttpStatus.OK).body(newInsumo);
         }catch (Exception e){
@@ -62,7 +67,9 @@ public class InsumoController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateInsumo(@RequestBody InsumosDTO insumosDTO, @PathVariable("id") Long ID) throws Exception {
         try {
-            Insumo insumo = insumosDTO.toEntity(insumosDTO);
+            Categoria cateFound = catergoriaService.findbyID(insumosDTO.getCategoria().getId());
+            if(cateFound == null) throw new RuntimeException("No existe esa categoria");
+            Insumo insumo = insumosDTO.toEntity(insumosDTO,cateFound);
             insumo = insumoService.updateInsumo(ID, insumo);
             return ResponseEntity.status(HttpStatus.OK).body(insumo);
         }catch (Exception e){

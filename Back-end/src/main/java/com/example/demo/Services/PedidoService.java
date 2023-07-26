@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,5 +50,8 @@ public class PedidoService implements PedidoServiceInterface{
         return resultado;
     }
 
-
+    @Override
+    public Integer cuentaPedidos(Date fecha1, Date fecha2) throws Exception {
+        return pedidoRepository.cuentaDePedidos(fecha1, fecha2);
+    }
 }

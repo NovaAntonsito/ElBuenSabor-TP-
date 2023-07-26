@@ -12,20 +12,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 public class DemoApplication {
 
-
-    @Value("${MP_Access_Key}")
-    private String MPAccessKey;
-
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(DemoApplication.class);
         app.run(args);
     }
-    @PostConstruct
-    public void init() {
-        try {
-            MercadoPagoConfig.setAccessToken(MPAccessKey);
-        } catch (Exception e) {
-            throw new IllegalStateException("Error al configurar el token de acceso de MercadoPago.", e);
-        }
-    }
+
 }

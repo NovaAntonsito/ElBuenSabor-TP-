@@ -15,13 +15,15 @@ import java.util.List;
 @Getter
 @Setter
 public class Insumo extends Base{
-    String nombre;
-    Double stockMinimo;
-    Double stockActual;
-    Baja_Alta estado;
-    Double costo;
+   private String nombre;
+   private Double stockMinimo;
+   private Double stockActual;
+   private Baja_Alta estado;
+   private Double costo;
     @ManyToMany(mappedBy = "insumoSet")
     @JsonIgnore
-    List<Producto> productoSet;
+   private List<Producto> productoSet;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Categoria categoria;
 }
