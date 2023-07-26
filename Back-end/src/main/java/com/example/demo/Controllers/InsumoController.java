@@ -38,7 +38,7 @@ public class InsumoController {
     public ResponseEntity<?> crearInsumo(@RequestBody InsumosDTO insumosDTO) throws Exception {
         try {
             Categoria cateFound = catergoriaService.findbyID(insumosDTO.getCategoria().getId());
-            if(cateFound == null) throw new RuntimeException("No existe esa categoria");
+            if(insumosDTO.getCategoria() != null && cateFound == null) throw new RuntimeException("No existe esa categoria");
             Insumo newInsumo = insumosDTO.toEntity(insumosDTO,cateFound);
             insumoService.createInsumo(newInsumo);
             return ResponseEntity.status(HttpStatus.OK).body(newInsumo);
@@ -68,7 +68,7 @@ public class InsumoController {
     public ResponseEntity<?> updateInsumo(@RequestBody InsumosDTO insumosDTO, @PathVariable("id") Long ID) throws Exception {
         try {
             Categoria cateFound = catergoriaService.findbyID(insumosDTO.getCategoria().getId());
-            if(cateFound == null) throw new RuntimeException("No existe esa categoria");
+            if(insumosDTO.getCategoria() != null && cateFound == null) throw new RuntimeException("No existe esa categoria");
             Insumo insumo = insumosDTO.toEntity(insumosDTO,cateFound);
             insumo = insumoService.updateInsumo(ID, insumo);
             return ResponseEntity.status(HttpStatus.OK).body(insumo);
