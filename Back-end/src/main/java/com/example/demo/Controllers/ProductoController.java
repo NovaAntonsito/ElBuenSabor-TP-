@@ -4,10 +4,8 @@ import com.example.demo.Controllers.DTOS.ProductoDTO;
 import com.example.demo.Entitys.Categoria;
 import com.example.demo.Entitys.Insumo;
 import com.example.demo.Entitys.Producto;
-import com.example.demo.Services.CatergoriaService;
-import com.example.demo.Services.CloudinaryServices;
-import com.example.demo.Services.InsumoService;
-import com.example.demo.Services.ProductoService;
+import com.example.demo.Entitys.ProductoInsumos;
+import com.example.demo.Services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -42,8 +40,10 @@ public class ProductoController {
 
     private final InsumoService insumoService;
 
+    private final ProductoInsumoService productoInsumosService;
+
     @GetMapping("")
-    public ResponseEntity<?> getAllinAlta(@PageableDefault(value = 10, page = 0)Pageable page) throws Exception{
+    public ResponseEntity<?> getAllinAlta() throws Exception{
         try {
             List<Producto> prodsInAlta = productoService.getAllNoPage();
             List<ProductoDTO> prodsDto = new ArrayList<>();
@@ -74,7 +74,7 @@ public class ProductoController {
     public ResponseEntity<?> createProducto(@RequestPart("producto") ProductoDTO productoDTO, @RequestPart(value = "imagen", required = false) MultipartFile file) throws Exception {
 
         try {
-            List<Insumo> insumoList = new ArrayList<>();
+            List<ProductoInsumos> insumoList = new ArrayList<>();
             Categoria cateFound = catergoriaService.findbyID(productoDTO.getProductoCategoria());
             String url = null;
 
@@ -84,11 +84,11 @@ public class ProductoController {
                 url = (String) result.get("url");
             }
 
-            for (Long id : productoDTO.getInsumosIDS()) {
-                Insumo insumoadd = insumoService.findByID(id);
-                log.info(insumoadd.getNombre());
-                insumoList.add(insumoadd);
+            for(ProductoInsumos insumos: productoDTO.getInsumos()){
+                productoInsumosService.save(insumos);
+                insumoList.add(insumos);
             }
+
             Producto newProd = productoDTO.toEntity(productoDTO,cateFound,insumoList,url);
             newProd = productoService.crearProducto(newProd,file);
             return ResponseEntity.status(HttpStatus.OK).body(newProd);
@@ -102,8 +102,7 @@ public class ProductoController {
     public ResponseEntity<?> updateProducto(@PathVariable("id") Long ID, @RequestPart("producto") ProductoDTO productoDTO, @RequestPart("file") MultipartFile file) throws Exception {
         try {
             ProductoDTO newProdDTO = new ProductoDTO();
-            List<Insumo> insumoSet = new ArrayList<>();
-            List<Insumo> insumoList = new ArrayList<>();
+            List<ProductoInsumos> insumoSet = new ArrayList<>();
             Categoria cateFound = catergoriaService.findbyID(productoDTO.getProductoCategoria());
             String url = null;
 
@@ -113,10 +112,9 @@ public class ProductoController {
                 url = (String) result.get("url");
             }
 
-            for (Long id : productoDTO.getInsumosIDS()) {
-                Insumo insumoadd = insumoService.findByID(id);
-                log.info(insumoadd.getNombre());
-                insumoList.add(insumoadd);
+            for(ProductoInsumos insumos: productoDTO.getInsumos()){
+                productoInsumosService.save(insumos);
+                insumoSet.add(insumos);
             }
             Producto updatedProducto = productoService.updateProducto(ID, newProdDTO.toEntity(productoDTO, catergoriaService.findbyID(productoDTO.getProductoCategoria()),insumoSet,url));
             return ResponseEntity.status(HttpStatus.OK).body(updatedProducto);
@@ -130,7 +128,10 @@ public class ProductoController {
     public ResponseEntity<?> deleteProducto(@PathVariable("id")Long ID) throws Exception{
         try {
             productoService.deleteSoftProducto(ID);
-            return ResponseEntity.status(HttpStatus.OK).body("El objeto se borro existosamente");
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of(
+                    "success", true,
+                    "message", "El objeto se borro correctamente"
+            ));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));

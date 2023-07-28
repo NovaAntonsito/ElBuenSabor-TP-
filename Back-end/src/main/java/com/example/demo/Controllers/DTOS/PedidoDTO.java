@@ -30,8 +30,8 @@ public class PedidoDTO {
         for (Producto prods: cartFound.getProductosComprados()) {
             ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
             newDTO.setProducto(prods.getNombre());
-            for (Insumo ins: prods.getInsumoSet()) {
-                precioTotal += ins.getCosto();
+            for (ProductoInsumos insumos : prods.getInsumos()) {
+                precioTotal += insumos.getInsumo().getCosto();
             }
         }
         newPedido.setEstado(pedidoDTO.getEstado());

@@ -4,15 +4,15 @@ package com.example.demo.Controllers.DTOS;
 import com.example.demo.Entitys.Categoria;
 import com.example.demo.Entitys.Enum.Baja_Alta;
 
-import com.example.demo.Entitys.Insumo;
 import com.example.demo.Entitys.Producto;
+import com.example.demo.Entitys.ProductoInsumos;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@Slf4j
 public class ProductoDTO {
 
     private Long id;
@@ -30,15 +31,14 @@ public class ProductoDTO {
     private String receta;
     private Baja_Alta estado;
     private Long productoCategoria;
-    private List<Long> insumosIDS;
     private Double precio;
     private Double valoracion;
     private Long descuento;
+    private List<ProductoInsumos> insumos;
 
 
     public ProductoDTO toDTO(Producto producto) {
         ProductoDTO dto = new ProductoDTO();
-        List<Long> prodsID = new ArrayList<>();
         dto.setId(producto.getID());
         dto.setNombre(producto.getNombre());
         dto.setDescripcion(producto.getDescripcion());
@@ -52,15 +52,15 @@ public class ProductoDTO {
             dto.setProductoCategoria(producto.getProductoCategoria().getID());
         }
         Double precio =  (double)0;
-        for(Insumo insumo : producto.getInsumoSet()){
-            prodsID.add(insumo.getID());
-            precio += insumo.getCosto();
+        for(ProductoInsumos insumos : producto.getInsumos()){
+            log.info(insumos.getInsumo().getCosto().toString());
+            precio += insumos.getInsumo().getCosto();
         }
         dto.setPrecio(precio);
-        dto.setInsumosIDS(prodsID);
+        dto.setInsumos(producto.getInsumos());
         return dto;
     }
-    public Producto toEntity(ProductoDTO dto, Categoria categoria, List<Insumo> insumoList,String URL) {
+    public Producto toEntity(ProductoDTO dto, Categoria categoria, List<ProductoInsumos> insumos, String URL) {
         Producto producto = new Producto();
         producto.setID(dto.getId());
         producto.setNombre(dto.getNombre());
@@ -74,7 +74,7 @@ public class ProductoDTO {
         if(dto.getProductoCategoria() != null){
             producto.setProductoCategoria(categoria);
         }
-        producto.setInsumoSet(insumoList);
+        producto.setInsumos(insumos);
         return producto;
     }
 

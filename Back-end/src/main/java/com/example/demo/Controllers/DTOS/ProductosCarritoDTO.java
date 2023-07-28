@@ -36,7 +36,7 @@ public class ProductosCarritoDTO {
                 if (dto.getProductoId().equals(producto.getID())) {
                     // El producto ya existe en la lista, aumentar la cantidad y actualizar el precio total
                     dto.setCantidad(dto.getCantidad() + 1);
-                    double precioUnitario =producto.getInsumoSet().get(0).getCosto();
+                    double precioUnitario =producto.getInsumos().get(0).getInsumo().getCosto();
                     double descuento = producto.getDescuento() != null ? ((double) producto.getDescuento()) : 0;
                     descuento /= 100;
                     precioUnitario -= precioUnitario * descuento;
@@ -52,11 +52,11 @@ public class ProductosCarritoDTO {
                 nuevoProducto.setProducto(producto.getNombre());
                 nuevoProducto.setCantidad(1L);
                 nuevoProducto.setDescuento(producto.getDescuento());
-                double precioUnitario =producto.getInsumoSet().get(0).getCosto();
+                double precioUnitario =producto.getInsumos().get(0).getInsumo().getCosto();
                 double descuento = producto.getDescuento() != null ? ((double) producto.getDescuento()) : 0;
                 descuento /= 100;
                 precioUnitario -= precioUnitario * descuento;
-                nuevoProducto.setPrecioUnitario(producto.getInsumoSet().get(0).getCosto()); // Suponemos que solo tiene un insumo
+                nuevoProducto.setPrecioUnitario(producto.getInsumos().get(0).getInsumo().getCosto()); // Suponemos que solo tiene un insumo
                 nuevoProducto.setPrecioTotal(precioUnitario); // Suponemos que solo tiene un insumo
                 nuevoProducto.setImgURL(producto.getImgURL());
                 nuevoProducto.setProductoId(producto.getID());

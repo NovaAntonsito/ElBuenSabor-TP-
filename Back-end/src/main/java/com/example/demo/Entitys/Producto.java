@@ -30,9 +30,6 @@ public class Producto extends Base{
     @ManyToOne
     @JsonIgnoreProperties({"subCategoria","hibernateLazyInitializer"})
     private Categoria productoCategoria;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "producto_insumo",
-            joinColumns = @JoinColumn(name = "producto_id"),
-            inverseJoinColumns = @JoinColumn(name = "insumo_id"))
-    private List<Insumo> insumoSet;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<ProductoInsumos> insumos;
 }

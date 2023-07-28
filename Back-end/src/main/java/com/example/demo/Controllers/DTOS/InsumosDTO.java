@@ -3,6 +3,7 @@ package com.example.demo.Controllers.DTOS;
 import com.example.demo.Entitys.Categoria;
 import com.example.demo.Entitys.Enum.Baja_Alta;
 import com.example.demo.Entitys.Insumo;
+import com.example.demo.Entitys.UnidadMedida;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class InsumosDTO {
     private Baja_Alta estado;
     private Double costo;
     private CategoriaDTO categoria;
+    private UnidadMedida medida;
 
 
     public InsumosDTO toDTO (Insumo insumo){
@@ -34,6 +36,7 @@ public class InsumosDTO {
         newDTO.setEstado(insumo.getEstado());
         newDTO.setCosto(insumo.getCosto());
         newDTO.setCategoria(CategoriaDTO.toDTO(insumo.getCategoria()));
+        newDTO.setMedida(insumo.getUnidadMedida());
         return newDTO;
     }
 
@@ -45,6 +48,7 @@ public class InsumosDTO {
         newInsumo.setEstado(dto.getEstado());
         newInsumo.setCosto(dto.getCosto());
         newInsumo.setCategoria(categoria);
+        newInsumo.setUnidadMedida(dto.getMedida());
         return newInsumo;
     }
 }
