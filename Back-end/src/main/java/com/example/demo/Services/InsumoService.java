@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Transactional
 @Slf4j
@@ -27,6 +29,11 @@ public class InsumoService implements InsumoServiceInterface {
     @Override
     public Iterable<Insumo> getAllInsumosWOPage() throws Exception {
         return insumoRepository.findAll();
+    }
+
+    @Override
+    public List<Insumo> getAllInsumosByIndividual() throws Exception {
+        return insumoRepository.findByIndividual();
     }
 
     @Override

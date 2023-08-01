@@ -25,6 +25,12 @@ public class ProductosCarritoDTO {
     private Double precioTotal;
     private Long descuento;
     private String imgURL;
+
+
+
+
+
+
     public List<ProductosCarritoDTO> toDTO(List<Producto> productosComprados) {
         List<ProductosCarritoDTO> productosCarritoDTOList = new ArrayList<>();
 

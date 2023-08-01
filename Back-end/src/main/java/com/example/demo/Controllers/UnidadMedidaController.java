@@ -46,7 +46,9 @@ public class UnidadMedidaController {
     public ResponseEntity<?> findAllUnidades () throws Exception{
         try {
             List<UnidadMedida> unidadMedidas = unidadService.findAll();
-            if(unidadMedidas.size() == 0) throw  new RuntimeException("No existen unidades de medidas");
+            if(unidadMedidas.size() == 0){
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(unidadMedidas);
+            }
             return ResponseEntity.status(HttpStatus.OK).body(unidadMedidas);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(

@@ -19,7 +19,11 @@ public class PedidoDTO {
 
     private List<ProductosCarritoDTO> productosComprados;
 
+
+
     private MP_Datos MercadoPagoDatos;
+
+
 
     public Pedido toEntity(PedidoDTO pedidoDTO, Usuario userFound, Carrito cartFound){
         Pedido newPedido = new Pedido();

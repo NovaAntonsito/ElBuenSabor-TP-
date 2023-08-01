@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface InsumoRepository extends BaseRepository<Insumo, Long> {
     Insumo findByID(Long ID);
@@ -21,5 +23,10 @@ public interface InsumoRepository extends BaseRepository<Insumo, Long> {
                     "WHERE (:nombre IS NULL OR nombre LIKE CONCAT('%', :nombre, '%'))",
             nativeQuery = true)
     Page<Insumo> getInsumoByName(@Param("nombre") String name, Pageable page);
+
+    @Query(value = "SELECT * FROM insumo WHERE individual = TRUE", nativeQuery = true)
+     List<Insumo> findByIndividual ();
+
+
 
 }

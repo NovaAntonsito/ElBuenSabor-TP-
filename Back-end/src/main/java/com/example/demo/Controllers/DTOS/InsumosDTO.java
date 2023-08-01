@@ -25,6 +25,7 @@ public class InsumosDTO {
     private Double costo;
     private CategoriaDTO categoria;
     private UnidadMedida medida;
+    private Boolean esComplemento;
 
 
     public InsumosDTO toDTO (Insumo insumo){
@@ -37,6 +38,7 @@ public class InsumosDTO {
         newDTO.setCosto(insumo.getCosto());
         newDTO.setCategoria(CategoriaDTO.toDTO(insumo.getCategoria()));
         newDTO.setMedida(insumo.getUnidadMedida());
+        newDTO.setEsComplemento(insumo.getEsComplemento());
         return newDTO;
     }
 
@@ -49,6 +51,7 @@ public class InsumosDTO {
         newInsumo.setCosto(dto.getCosto());
         newInsumo.setCategoria(categoria);
         newInsumo.setUnidadMedida(dto.getMedida());
+        newInsumo.setEsComplemento(dto.getEsComplemento());
         return newInsumo;
     }
 }

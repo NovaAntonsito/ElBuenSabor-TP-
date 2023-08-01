@@ -23,6 +23,10 @@ public class Carrito extends Base {
             inverseJoinColumns = @JoinColumn(name = "producto_id"))
     private List<Producto> productosComprados;
 
+    @ManyToMany
+    @JoinTable(name="insumosAgregados_carrito")
+    private List<Insumo> productosAdicionales;
+
     @OneToOne
     private Usuario usuarioAsignado;
 }

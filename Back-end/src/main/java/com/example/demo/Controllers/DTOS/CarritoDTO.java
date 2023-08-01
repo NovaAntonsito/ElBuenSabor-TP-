@@ -16,7 +16,8 @@ import java.util.List;
 @Getter
 @Setter
 public class CarritoDTO {
-    List<ProductosCarritoDTO> productosComprados = new ArrayList<ProductosCarritoDTO>();
+    private List<ProductosCarritoDTO> productosComprados;
+    private List<InsumoCarritoDTO> productosAgregados;
     private  Double totalCompra;
 
 

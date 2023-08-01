@@ -23,6 +23,9 @@ public class Insumo extends Base{
    @ManyToOne(fetch = FetchType.EAGER)
    private Categoria categoria;
 
+
+   private Boolean esComplemento;
+
    @ManyToOne(fetch = FetchType.EAGER)
    private UnidadMedida unidadMedida;
 }

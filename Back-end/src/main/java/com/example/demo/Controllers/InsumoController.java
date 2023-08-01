@@ -44,7 +44,26 @@ public class InsumoController {
             return ResponseEntity.status(HttpStatus.OK).body(newInsumo);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("success", false, "message", e.getMessage()));
+                    .body(Map.of(
+                            "success", false,
+                            "message", e.getMessage()
+                    ));
+        }
+    }
+
+    @GetMapping("/getAgregados")
+    public ResponseEntity<?> getAllInsumosAgregados () throws Exception{
+        try {
+            if(insumoService.getAllInsumosByIndividual().size() == 0){
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(insumoService.getAllInsumosByIndividual());
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(insumoService.getAllInsumosByIndividual());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "success", false,
+                            "message", e.getMessage()
+                    ));
         }
     }
 

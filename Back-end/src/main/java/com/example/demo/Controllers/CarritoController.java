@@ -2,19 +2,17 @@ package com.example.demo.Controllers;
 
 
 import com.example.demo.Controllers.DTOS.CarritoDTO;
+import com.example.demo.Controllers.DTOS.InsumoCarritoDTO;
 import com.example.demo.Controllers.DTOS.ProductosCarritoDTO;
 import com.example.demo.Entitys.Carrito;
+import com.example.demo.Entitys.Insumo;
 import com.example.demo.Entitys.Producto;
 import com.example.demo.Entitys.Usuario;
-import com.example.demo.Services.CarritoService;
-import com.example.demo.Services.ConfigLocalService;
-import com.example.demo.Services.UserService;
-import com.example.demo.Services.ProductoService;
+import com.example.demo.Services.*;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +29,7 @@ import java.util.Map;
 @RestController
 public class CarritoController {
     private final CarritoService carritoService;
+    private final InsumoService insumoService;
     private final ProductoService productoService;
     private final UserService userService;
     private final ConfigLocalService configService;
@@ -46,6 +45,8 @@ public class CarritoController {
             Producto nuevoProducto = productoService.findbyID(productoId);
             cart.getProductosComprados().add(nuevoProducto);
             carritoService.cartSave(cart);
+            InsumoCarritoDTO complementosDTO = new InsumoCarritoDTO();
+            List<InsumoCarritoDTO> complementosList = complementosDTO.toDTO(cart.getProductosAdicionales());
             ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
             List<ProductosCarritoDTO> dtoList = newDTO.toDTO(cart.getProductosComprados());
             Double precioTotal = 0D;
@@ -57,9 +58,45 @@ public class CarritoController {
                         .getTiempoCocina();
             }
             precioTotal += configService.getPrecioPorTiempo(tiempoEnCocina);
-            CarritoDTO carritoDTO = new CarritoDTO(dtoList,precioTotal);
+            CarritoDTO carritoDTO = new CarritoDTO();
+            carritoDTO.setProductosAgregados(complementosList);
+            carritoDTO.setProductosComprados(dtoList);
+            carritoDTO.setTotalCompra(precioTotal);
             return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
         } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/addComplemento/{productoAgregadoID}")
+    public ResponseEntity<?> addComplemento(@PathVariable("productoAgregadoID") Long complementoID, @RequestHeader("Authorization")String token) throws Exception{
+        String jwtToken = token.substring(7);
+        try {
+            JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
+            String sub = decodedJWT.getSubject();
+            Usuario userFound = userService.userbyID(sub);
+            Carrito cart = carritoService.getCarritobyUserID(userFound.getId());
+            Insumo complemento = insumoService.findByID(complementoID);
+            if (complemento.getEsComplemento()){
+                throw new RuntimeException("No se puede agregar un insumo que no sea un complemento");
+            }
+            cart.getProductosAdicionales().add(complemento);
+            carritoService.cartSave(cart);
+            InsumoCarritoDTO complementosDTO = new InsumoCarritoDTO();
+            List<InsumoCarritoDTO> complementosList = complementosDTO.toDTO(cart.getProductosAdicionales());
+            ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
+            List<ProductosCarritoDTO> dtoList = newDTO.toDTO(cart.getProductosComprados());
+            Double precioTotal = 0D;
+            for(InsumoCarritoDTO insumoComplemento : complementosList){
+                precioTotal += insumoComplemento.getPrecioTotal();
+            }
+            CarritoDTO carritoDTO = new CarritoDTO();
+            carritoDTO.setProductosAgregados(complementosList);
+            carritoDTO.setProductosComprados(dtoList);
+            carritoDTO.setTotalCompra(precioTotal);
+            return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
+        }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
@@ -82,7 +119,9 @@ public class CarritoController {
             for (ProductosCarritoDTO productosCarritoDTO : dtoList) {
                 precioTotal += productosCarritoDTO.getPrecioTotal();
             }
-            CarritoDTO carritoDTO = new CarritoDTO(dtoList,precioTotal);
+            CarritoDTO carritoDTO = new CarritoDTO();
+            carritoDTO.setProductosComprados(dtoList);
+            carritoDTO.setTotalCompra(precioTotal);
 
             return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
         } catch (Exception e) {
@@ -104,7 +143,9 @@ public class CarritoController {
             ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
             List<ProductosCarritoDTO> dtoList = new ArrayList<ProductosCarritoDTO>();
             Double precioTotal = 0D;
-            CarritoDTO carritoDTO = new CarritoDTO(dtoList,precioTotal);
+            CarritoDTO carritoDTO = new CarritoDTO();
+            carritoDTO.setProductosComprados(dtoList);
+            carritoDTO.setTotalCompra(precioTotal);
             return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -142,6 +183,8 @@ public class CarritoController {
                 return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
             }else{
                 List<ProductosCarritoDTO> dtoList = newDTO.toDTO(carritoFound.getProductosComprados());
+                InsumoCarritoDTO complementosDTO = new InsumoCarritoDTO();
+                List<InsumoCarritoDTO> complementosList = complementosDTO.toDTO(carritoFound.getProductosAdicionales());
                 Double precioTotal = 0D;
                 Double tiempoEnCocina = 0D;
                 for (ProductosCarritoDTO productosCarritoDTO : dtoList) {
@@ -150,9 +193,14 @@ public class CarritoController {
                             .findbyID(productosCarritoDTO.getProductoId())
                             .getTiempoCocina();
                 }
-                log.info(tiempoEnCocina.toString());
                 precioTotal += configService.getPrecioPorTiempo(tiempoEnCocina);
-                CarritoDTO carritoDTO = new CarritoDTO(dtoList,precioTotal);
+                for (InsumoCarritoDTO complementos : complementosList){
+                    precioTotal += complementos.getPrecioTotal();
+                }
+                CarritoDTO carritoDTO = new CarritoDTO();
+                carritoDTO.setProductosAgregados(complementosList);
+                carritoDTO.setProductosComprados(dtoList);
+                carritoDTO.setTotalCompra(precioTotal);
                 return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
             }
         }catch (Exception e){
