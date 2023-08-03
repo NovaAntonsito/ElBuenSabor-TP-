@@ -15,4 +15,5 @@ public interface InsumoServiceInterface {
     Insumo updateInsumo (Long ID, Insumo insumo) throws Exception;
     Page<Insumo> getInsumoByName (String name, Pageable page) throws Exception;
     Insumo findByID (Long ID) throws Exception;
+    Boolean verificarAsociacion (Insumo insumo) throws Exception;
 }

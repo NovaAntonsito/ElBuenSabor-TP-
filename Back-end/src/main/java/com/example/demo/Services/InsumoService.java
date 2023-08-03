@@ -2,8 +2,10 @@ package com.example.demo.Services;
 
 import com.example.demo.Entitys.Enum.Baja_Alta;
 import com.example.demo.Entitys.Insumo;
+import com.example.demo.Entitys.ProductoInsumos;
 import com.example.demo.Repository.InsumoRepository;
 
+import com.example.demo.Repository.ProductosInsumosRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InsumoService implements InsumoServiceInterface {
     private final InsumoRepository insumoRepository;
+    private final ProductosInsumosRepository productosInsumosRepository;
 
 
     @Override
@@ -68,5 +71,17 @@ public class InsumoService implements InsumoServiceInterface {
     @Override
     public Insumo findByID(Long ID) throws Exception {
         return insumoRepository.findByID(ID);
+    }
+
+    @Override
+    public Boolean verificarAsociacion(Insumo insumo) throws Exception {
+        List<ProductoInsumos> productosAsociados = productosInsumosRepository.getProductoInsumosAsociados(insumo.getID());
+        if (!productosAsociados.isEmpty()) {
+            // El insumo está asociado a algún producto, no se puede cambiar el estado
+            return true;
+        } else {
+            // El insumo no está asociado a ningún producto, se puede cambiar el estado
+            return false;
+        }
     }
 }

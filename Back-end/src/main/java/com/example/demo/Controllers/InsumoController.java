@@ -89,6 +89,9 @@ public class InsumoController {
             Categoria cateFound = catergoriaService.findbyID(insumosDTO.getCategoria().getId());
             if(insumosDTO.getCategoria() != null && cateFound == null) throw new RuntimeException("No existe esa categoria");
             Insumo insumo = insumosDTO.toEntity(insumosDTO,cateFound);
+            if (insumosDTO.getEstado() != null && insumoService.verificarAsociacion(insumo)){
+                throw new RuntimeException("No se puede modificar un insumo asociado");
+            }
             insumo = insumoService.updateInsumo(ID, insumo);
             return ResponseEntity.status(HttpStatus.OK).body(insumo);
         }catch (Exception e){
