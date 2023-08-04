@@ -19,6 +19,8 @@ public class Insumo extends Base{
    @Column(name = "stockMinimo")
    private Double stockMinimo;
 
+   private String urlIMG;
+
    @Column(name = "stockActual")
    private Double stockActual;
    private Baja_Alta estado;

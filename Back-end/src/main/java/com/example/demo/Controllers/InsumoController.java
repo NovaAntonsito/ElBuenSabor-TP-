@@ -33,13 +33,21 @@ public class InsumoController {
 
     private final InsumoService insumoService;
     private final CatergoriaService catergoriaService;
+    private final CloudinaryServices cloudServices;
 
-    @PostMapping(value = "", consumes = {"application/json"})
-    public ResponseEntity<?> crearInsumo(@RequestBody InsumosDTO insumosDTO) throws Exception {
+    @PostMapping(value = "")
+    public ResponseEntity<?> crearInsumo(@RequestPart(value = "insumo", required = true) InsumosDTO insumosDTO, @RequestPart(value = "img", required = false) MultipartFile img) throws Exception {
         try {
             Categoria cateFound = catergoriaService.findbyID(insumosDTO.getCategoria().getId());
             if(insumosDTO.getCategoria() != null && cateFound == null) throw new RuntimeException("No existe esa categoria");
             Insumo newInsumo = insumosDTO.toEntity(insumosDTO,cateFound);
+            if(img == null && insumosDTO.getEsComplemento()){
+                throw new RuntimeException("Si el insumo es un complemento, es necesario una foto");
+            }else{
+                BufferedImage imgActual = ImageIO.read(img.getInputStream());
+                var result = cloudServices.UploadIMG(img);
+                newInsumo.setUrlIMG((String) result.get("url"));
+            }
             insumoService.createInsumo(newInsumo);
             return ResponseEntity.status(HttpStatus.OK).body(newInsumo);
         }catch (Exception e){
@@ -84,13 +92,20 @@ public class InsumoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateInsumo(@RequestBody InsumosDTO insumosDTO, @PathVariable("id") Long ID) throws Exception {
+    public ResponseEntity<?> updateInsumo(@RequestPart(value = "insumo", required = true) InsumosDTO insumosDTO,@RequestPart(value = "img", required = false) MultipartFile img, @PathVariable("id") Long ID) throws Exception {
         try {
             Categoria cateFound = catergoriaService.findbyID(insumosDTO.getCategoria().getId());
             if(insumosDTO.getCategoria() != null && cateFound == null) throw new RuntimeException("No existe esa categoria");
             Insumo insumo = insumosDTO.toEntity(insumosDTO,cateFound);
             if (insumosDTO.getEstado() != null && insumoService.verificarAsociacion(insumo)){
                 throw new RuntimeException("No se puede modificar un insumo asociado");
+            }
+            if(img == null && insumosDTO.getEsComplemento()){
+                throw new RuntimeException("Si el insumo es un complemento, es necesario una foto");
+            }else{
+                BufferedImage imgActual = ImageIO.read(img.getInputStream());
+                var result = cloudServices.UploadIMG(img);
+                insumo.setUrlIMG((String) result.get("url"));
             }
             insumo = insumoService.updateInsumo(ID, insumo);
             return ResponseEntity.status(HttpStatus.OK).body(insumo);
