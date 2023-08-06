@@ -1,6 +1,7 @@
 package com.example.demo.Controllers;
 
 import com.example.demo.Controllers.DTOS.ProductoDTO;
+import com.example.demo.Controllers.DTOS.ProductosCarritoDTO;
 import com.example.demo.Entitys.Categoria;
 import com.example.demo.Entitys.Insumo;
 import com.example.demo.Entitys.Producto;
@@ -42,6 +43,8 @@ public class ProductoController {
 
     private final ProductoInsumoService productoInsumosService;
 
+    private final ConfigLocalService configService;
+
     @GetMapping("")
     public ResponseEntity<?> getAllinAlta() throws Exception{
         try {
@@ -62,7 +65,26 @@ public class ProductoController {
         try {
             Producto productoFound = productoService.findbyID(id);
             ProductoDTO pDto = new ProductoDTO();
-            return ResponseEntity.status(HttpStatus.OK).body(pDto.toDTO(productoFound));
+            pDto = pDto.toDTO(productoFound);
+            Double precioTotalProducto = 0D;
+            precioTotalProducto +=   pDto.getPrecio();
+            if (precioTotalProducto == 0D){
+                return ResponseEntity.status(HttpStatus.OK).body(pDto);
+            }
+            Double valorAgregadoPorCocinar = configService.getPrecioPorTiempo((double) pDto.getTiempoCocina());
+            precioTotalProducto += valorAgregadoPorCocinar;
+            // Supongamos que tienes un valor productoDescuento (long) que contiene el descuento en un rango de 0 a 100.
+            long productoDescuento = pDto.getDescuento();
+
+            // Dividimos el valor de productoDescuento entre 100 para obtener la fracción.
+            double productoDividido = (double) productoDescuento / 100.0;
+
+
+            // Calculamos el descuento aplicando la fracción productoDividido al precioTotal.
+            precioTotalProducto *= (1 - productoDividido);
+
+            pDto.setPrecio(precioTotalProducto);
+            return ResponseEntity.status(HttpStatus.OK).body(pDto);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
@@ -160,7 +182,28 @@ public class ProductoController {
             List<ProductoDTO> prodsDto = new ArrayList<>();
             for (Producto p : productoPage){
                 ProductoDTO pDto = new ProductoDTO();
-                prodsDto.add(pDto.toDTO(p));
+                pDto = pDto.toDTO(p);
+                Double precioTotalProducto = 0D;
+                precioTotalProducto +=   pDto.getPrecio();
+                if (precioTotalProducto == 0D){
+                    prodsDto.add(pDto.toDTO(p));
+                }else {
+                    Double valorAgregadoPorCocinar = configService.getPrecioPorTiempo((double) pDto.getTiempoCocina());
+                    precioTotalProducto += valorAgregadoPorCocinar;
+                    // Supongamos que tienes un valor productoDescuento (long) que contiene el descuento en un rango de 0 a 100.
+                    long productoDescuento = pDto.getDescuento();
+
+                    // Dividimos el valor de productoDescuento entre 100 para obtener la fracción.
+                    double productoDividido = (double) productoDescuento / 100.0;
+
+
+                    // Calculamos el descuento aplicando la fracción productoDividido al precioTotal.
+                    precioTotalProducto *= (1 - productoDividido);
+
+                    pDto.setPrecio(precioTotalProducto);
+                    prodsDto.add(pDto);
+                }
+
             }
             return ResponseEntity.status(HttpStatus.OK).body(prodsDto);
         }catch (Exception e){

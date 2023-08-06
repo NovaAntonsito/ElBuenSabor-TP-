@@ -51,9 +51,9 @@ public class ProductoDTO {
         if(producto.getProductoCategoria().getID() != null){
             dto.setProductoCategoria(producto.getProductoCategoria().getID());
         }
-        Double precio =  (double)0;
+        Double precio = 0D;
         for(ProductoInsumos insumos : producto.getInsumos()){
-            log.info(insumos.getInsumo().getCosto().toString());
+
             precio += insumos.getInsumo().getCosto();
         }
         dto.setPrecio(precio);

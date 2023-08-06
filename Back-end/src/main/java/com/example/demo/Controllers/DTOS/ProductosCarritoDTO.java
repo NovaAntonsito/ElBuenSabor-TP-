@@ -2,6 +2,8 @@ package com.example.demo.Controllers.DTOS;
 
 import com.example.demo.Entitys.Insumo;
 import com.example.demo.Entitys.Producto;
+import com.example.demo.Entitys.ProductoInsumos;
+import com.example.demo.Services.ConfigLocalService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,9 +24,11 @@ public class ProductosCarritoDTO {
     private Long productoId;
     private Long cantidad;
     private Double precioUnitario;
+    private Double precioTotalSinDescuento;
     private Double precioTotal;
     private Long descuento;
     private String imgURL;
+    private Long tiempoCocina;
 
 
 
@@ -42,11 +46,6 @@ public class ProductosCarritoDTO {
                 if (dto.getProductoId().equals(producto.getID())) {
                     // El producto ya existe en la lista, aumentar la cantidad y actualizar el precio total
                     dto.setCantidad(dto.getCantidad() + 1);
-                    double precioUnitario =producto.getInsumos().get(0).getInsumo().getCosto();
-                    double descuento = producto.getDescuento() != null ? ((double) producto.getDescuento()) : 0;
-                    descuento /= 100;
-                    precioUnitario -= precioUnitario * descuento;
-                    dto.setPrecioTotal(dto.getPrecioTotal() + precioUnitario); // Suponemos que solo tiene un insumo
                     existeProducto = true;
                     break;
                 }
@@ -58,12 +57,13 @@ public class ProductosCarritoDTO {
                 nuevoProducto.setProducto(producto.getNombre());
                 nuevoProducto.setCantidad(1L);
                 nuevoProducto.setDescuento(producto.getDescuento());
-                double precioUnitario =producto.getInsumos().get(0).getInsumo().getCosto();
-                double descuento = producto.getDescuento() != null ? ((double) producto.getDescuento()) : 0;
-                descuento /= 100;
-                precioUnitario -= precioUnitario * descuento;
-                nuevoProducto.setPrecioUnitario(producto.getInsumos().get(0).getInsumo().getCosto()); // Suponemos que solo tiene un insumo
-                nuevoProducto.setPrecioTotal(precioUnitario); // Suponemos que solo tiene un insumo
+                double precioUnitario =  0;
+                for(ProductoInsumos insumos : producto.getInsumos()){
+                    precioUnitario += insumos.getInsumo().getCosto();
+                }
+                nuevoProducto.setPrecioUnitario(precioUnitario);
+                nuevoProducto.setTiempoCocina(producto.getTiempoCocina());
+                nuevoProducto.setPrecioTotal(precioUnitario);
                 nuevoProducto.setImgURL(producto.getImgURL());
                 nuevoProducto.setProductoId(producto.getID());
                 productosCarritoDTOList.add(nuevoProducto);

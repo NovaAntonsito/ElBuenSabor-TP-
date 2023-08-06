@@ -61,4 +61,31 @@ public class DireccionesController {
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
+
+    @DeleteMapping("/delDireccion/{direccion_id}")
+    public ResponseEntity<?> delDireccion(@PathVariable("direccion_id") Long direccion_id, @RequestHeader("Authorization") String token) throws Exception {
+        String jwtToken = token.substring(7);
+        try {
+            JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
+            String sub = decodedJWT.getSubject();
+            Usuario userFound = userService.userbyID(sub);
+            List<Direccion> direccionList;
+            if (userFound != null){
+                direccionList  = userFound.getDireccionList();
+                Direccion dirFound = direccionService.getOneDireccion(direccion_id);
+                if (dirFound != null){
+                    direccionList.remove(dirFound);
+                    userFound.setDireccionList(direccionList);
+                    userService.saveUser(userFound);
+                }
+                return ResponseEntity.status(HttpStatus.OK).body(direccionList);
+            }else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("success", false,"message" , "No se encontro un usuario"));
+            }
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
 }
