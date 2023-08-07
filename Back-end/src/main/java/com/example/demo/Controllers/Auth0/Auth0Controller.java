@@ -50,6 +50,9 @@ public class Auth0Controller {
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String auth0Domain;
 
+    @Value("${The.Ultimate.Password}")
+    private String LePassword;
+
     private final RolService rolService;
 
 
@@ -78,18 +81,21 @@ public class Auth0Controller {
     }
 
     @PostMapping("/createUserAdmin")
-    public ResponseEntity<?> createUser(@RequestBody UserAuth0 user) throws Exception{
+    public ResponseEntity<?> createUser(@RequestBody Usuario user) throws Exception{
         try {
             //Creacion de usuario
-            user.setConnection("email");
             JWTManager newJTW = new JWTManager();
             String JWTActual = newJTW.getJWTFromAuth0(clientID, clientSecret);
             String postUserURL = auth0Domain.concat("api/v2/users");
+            //Esto es muy sucio
+            user.setPassword(LePassword);
             // Crear un nuevo objeto JSON con email y conexión
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("email", user.getEmail());
-            jsonObject.addProperty("connection", user.getConnection());
-
+            jsonObject.addProperty("connection", "ElBuenSaborDB");
+            jsonObject.addProperty("password", user.getPassword());
+            jsonObject.addProperty("username", user.getUsername());
+            jsonObject.addProperty("name", user.getName());
             // Convertir el nuevo objeto JSON a cadena JSON
             Gson gson = new Gson();
             String nuevoJson = gson.toJson(jsonObject);
@@ -99,17 +105,22 @@ public class Auth0Controller {
                     .header("authorization", "Bearer " + JWTActual)
                     .body(nuevoJson)
                     .asString();
+
             String responseBody = response.getBody();
             JSONObject json = new JSONObject(responseBody);
+            Thread.sleep(5000);
             String userId = json.getString("user_id");
-
+            Usuario userCreated = new Usuario();
+            userCreated.setId(userId);
+            userCreated.setName(user.getName());
+            userCreated.setPassword(user.getPassword());
+            userCreated.setUsername(user.getUsername());
+            userCreated.setEmail(user.getEmail());
 
             //Asignacion de rol
-
             JsonObject rol = new JsonObject();
             JsonArray rolesArray = new JsonArray();
-            rolesArray.add(user.getRolID());
-            log.info(user.getRolID());
+            rolesArray.add(user.getRol().getId());
             rol.add("roles", rolesArray);
             // Obvio que hay que cambiar los nombres a las variables pero no me salia un mejor nombre
             String newJson = gson.toJson(rol);
@@ -122,14 +133,13 @@ public class Auth0Controller {
                     .body(newJson)
                     .asString();
 
-            if(userService.existsbyID(userId)){
-                Usuario userFound = userService.userbyID(userId);
-                Rol rolFound = rolService.findbyID(user.getRolID());
-                userFound.setRol(rolFound);
-                userService.saveUser(userFound);
-                return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "El usuario creado y asignado el rol"));
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "Usuario creado pero no existe en nuestra base de datos"));
+
+            Rol rolFound = rolService.findbyID(user.getRol().getId());
+            log.info(rolFound.getName());
+            userCreated.setRol(rolFound);
+            userService.saveUser(userCreated);
+
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "El usuario creado y asignado el rol"));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));

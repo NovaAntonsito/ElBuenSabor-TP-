@@ -23,7 +23,7 @@ public class Auth0DTO {
 
     private String email;
 
-    private List<Direccion> direccionList = new ArrayList<Direccion>();
+    private List<Direccion> direccionList;
 
     private Boolean bloqueado;
 

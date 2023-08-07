@@ -2,6 +2,7 @@ package com.example.demo.Services;
 
 import com.example.demo.Entitys.ProductoInsumos;
 import com.example.demo.Repository.ProductosInsumosRepository;
+import com.example.demo.Services.Interfaces.ProductoInsumoInterface;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

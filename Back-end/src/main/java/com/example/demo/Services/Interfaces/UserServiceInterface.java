@@ -1,4 +1,4 @@
-package com.example.demo.Services;
+package com.example.demo.Services.Interfaces;
 
 import com.example.demo.Entitys.Direccion;
 import com.example.demo.Entitys.Usuario;

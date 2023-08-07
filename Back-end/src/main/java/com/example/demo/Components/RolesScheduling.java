@@ -47,7 +47,6 @@ public class RolesScheduling {
                     .asString();
             String allRoles = response.getBody();
             JSONArray jsonArrayFromAuth0 = new JSONArray(allRoles);
-            log.info(jsonArrayFromAuth0.toString(), "<----------- JsonArray de java");
             for (Object obj: jsonArrayFromAuth0) {
                 JSONObject jsonObject = (JSONObject) obj;
                 if(!rolService.checkID(jsonObject.getString("id"))){

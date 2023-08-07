@@ -2,6 +2,7 @@ package com.example.demo.Services;
 
 import com.example.demo.Entitys.Configuracion;
 import com.example.demo.Repository.ConfigRepository;
+import com.example.demo.Services.Interfaces.ConfigLocalServiceInterface;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

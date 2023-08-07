@@ -6,6 +6,7 @@ import com.example.demo.Entitys.Producto;
 
 import com.example.demo.Repository.CategoriaRepository;
 import com.example.demo.Repository.ProductoRepository;
+import com.example.demo.Services.Interfaces.ProductoServiceInterface;
 import jakarta.transaction.Transactional;
 
 
@@ -23,7 +24,7 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional
-public class ProductoService implements ProductoServiceInterface{
+public class ProductoService implements ProductoServiceInterface {
 
 
     private final ProductoRepository productoRepository;

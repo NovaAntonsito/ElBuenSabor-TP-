@@ -2,6 +2,7 @@ package com.example.demo.Services;
 
 import com.example.demo.Entitys.Rol;
 import com.example.demo.Repository.RolesRepository;
+import com.example.demo.Services.Interfaces.RolServiceInterface;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,13 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class RolService implements RolServiceInterface{
+public class RolService implements RolServiceInterface {
     private final RolesRepository rolesRepository;
 
 

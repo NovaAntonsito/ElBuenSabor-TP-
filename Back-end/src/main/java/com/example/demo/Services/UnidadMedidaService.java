@@ -2,10 +2,9 @@ package com.example.demo.Services;
 
 import com.example.demo.Entitys.UnidadMedida;
 import com.example.demo.Repository.UnidadMedidaRepository;
-import com.fasterxml.jackson.databind.util.BeanUtil;
+import com.example.demo.Services.Interfaces.UnidadMedidaServiceInterface;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UnidadMedidaService implements UnidadMedidaServiceInterface{
+public class UnidadMedidaService implements UnidadMedidaServiceInterface {
     private final UnidadMedidaRepository unidadMedidaRepository;
     @Override
     public void save(UnidadMedida unidadMedida) throws Exception {

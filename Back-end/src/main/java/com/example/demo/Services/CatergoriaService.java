@@ -2,6 +2,7 @@ package com.example.demo.Services;
 
 import com.example.demo.Entitys.Categoria;
 import com.example.demo.Repository.CategoriaRepository;
+import com.example.demo.Services.Interfaces.CatergoriaServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

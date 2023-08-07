@@ -3,14 +3,13 @@ package com.example.demo.Services;
 import com.example.demo.Entitys.Direccion;
 import com.example.demo.Entitys.Usuario;
 import com.example.demo.Repository.UserRepository;
+import com.example.demo.Services.Interfaces.UserServiceInterface;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor

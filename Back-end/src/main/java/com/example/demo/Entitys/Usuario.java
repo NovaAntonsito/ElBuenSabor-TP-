@@ -24,6 +24,8 @@ public class Usuario {
 
     private String password;
 
+    private String name;
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "usuario_direccion",
             joinColumns = {@JoinColumn(name = "id_usuario_fk")},

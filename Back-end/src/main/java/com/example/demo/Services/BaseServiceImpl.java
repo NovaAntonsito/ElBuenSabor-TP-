@@ -2,12 +2,12 @@ package com.example.demo.Services;
 
 import com.example.demo.Entitys.Base;
 import com.example.demo.Repository.BaseRepository;
+import com.example.demo.Services.Interfaces.BaseServices;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Optional;
 
 public abstract class BaseServiceImpl<E extends Base, ID extends Serializable> implements BaseServices<E, ID> {
