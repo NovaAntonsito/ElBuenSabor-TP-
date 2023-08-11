@@ -1,15 +1,12 @@
 package com.example.demo.Controllers.Auth0;
 
 import com.example.demo.Controllers.Auth0.Auth0Classes.Auth0DTO;
-import com.example.demo.Controllers.Auth0.Auth0Classes.UserAuth0;
 import com.example.demo.Controllers.Auth0.Auth0Utils.JWTManager;
-
 import com.example.demo.Entitys.Usuario;
 import com.example.demo.Services.DireccionService;
 import com.example.demo.Services.RolService;
 import com.example.demo.Services.UserService;
 import com.mashape.unirest.http.Unirest;
-
 import com.nimbusds.jose.shaded.gson.Gson;
 
 import com.nimbusds.jose.shaded.gson.JsonArray;
@@ -17,27 +14,28 @@ import com.nimbusds.jose.shaded.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.mashape.unirest.http.HttpResponse;
-import com.example.demo.Entitys.Rol;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping(path = "api/v1/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "v1/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class Auth0Controller {
-    //http://localhost:9000/api/v1/users
-
     private final UserService userService;
     private final DireccionService direccionService;
 
@@ -55,15 +53,16 @@ public class Auth0Controller {
 
     private final RolService rolService;
 
+    private final JWTManager jwtManager = new JWTManager();
 
     //SOLO UTILIZABLE EN AUTH0 IDS, No googleIDS o otras redes sociales
     @PutMapping("/changeUser/{idUser}")
-    public ResponseEntity<?> changeUser(@RequestBody UserAuth0 userAuth0, @PathVariable("idUser") String idUser) throws Exception{
+    public ResponseEntity<?> changeUser(@RequestBody Usuario userAuth0, @PathVariable("idUser") String idUser) throws Exception {
         try {
             JWTManager newJWT = new JWTManager();
-            String newIdUser = idUser.replace('_' , '|');
+            String newIdUser = idUser.replace('_', '|');
             String JWTActual = newJWT.getJWTFromAuth0(clientID, clientSecret);
-            String putUserURL = auth0Domain.concat("api/v2/users/"+newIdUser);
+            String putUserURL = auth0Domain.concat("api/v2/users/" + newIdUser);
             Gson newJson = new Gson();
             String jsonBody = newJson.toJson(userAuth0);
             log.info(putUserURL);
@@ -74,79 +73,87 @@ public class Auth0Controller {
                     .body(jsonBody)
                     .asString();
             return ResponseEntity.status(HttpStatus.OK).body(response.getBody());
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
 
+    /*    @PostMapping("/createUserAdmin")
+        public ResponseEntity<?> createUser(@RequestBody Usuario user) throws Exception{
+            try {
+                //Creacion de usuario
+                log.info("Creando usuario", user.toString());
+
+                String JWTActual = newJTW.getJWTFromAuth0(clientID, clientSecret);
+                String postUserURL = auth0Domain.concat("api/v2/users");
+                //Esto es muy sucio
+                user.setPassword(LePassword);
+                // Crear un nuevo objeto JSON con email y conexión
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("email", user.getEmail());
+                jsonObject.addProperty("connection", "ElBuenSaborDB");
+                jsonObject.addProperty("password", user.getPassword());
+                jsonObject.addProperty("name", user.getName());
+                jsonObject.addProperty("username", user.getUsername());
+                jsonObject.addProperty("phone_number", user.getTelefono());
+                jsonObject.addProperty("blocked", user.getBloqueado());
+
+                // Convertir el nuevo objeto JSON a cadena JSON
+                Gson gson = new Gson();
+                String nuevoJson = gson.toJson(jsonObject);
+                HttpResponse<String> response = Unirest.post(postUserURL)
+                        .header("content-type", "application/json")
+                        .header("accept", "application/json")
+                        .header("authorization", "Bearer " + JWTActual)
+                        .body(nuevoJson)
+                        .asString();
+
+                String responseBody = response.getBody();
+                if (response.getStatus()  == 409) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body(Map.of("success", false, "message", "El usuario ya existe"));
+                }
+
+                JSONObject json = new JSONObject(responseBody);
+                //Thread.sleep(5000);
+
+                String userId = json.getString("user_id");
+                //Asignacion de rol
+                user.setId(userId);
+
+                JsonObject rol = new JsonObject();
+                JsonArray rolesArray = new JsonArray();
+                rolesArray.add(user.getRol().getId());
+                rol.add("roles", rolesArray);
+
+                String newJson = gson.toJson(rol);
+                log.info(newJson);
+                String asignarRolURL = auth0Domain.concat("/api/v2/users/" + userId + "/roles");
+                HttpResponse<String> asignar = Unirest.post(asignarRolURL)
+                        .header("content-type", "application/json")
+                        .header("accept", "application/json")
+                        .header("authorization", "Bearer " + JWTActual)
+                        .body(newJson)
+                        .asString();
+
+
+                Rol rolFound = rolService.findbyID(user.getRol().getId());
+                log.info(rolFound.getName());
+                user.setRol(rolFound);
+
+                userService.upsertUser(user);
+                return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "El usuario creado y asignado el rol"));
+            }catch (Exception e){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("success", false, "message", e.getMessage()));
+            }
+        }
+        */
     @PostMapping("/createUserAdmin")
-    public ResponseEntity<?> createUser(@RequestBody Usuario user) throws Exception{
-        try {
-            //Creacion de usuario
-            JWTManager newJTW = new JWTManager();
-            String JWTActual = newJTW.getJWTFromAuth0(clientID, clientSecret);
-            String postUserURL = auth0Domain.concat("api/v2/users");
-            //Esto es muy sucio
-            user.setPassword(LePassword);
-            // Crear un nuevo objeto JSON con email y conexión
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("email", user.getEmail());
-            jsonObject.addProperty("connection", "ElBuenSaborDB");
-            jsonObject.addProperty("password", user.getPassword());
-            jsonObject.addProperty("username", user.getUsername());
-            jsonObject.addProperty("name", user.getName());
-            // Convertir el nuevo objeto JSON a cadena JSON
-            Gson gson = new Gson();
-            String nuevoJson = gson.toJson(jsonObject);
-            HttpResponse<String> response = Unirest.post(postUserURL)
-                    .header("content-type", "application/json")
-                    .header("accept", "application/json")
-                    .header("authorization", "Bearer " + JWTActual)
-                    .body(nuevoJson)
-                    .asString();
-
-            String responseBody = response.getBody();
-            JSONObject json = new JSONObject(responseBody);
-            Thread.sleep(5000);
-            String userId = json.getString("user_id");
-            Usuario userCreated = new Usuario();
-            userCreated.setId(userId);
-            userCreated.setName(user.getName());
-            userCreated.setPassword(user.getPassword());
-            userCreated.setUsername(user.getUsername());
-            userCreated.setEmail(user.getEmail());
-
-            //Asignacion de rol
-            JsonObject rol = new JsonObject();
-            JsonArray rolesArray = new JsonArray();
-            rolesArray.add(user.getRol().getId());
-            rol.add("roles", rolesArray);
-            // Obvio que hay que cambiar los nombres a las variables pero no me salia un mejor nombre
-            String newJson = gson.toJson(rol);
-            log.info(newJson.toString());
-            String asignarRolURL = auth0Domain.concat("/api/v2/users/"+userId+"/roles");
-            HttpResponse<String> asignar = Unirest.post(asignarRolURL)
-                    .header("content-type", "application/json")
-                    .header("accept", "application/json")
-                    .header("authorization", "Bearer " + JWTActual)
-                    .body(newJson)
-                    .asString();
-
-
-            Rol rolFound = rolService.findbyID(user.getRol().getId());
-            log.info(rolFound.getName());
-            userCreated.setRol(rolFound);
-            userService.saveUser(userCreated);
-
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "El usuario creado y asignado el rol"));
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("success", false, "message", e.getMessage()));
-        }
+    public ResponseEntity<?> createUser(@RequestBody Usuario user) {
+        return userService.createUser(user);
     }
-
-
 
     @GetMapping("/getUsers")
     public ResponseEntity<?> getUsers(@PageableDefault(value = 10, page = 0) Pageable page) throws Exception {
@@ -157,40 +164,78 @@ public class Auth0Controller {
                 return usuarioDTO.toDTO(usuario);
             });
             return ResponseEntity.status(HttpStatus.OK).body(allUsuariosDTO);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
 
     @GetMapping("/ForceBringUsersAuth0")
-    public ResponseEntity<?> forceGetUsersAuth0(){
+    public ResponseEntity<?> forceGetUsersAuth0() {
         try {
             JWTManager jwtManager = new JWTManager();
-            String newJWT = jwtManager.getJWTFromAuth0(clientID,clientSecret);
-            
+            String newJWT = jwtManager.getJWTFromAuth0(clientID, clientSecret);
+            String getUsersUrl = auth0Domain.concat("api/v2/users");
+
+            log.info(getUsersUrl);
+            log.info(newJWT);
+            Unirest.setTimeouts(0, 0);
+            HttpResponse<String> response = Unirest.get(getUsersUrl)
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + newJWT)
+                    .asString();
+
+            String responseBody = response.getBody();
+            //Create a user list to save the users
+            List<Usuario> userList = new ArrayList<>();
+            // For each user in the response body create a new user and save it in the list
+            JSONArray jsonArray = new JSONArray(responseBody);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Usuario newUser = new Usuario();
+                newUser.setId(jsonObject.getString("user_id"));
+                newUser.setEmail(jsonObject.getString("email"));
+                newUser.setUsername(jsonObject.getString("nickname"));
+                newUser.setPicture(jsonObject.getString("picture"));
+                // newUser.setRol(rolService.findbyID("rol_0"));
+                if (jsonObject.has("blocked")) {
+                    log.info("bloqueado" + jsonObject.getBoolean("blocked"));
+                    newUser.setBlocked((jsonObject.getBoolean("blocked")));
+                }
+                if (jsonObject.has("email_verified")) {
+                    newUser.setEmail_verified((jsonObject.getBoolean("email_verified")));
+                }
+                userList.add(newUser);
+            }
+            // Save the list of users in the database
+            for (Usuario user : userList) {
+                if (!userService.existsbyID(user.getId())) {
+                    userService.saveUser(user);
+                }
+            }
+
+            log.info(responseBody);
 
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(Map.of("success", true, "message", "Los usuarios fueron traidos"));
-        }catch (Exception e){
+                    .body(jsonArray);
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
 
     @GetMapping("/getRoles")
-    public ResponseEntity<?> getRoles(@PageableDefault(value = 10, page = 0) Pageable page) throws Exception{
+    public ResponseEntity<?> getRoles() throws Exception {
         try {
-            Page<Rol> allRoles = rolService.rolPage(page);
-            return ResponseEntity.status(HttpStatus.OK).body(allRoles);
-        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.OK).body(rolService.getAllWOPage());
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
 
     @PostMapping("/addRole")
-    public ResponseEntity<?> createRole(@RequestBody Map<String, String> requestBody) throws Exception{
+    public ResponseEntity<?> createRole(@RequestBody Map<String, String> requestBody) {
         try {
             JWTManager newJWT = new JWTManager();
             String JWT = newJWT.getJWTFromAuth0(clientID, clientSecret);
@@ -201,38 +246,41 @@ public class Auth0Controller {
                     .header("content-type", "application/json")
                     .header("authorization", "Bearer " + JWT)
                     .header("cache-control", "no-cache")
-                    .body("{ \"name\": \"" + roleName + "\", \"description\": \"" +  roleDescription + "\" }")
+                    .body("{ \"name\": \"" + roleName + "\", \"description\": \"" + roleDescription + "\" }")
                     .asString();
             return ResponseEntity.status(HttpStatus.OK)
                     .body(Map.of("success", true, "message", "Rol creado"));
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
 
     }
-
 
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchUsuarios(@PageableDefault(value = 10, page = 0) Pageable page,@RequestParam("username")String username) throws Exception{
+    public ResponseEntity<?> searchUsuarios(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable page,
+                                            @RequestParam(value = "query", required = false) String query,
+                                            @RequestParam(value = "rol", required = false) String rol
+    ) {
         try {
-            Page<Usuario> usuarioPage = userService.filterUsuarios(username,page);
+            Page<Usuario> usuarioPage = userService.filterUsuarios(query, rol, page);
             return ResponseEntity.status(HttpStatus.OK).body(usuarioPage);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
 
     }
+
     @GetMapping("/{username}")
-    public ResponseEntity<?> getOneUsuario(@PathVariable("username") String username)throws Exception{
+    public ResponseEntity<?> getOneUsuario(@PathVariable("username") String username) throws Exception {
         try {
             username = username.replace('_', '|');
             Usuario userFound = userService.userbyID(username);
             Auth0DTO userProccesed = new Auth0DTO();
             return ResponseEntity.status(HttpStatus.OK).body(userProccesed.toDTO(userFound));
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }

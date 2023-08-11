@@ -26,7 +26,6 @@ public class DireccionesController {
     public ResponseEntity<?> addDireccionToUser(@RequestBody Direccion direccion, @RequestHeader("Authorization") String token) throws Exception{
         String jwtToken = token.substring(7);
         try {
-
             JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
             String sub = decodedJWT.getSubject();
             System.out.println(direccion);

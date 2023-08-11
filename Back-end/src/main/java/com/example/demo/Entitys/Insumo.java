@@ -17,19 +17,15 @@ import lombok.Setter;
 public class Insumo extends Base{
    private String nombre;
    @Column(name = "stockMinimo")
-   private Double stockMinimo;
-
+   private Double stock_minimo;
    private String urlIMG;
-
    @Column(name = "stockActual")
-   private Double stockActual;
+   private Double stock_actual;
    private Baja_Alta estado;
    private Double costo;
    @ManyToOne(fetch = FetchType.EAGER)
    private Categoria categoria;
-   @Column(name = "esComplemento")
-   private Boolean esComplemento;
+   private Boolean es_complemento;
    @ManyToOne(fetch = FetchType.EAGER)
-   private UnidadMedida unidadMedida;
-
+   private UnidadMedida unidad_medida;
 }

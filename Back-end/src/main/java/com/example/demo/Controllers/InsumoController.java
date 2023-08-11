@@ -40,8 +40,8 @@ public class InsumoController {
         try {
             Categoria cateFound = catergoriaService.findbyID(insumosDTO.getCategoria().getId());
             if(insumosDTO.getCategoria() != null && cateFound == null) throw new RuntimeException("No existe esa categoria");
-            Insumo newInsumo = insumosDTO.toEntity(insumosDTO,cateFound);
-            if(img == null && insumosDTO.getEsComplemento()){
+            Insumo newInsumo = insumosDTO.toEntity(insumosDTO);
+            if(img == null && insumosDTO.getEs_complemento()){
                 throw new RuntimeException("Si el insumo es un complemento, es necesario una foto");
             }else{
                 BufferedImage imgActual = ImageIO.read(img.getInputStream());
@@ -94,13 +94,12 @@ public class InsumoController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateInsumo(@RequestPart(value = "insumo", required = true) InsumosDTO insumosDTO,@RequestPart(value = "img", required = false) MultipartFile img, @PathVariable("id") Long ID) throws Exception {
         try {
-            Categoria cateFound = catergoriaService.findbyID(insumosDTO.getCategoria().getId());
-            if(insumosDTO.getCategoria() != null && cateFound == null) throw new RuntimeException("No existe esa categoria");
-            Insumo insumo = insumosDTO.toEntity(insumosDTO,cateFound);
+            Insumo insumo = insumosDTO.toEntity(insumosDTO);
             if (insumosDTO.getEstado() != null && insumoService.verificarAsociacion(insumo)){
                 throw new RuntimeException("No se puede modificar un insumo asociado");
             }
-            if(img == null && insumosDTO.getEsComplemento()){
+
+            if(img == null && insumosDTO.getEs_complemento()){
                 throw new RuntimeException("Si el insumo es un complemento, es necesario una foto");
             }else{
                 BufferedImage imgActual = ImageIO.read(img.getInputStream());
@@ -125,7 +124,6 @@ public class InsumoController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
-
     }
 
     @GetMapping("/filter")

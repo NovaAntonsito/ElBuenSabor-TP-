@@ -15,5 +15,4 @@ public class Direccion extends Base {
     private Long numeracion;
     private String aclaracion;
     private Long nroPiso;
-
 }

@@ -1,5 +1,6 @@
 package com.example.demo.Entitys;
 
+import com.example.demo.Entitys.Enum.Baja_Alta;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -17,4 +18,5 @@ import lombok.Setter;
 @JsonIgnoreProperties("hibernateLazyInitializer")
 public class UnidadMedida extends Base {
     private String nombre;
+    private Baja_Alta estado;
 }

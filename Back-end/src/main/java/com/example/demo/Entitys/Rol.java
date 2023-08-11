@@ -1,5 +1,6 @@
 package com.example.demo.Entitys;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -14,11 +15,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonIgnoreProperties("hibernateLazyInitializer")
 public class Rol {
     @Id
     private String id;
 
     private String name;
 
-    private String descripcion;
+    private String description;
 }

@@ -10,6 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @Transactional
 @Slf4j
@@ -36,6 +39,11 @@ public class RolService implements RolServiceInterface {
     @Override
     public Rol findbyID(String id) throws Exception {
         return rolesRepository.findRolbyID(id);
+    }
+
+    @Override
+    public List<Rol> getAllWOPage() throws Exception {
+        return rolesRepository.findAll();
     }
 
 

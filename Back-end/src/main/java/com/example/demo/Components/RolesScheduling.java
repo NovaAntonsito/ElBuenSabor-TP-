@@ -34,7 +34,7 @@ public class RolesScheduling {
 
 
     //Funciona, tira palida de las cookies pero funciona
-    @Scheduled(cron = "0 0 */1 * * *")
+    @Scheduled(cron = "0 0 11 * * ?")
     public void getRolesSchedule() {
         try {
             JWTManager newJWT = new JWTManager();
@@ -53,7 +53,7 @@ public class RolesScheduling {
                     Rol newRol = new Rol();
                     newRol.setId(jsonObject.getString("id"));
                     newRol.setName(jsonObject.getString("name"));
-                    newRol.setDescripcion(jsonObject.getString("description"));
+                    newRol.setDescription(jsonObject.getString("description"));
                     rolService.saveRol(newRol);
                 }
             }

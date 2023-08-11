@@ -7,10 +7,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import java.util.List;
 
 @Entity
@@ -20,6 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
+@ToString
 public class Categoria extends Base{
     private Baja_Alta estado;
 
@@ -36,15 +35,4 @@ public class Categoria extends Base{
     @JsonManagedReference
     @Column(nullable = true)
     private List<Categoria> subCategoria;
-
-    @Override
-    public String toString() {
-        return "Categoria{" +
-                ", nombre='" + nombre + '\'' +
-                ", estado=" + estado +
-                ", tipo=" + tipo +
-                ", categoriaPadre=" + categoriaPadre +
-                ", subCategoria=" + subCategoria +
-                '}';
-    }
 }

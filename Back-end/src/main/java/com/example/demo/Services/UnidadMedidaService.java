@@ -5,6 +5,8 @@ import com.example.demo.Repository.UnidadMedidaRepository;
 import com.example.demo.Services.Interfaces.UnidadMedidaServiceInterface;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +35,7 @@ public class UnidadMedidaService implements UnidadMedidaServiceInterface {
         UnidadMedida medidaFound = this.findbyID(id);
         if (medidaFound != null) {
             medidaFound.setNombre(medidaUpdate.getNombre());
+            medidaFound.setEstado(medidaUpdate.getEstado());
             return unidadMedidaRepository.save(medidaFound);
         } else {
             throw new RuntimeException("No existe ese objeto");
@@ -43,5 +46,15 @@ public class UnidadMedidaService implements UnidadMedidaServiceInterface {
     @Override
     public List<UnidadMedida> findAll() throws Exception {
         return unidadMedidaRepository.findAll();
+    }
+
+    @Override
+    public Page<UnidadMedida> filterByName(String nombre, Pageable pageable) throws Exception {
+        return unidadMedidaRepository.filterByName(nombre, pageable);
+    }
+
+    @Override
+    public List<UnidadMedida> findAllByEstadoDisponible() throws Exception {
+        return unidadMedidaRepository.findAllByEstadoDisponible();
     }
 }

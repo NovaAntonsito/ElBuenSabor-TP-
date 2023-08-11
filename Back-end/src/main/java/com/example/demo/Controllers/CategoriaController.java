@@ -97,7 +97,6 @@ public class CategoriaController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
-
     }
 
     @DeleteMapping(value = "/{id}")

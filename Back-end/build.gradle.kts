@@ -41,6 +41,7 @@ dependencies {
     implementation("org.apache.httpcomponents.core5:httpcore5:5.2")
     implementation("org.apache.httpcomponents.core5:httpcore5:5.2")
     implementation("org.apache.httpcomponents.core5:httpcore5:5.2")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j")

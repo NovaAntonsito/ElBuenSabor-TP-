@@ -58,9 +58,12 @@ public class InsumoService implements InsumoServiceInterface {
         insumoFound.setNombre(insumo.getNombre());
         insumoFound.setCosto(insumo.getCosto());
         insumoFound.setEstado(insumo.getEstado());
-        insumoFound.setStockActual(insumo.getStockActual());
-        insumoFound.setStockMinimo(insumo.getStockMinimo());
+        insumoFound.setStock_actual(insumo.getStock_actual());
+        insumoFound.setStock_minimo(insumo.getStock_minimo());
         insumoFound.setUrlIMG(insumo.getUrlIMG());
+        insumoFound.setUnidad_medida(insumo.getUnidad_medida());
+        insumoFound.setCategoria(insumo.getCategoria());
+        insumoFound.setEs_complemento(insumo.getEs_complemento());
         insumoRepository.save(insumoFound);
         return insumoFound;
     }
