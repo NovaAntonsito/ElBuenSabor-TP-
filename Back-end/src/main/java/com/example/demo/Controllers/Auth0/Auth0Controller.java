@@ -14,7 +14,7 @@ import com.nimbusds.jose.shaded.gson.Gson;
 
 import com.nimbusds.jose.shaded.gson.JsonArray;
 import com.nimbusds.jose.shaded.gson.JsonObject;
-import com.nimbusds.jose.shaded.gson.JsonPrimitive;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
