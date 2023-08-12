@@ -159,31 +159,7 @@ public class CarritoController {
             List<InsumoCarritoDTO> complementosList = complementosDTO.toDTO(carrito.getProductosAdicionales());
             Double precioTotal = 0D;
             for (ProductosCarritoDTO productosCarritoDTO : dtoList) {
-                Double precioTotalProducto = 0D;
-                Double precioTotalSinDescuento = 0D;
-                Double tiempoEnCocinaProducto = 0D;
-                tiempoEnCocinaProducto  += productosCarritoDTO.getTiempoCocina();
-                precioTotalProducto = productosCarritoDTO.getPrecioTotal();
-                precioTotalSinDescuento = productosCarritoDTO.getPrecioTotal();
-                Double valorAgregadoPorCocinar = configService.getPrecioPorTiempo(tiempoEnCocinaProducto);
-                precioTotalProducto += valorAgregadoPorCocinar;
-                precioTotalSinDescuento += valorAgregadoPorCocinar;
-                productosCarritoDTO.setPrecioUnitario(productosCarritoDTO.getPrecioUnitario() + valorAgregadoPorCocinar);
-                precioTotalProducto *= productosCarritoDTO.getCantidad();
-                precioTotalSinDescuento  *= productosCarritoDTO.getCantidad();
-                // Supongamos que tienes un valor productoDescuento (long) que contiene el descuento en un rango de 0 a 100.
-                long productoDescuento = productosCarritoDTO.getDescuento();
-
-                // Dividimos el valor de productoDescuento entre 100 para obtener la fracción.
-                double productoDividido = (double) productoDescuento / 100.0;
-
-
-                // Calculamos el descuento aplicando la fracción productoDividido al precioTotal.
-                precioTotalProducto *= (1 - productoDividido);
-
-                productosCarritoDTO.setPrecioTotal(precioTotalProducto);
-                productosCarritoDTO.setPrecioTotalSinDescuento(precioTotalSinDescuento);
-                precioTotal += precioTotalProducto;
+                precioTotal +=  productosCarritoDTO.getPrecioTotal();
 
             }
             for(InsumoCarritoDTO insumoComplemento : complementosList){

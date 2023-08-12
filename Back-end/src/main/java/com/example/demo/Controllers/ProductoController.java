@@ -168,41 +168,16 @@ public class ProductoController {
         try {
             List<Producto> productoPage;
             productoPage = productoService.searchByNameAndCategoria(id, nombre);
-            /*if (id != null){
-                productoPage = new ArrayList<>();
-            }else {
-                productoPage = productoService.searchByNameAndCategoria(null, nombre);
-            }
-            Categoria categoriaFound = catergoriaService.findbyID(id);
-            processedProducts.clear();
 
-            if (categoriaFound != null){
-                productoPage.addAll(fillProductoPageRecursive(productoPage,categoriaFound.getID(),nombre));
-            }*/
             List<ProductoDTO> prodsDto = new ArrayList<>();
             for (Producto p : productoPage){
                 ProductoDTO pDto = new ProductoDTO();
-                pDto = pDto.toDTO(p);
-                Double precioTotalProducto = 0D;
-                precioTotalProducto +=   pDto.getPrecio();
-                if (precioTotalProducto == 0D){
-                    prodsDto.add(pDto.toDTO(p));
+                if (p.getPrecioUnitario() == 0 || p.getPrecioUnitario() == null ){
+                    pDto = pDto.toDTO(calcularProductoPrecio(p));
                 }else {
-                    Double valorAgregadoPorCocinar = configService.getPrecioPorTiempo((double) pDto.getTiempoCocina());
-                    precioTotalProducto += valorAgregadoPorCocinar;
-                    // Supongamos que tienes un valor productoDescuento (long) que contiene el descuento en un rango de 0 a 100.
-                    long productoDescuento = pDto.getDescuento();
-
-                    // Dividimos el valor de productoDescuento entre 100 para obtener la fracción.
-                    double productoDividido = (double) productoDescuento / 100.0;
-
-
-                    // Calculamos el descuento aplicando la fracción productoDividido al precioTotal.
-                    precioTotalProducto *= (1 - productoDividido);
-
-                    pDto.setPrecio(precioTotalProducto);
-                    prodsDto.add(pDto);
+                    pDto = pDto.toDTO(p);
                 }
+                prodsDto.add(pDto);
 
             }
             return ResponseEntity.status(HttpStatus.OK).body(prodsDto);
@@ -211,38 +186,29 @@ public class ProductoController {
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
-    List<Long> processedProducts = new ArrayList<>();
-    public List<Producto> fillProductoPageRecursive(List<Producto> returnProducts,Long categoriaId, String nombre) throws Exception {
-            Categoria categoriaFound = catergoriaService.findbyID(categoriaId);
-            if (categoriaFound != null) {
-                // Buscar productos por nombre y categoría
-                List<Categoria> subCategorias =categoriaFound.getSubCategoria();
-                if (subCategorias.size() > 0){
 
-                    // Recorrer las subcategorías y llamar recursivamente
-                    for (Categoria cat : subCategorias) {
-                        System.out.println(cat.getNombre());
-                        List<Producto> addedProducts = fillProductoPageRecursive(returnProducts,cat.getID(), nombre);
-                        for (Producto p : addedProducts){
-                            if (!processedProducts.contains(p.getID())) {
-                                processedProducts.add(p.getID());
-                                returnProducts.add(p);
-                            }
-
-                        }
-                    }
-                }else{
-                    List<Producto> pLista = productoService.searchByNameAndCategoria(categoriaFound.getID(), nombre);
-                    for (Producto pNuevo : pLista) {
-                        if (!processedProducts.contains(pNuevo.getID())) {
-                            processedProducts.add(pNuevo.getID());
-                            returnProducts.add(pNuevo);
-                        }
-                    }
-
-                }
+    public Producto calcularProductoPrecio (Producto producto) {
+        try {
+            Double precio = 0D;
+            for(ProductoInsumos insumos : producto.getInsumos()){
+                precio += insumos.getInsumo().getCosto();
             }
-            return returnProducts;
-    }
+            Double valorAgregadoPorCocinar = configService.getPrecioPorTiempo((double) producto.getTiempoCocina());
+            precio += valorAgregadoPorCocinar;
+            // Supongamos que tienes un valor productoDescuento (long) que contiene el descuento en un rango de 0 a 100.
+            long productoDescuento = producto.getDescuento();
 
+            // Dividimos el valor de productoDescuento entre 100 para obtener la fracción.
+            double productoDividido = (double) productoDescuento / 100.0;
+
+
+            // Calculamos el descuento aplicando la fracción productoDividido al precioTotal.
+            precio *= (1 - productoDividido);
+            producto.setPrecioUnitario(precio);
+            producto = productoService.updateProducto(producto.getID(),producto);
+            return producto;
+        }catch (Exception e){
+            return null;
+        }
+    }
 }

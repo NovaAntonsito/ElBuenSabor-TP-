@@ -46,6 +46,7 @@ public class ProductosCarritoDTO {
                 if (dto.getProductoId().equals(producto.getID())) {
                     // El producto ya existe en la lista, aumentar la cantidad y actualizar el precio total
                     dto.setCantidad(dto.getCantidad() + 1);
+
                     existeProducto = true;
                     break;
                 }
@@ -57,17 +58,33 @@ public class ProductosCarritoDTO {
                 nuevoProducto.setProducto(producto.getNombre());
                 nuevoProducto.setCantidad(1L);
                 nuevoProducto.setDescuento(producto.getDescuento());
-                double precioUnitario =  0;
-                for(ProductoInsumos insumos : producto.getInsumos()){
-                    precioUnitario += insumos.getInsumo().getCosto();
-                }
-                nuevoProducto.setPrecioUnitario(precioUnitario);
+                nuevoProducto.setPrecioUnitario(producto.getPrecioUnitario());
                 nuevoProducto.setTiempoCocina(producto.getTiempoCocina());
-                nuevoProducto.setPrecioTotal(precioUnitario);
+                nuevoProducto.setPrecioTotal(producto.getPrecioUnitario());
                 nuevoProducto.setImgURL(producto.getImgURL());
                 nuevoProducto.setProductoId(producto.getID());
                 productosCarritoDTOList.add(nuevoProducto);
             }
+        }
+
+        for (ProductosCarritoDTO productosCarritoDTO : productosCarritoDTOList){
+            Double precioTotalProducto = productosCarritoDTO.getPrecioTotal();
+            Double precioTotalSinDescuento = productosCarritoDTO.getPrecioTotal();
+
+            precioTotalProducto *= productosCarritoDTO.getCantidad();
+            productosCarritoDTO.setPrecioTotalSinDescuento(precioTotalSinDescuento * productosCarritoDTO.getCantidad());
+
+            // Supongamos que tienes un valor productoDescuento (long) que contiene el descuento en un rango de 0 a 100.
+            long productoDescuento = productosCarritoDTO.getDescuento();
+
+            // Dividimos el valor de productoDescuento entre 100 para obtener la fracción.
+            double productoDividido = (double) productoDescuento / 100.0;
+
+
+            // Calculamos el descuento aplicando la fracción productoDividido al precioTotal.
+            precioTotalProducto *= (1 - productoDividido);
+
+            productosCarritoDTO.setPrecioTotal(precioTotalProducto);
         }
         return productosCarritoDTOList;
     }
