@@ -17,25 +17,20 @@ public class PedidoDTO {
 
     private EstadoPedido estado;
 
-    private List<ProductosCarritoDTO> productosComprados;
+    private Boolean esDelivery;
 
-
-
-    private MP_Datos MercadoPagoDatos;
-
+    private Direccion direccion;
 
 
     public Pedido toEntity(PedidoDTO pedidoDTO, Usuario userFound, Carrito cartFound){
         Pedido newPedido = new Pedido();
         Double precioTotal = 0.0;
-        newPedido.setDireccionPedido(userFound.getDireccionList().get(0));
+        newPedido.setDireccionPedido(pedidoDTO.getDireccion());
         newPedido.setUsuarioPedido(userFound);
-        newPedido.setMercadoPagoDatos(pedidoDTO.getMercadoPagoDatos());
-        for (Producto prods: cartFound.getProductosComprados()) {
-            ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
-            newDTO.setProducto(prods.getNombre());
-            for (ProductoInsumos insumos : prods.getInsumos()) {
-                precioTotal += insumos.getInsumo().getCosto();
+        for(Producto producto : cartFound.getProductosComprados()){
+            precioTotal += producto.getPrecioUnitario();
+            for (Insumo insumo : cartFound.getProductosAdicionales()) {
+                precioTotal += insumo.getCosto();
             }
         }
         newPedido.setEstado(pedidoDTO.getEstado());

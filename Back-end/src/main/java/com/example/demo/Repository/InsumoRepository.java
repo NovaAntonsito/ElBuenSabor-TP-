@@ -24,7 +24,7 @@ public interface InsumoRepository extends BaseRepository<Insumo, Long> {
             nativeQuery = true)
     Page<Insumo> getInsumoByName(@Param("nombre") String name, Pageable page);
 
-    @Query(value = "SELECT * FROM insumo WHERE individual = TRUE", nativeQuery = true)
+    @Query(value = "SELECT * FROM insumo WHERE es_complemento = TRUE", nativeQuery = true)
      List<Insumo> findByIndividual ();
 
 

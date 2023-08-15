@@ -121,9 +121,9 @@ public class CarritoController {
 
     @GetMapping("/getCarrito")
     public ResponseEntity<?> getCarritoUser (@RequestHeader("Authorization") String token) throws Exception{
-        String jwtToken = "";
-        if (token.length() > 7) jwtToken = token.substring(7);
-
+        //String jwtToken = "";
+        //if (token.length() > 7) jwtToken = token.substring(7);
+        String jwtToken = token.substring(7);
         try{
             JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
             String sub = decodedJWT.getSubject();

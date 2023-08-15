@@ -35,4 +35,10 @@ public class ConfigLocalService implements ConfigLocalServiceInterface {
         Double costoPorTiempoEnCocina = tiempoEnCocinaPorCocinero * configuracion.getPrecioPorTiempo();
         return costoPorTiempoEnCocina;
     }
+
+    @Override
+    public Double getPrecioPorDelivery() throws Exception {
+        Configuracion config = configRepository.findByID(1L);
+        return config.getCostoEnvio();
+    }
 }

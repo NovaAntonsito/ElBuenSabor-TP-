@@ -12,4 +12,6 @@ public interface PedidoServiceInterface {
     Page<Pedido> getAllPedidos (Pageable page) throws Exception;
     Map<String, Integer> cantidadPedidosporMes() throws Exception;
     Integer cuentaPedidos(Date fecha1, Date fecha2) throws Exception;
+    Pedido getPedido (Long id) throws Exception;
+    Pedido getPedidoByUsuario(String id) throws Exception;
 }

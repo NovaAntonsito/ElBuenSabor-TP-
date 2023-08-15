@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalTime;
+
 @Entity
 @Getter
 @Setter
@@ -18,6 +20,9 @@ public class Configuracion extends Base {
     private Long cantCocineros;
     private Double precioPorTiempo;
     private String emailEmpresa;
+    private Double costoEnvio;
+    private LocalTime cierreLocal;
+    private LocalTime aperturaLocal;
     @Column(unique = true,name = "token_secret_MP")
     private String token_MP;
 }

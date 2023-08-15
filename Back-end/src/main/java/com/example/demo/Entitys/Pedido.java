@@ -1,6 +1,7 @@
 package com.example.demo.Entitys;
 
 import com.example.demo.Config.WebSocketEventListener;
+import com.example.demo.Entitys.Enum.EstadoMP;
 import com.example.demo.Entitys.Enum.EstadoPedido;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,9 +31,9 @@ public class Pedido extends Base {
 
     private EstadoPedido estado;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_MP_datos_fk", nullable = true)
-    private MP_Datos MercadoPagoDatos;
+    private EstadoMP estadoMP;
+
+    private Boolean esDelivery;
 
     private Date fechaInicio;
 

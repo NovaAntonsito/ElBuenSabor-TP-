@@ -27,6 +27,7 @@ public class Producto extends Base{
     private Double valoracion;
     private String receta;
     private Baja_Alta alta;
+    private Double precioUnitario;
     @ManyToOne
     @JsonIgnoreProperties({"subCategoria","hibernateLazyInitializer"})
     private Categoria productoCategoria;

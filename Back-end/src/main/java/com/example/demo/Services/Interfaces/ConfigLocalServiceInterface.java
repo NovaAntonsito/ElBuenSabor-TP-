@@ -6,4 +6,6 @@ public interface ConfigLocalServiceInterface {
     void SaveConfig (Configuracion config) throws Exception;
 
     Double getPrecioPorTiempo (Double tiempoEnCocina) throws Exception;
+
+    Double getPrecioPorDelivery() throws Exception;
 }

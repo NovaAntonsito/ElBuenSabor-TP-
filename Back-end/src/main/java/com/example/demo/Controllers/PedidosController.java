@@ -27,7 +27,6 @@ import java.util.Map;
 public class PedidosController {
     private final PedidoService pedidoService;
     private final UserService userService;
-    private final CarritoService carritoService;
 
     @GetMapping("")
     public ResponseEntity<?> getAllPedidos (@PageableDefault(page = 0, size = 10) Pageable page) throws Exception{
@@ -39,20 +38,19 @@ public class PedidosController {
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
-
-    @PostMapping("")
-    public ResponseEntity<?> postPedido (@RequestBody PedidoDTO pedidoDTO, @RequestHeader("Authorization") String token) throws Exception{
+    @GetMapping("/getPedido")
+    public ResponseEntity<?> getOnePedido (@RequestHeader("Authorization") String token) throws Exception{
         String jwtToken = token.substring(7);
         try {
             JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
             String sub = decodedJWT.getSubject();
             Usuario userFound = userService.userbyID(sub);
-            Carrito carritoFound = carritoService.getCarritobyUserID(sub);
-            Pedido newPedido = pedidoDTO.toEntity(pedidoDTO,userFound,carritoFound);
-            pedidoService.savePedido(newPedido);
-            return ResponseEntity.status(HttpStatus.OK).body(newPedido);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(pedidoService.getPedidoByUsuario(userFound.getId()));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }

@@ -79,77 +79,7 @@ public class Auth0Controller {
         }
     }
 
-    /*    @PostMapping("/createUserAdmin")
-        public ResponseEntity<?> createUser(@RequestBody Usuario user) throws Exception{
-            try {
-                //Creacion de usuario
-                log.info("Creando usuario", user.toString());
 
-                String JWTActual = newJTW.getJWTFromAuth0(clientID, clientSecret);
-                String postUserURL = auth0Domain.concat("api/v2/users");
-                //Esto es muy sucio
-                user.setPassword(LePassword);
-                // Crear un nuevo objeto JSON con email y conexión
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("email", user.getEmail());
-                jsonObject.addProperty("connection", "ElBuenSaborDB");
-                jsonObject.addProperty("password", user.getPassword());
-                jsonObject.addProperty("name", user.getName());
-                jsonObject.addProperty("username", user.getUsername());
-                jsonObject.addProperty("phone_number", user.getTelefono());
-                jsonObject.addProperty("blocked", user.getBloqueado());
-
-                // Convertir el nuevo objeto JSON a cadena JSON
-                Gson gson = new Gson();
-                String nuevoJson = gson.toJson(jsonObject);
-                HttpResponse<String> response = Unirest.post(postUserURL)
-                        .header("content-type", "application/json")
-                        .header("accept", "application/json")
-                        .header("authorization", "Bearer " + JWTActual)
-                        .body(nuevoJson)
-                        .asString();
-
-                String responseBody = response.getBody();
-                if (response.getStatus()  == 409) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT)
-                            .body(Map.of("success", false, "message", "El usuario ya existe"));
-                }
-
-                JSONObject json = new JSONObject(responseBody);
-                //Thread.sleep(5000);
-
-                String userId = json.getString("user_id");
-                //Asignacion de rol
-                user.setId(userId);
-
-                JsonObject rol = new JsonObject();
-                JsonArray rolesArray = new JsonArray();
-                rolesArray.add(user.getRol().getId());
-                rol.add("roles", rolesArray);
-
-                String newJson = gson.toJson(rol);
-                log.info(newJson);
-                String asignarRolURL = auth0Domain.concat("/api/v2/users/" + userId + "/roles");
-                HttpResponse<String> asignar = Unirest.post(asignarRolURL)
-                        .header("content-type", "application/json")
-                        .header("accept", "application/json")
-                        .header("authorization", "Bearer " + JWTActual)
-                        .body(newJson)
-                        .asString();
-
-
-                Rol rolFound = rolService.findbyID(user.getRol().getId());
-                log.info(rolFound.getName());
-                user.setRol(rolFound);
-
-                userService.upsertUser(user);
-                return ResponseEntity.status(HttpStatus.OK).body(Map.of("success", true, "message", "El usuario creado y asignado el rol"));
-            }catch (Exception e){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("success", false, "message", e.getMessage()));
-            }
-        }
-        */
     @PostMapping("/createUserAdmin")
     public ResponseEntity<?> createUser(@RequestBody Usuario user) {
         return userService.createUser(user);

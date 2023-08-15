@@ -36,6 +36,16 @@ public class PedidoService implements PedidoServiceInterface {
     }
 
     @Override
+    public Pedido getPedido(Long id) throws Exception {
+        return pedidoRepository.findByID(id);
+    }
+
+    @Override
+    public Pedido getPedidoByUsuario(String id) throws Exception {
+        return pedidoRepository.findByUsuarioPedidoId(id);
+    }
+
+    @Override
     public Map<String, Integer> cantidadPedidosporMes() throws Exception {
         List<Integer> cantidadDePedidos = pedidoRepository.obtenerPedidosPorMes();
         if(cantidadDePedidos.size() == 0) throw new Exception("No existe ningun pedido");

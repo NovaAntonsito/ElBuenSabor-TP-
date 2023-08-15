@@ -1,11 +1,14 @@
 package com.example.demo.Controllers;
 
+import com.example.demo.Controllers.DTOS.InsumoCarritoDTO;
+import com.example.demo.Controllers.DTOS.PedidoDTO;
 import com.example.demo.Controllers.DTOS.ProductosCarritoDTO;
 import com.example.demo.Entitys.Carrito;;
+import com.example.demo.Entitys.Enum.EstadoMP;
+import com.example.demo.Entitys.Enum.EstadoPedido;
+import com.example.demo.Entitys.Pedido;
 import com.example.demo.Entitys.Usuario;
-import com.example.demo.Services.CarritoService;
-import com.example.demo.Services.ProductoService;
-import com.example.demo.Services.UserService;
+import com.example.demo.Services.*;
 import com.mercadopago.client.preference.*;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.preference.Preference;
@@ -25,6 +28,10 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.fasterxml.jackson.databind.type.LogicalType.Collection;
 
 @RestController
 @RequestMapping("/checkout")
@@ -35,25 +42,34 @@ public class CheckoutController {
     private final UserService userService;
     private final CarritoService carritoService;
     private final ProductoService productoService;
-
+    private final ConfigLocalService configService;
+    private final PedidoService pedidoService;
+    private final InsumoService insumoService;
     @Value("${front.end.checkout.path}")
     private String frontEndPath;
 
 
     @SneakyThrows
     @PostMapping()
-    public ResponseEntity<?> pagarPedido (@RequestHeader("Authorization") String token) throws MPException{
+    public ResponseEntity<?> pagarPedido (@RequestHeader("Authorization") String token, @RequestBody(required = false) PedidoDTO pedidoDTO) throws MPException{
         String jwtToken = token.substring(7);
         PreferenceClient client = new PreferenceClient();
         try {
+            ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
+            InsumoCarritoDTO complementosDTO = new InsumoCarritoDTO();
             JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
             String sub = decodedJWT.getSubject();
             Usuario userFound = userService.userbyID(sub);
             Carrito carritoFound = carritoService.getCarritobyUserID(sub);
             List<PreferenceItemRequest> productosPorComprar = new ArrayList<>();
-            ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
+            List<PreferenceItemRequest> complementosPorComprar = new ArrayList<>();
+            Pedido newPedido = pedidoDTO.toEntity(pedidoDTO, userFound, carritoFound);
             List<ProductosCarritoDTO> dtoList = newDTO.toDTO(carritoFound.getProductosComprados());
+            List<InsumoCarritoDTO> complementosList = complementosDTO.toDTO(carritoFound.getProductosAdicionales());
             int precioTotal = 0;
+            if(pedidoDTO.getEsDelivery()){
+                precioTotal += configService.getPrecioPorDelivery();
+            }
             for (ProductosCarritoDTO productosCarritoDTO : dtoList) {
                 precioTotal += productosCarritoDTO.getPrecioTotal();
             }
@@ -70,6 +86,20 @@ public class CheckoutController {
                         .build();
                 productosPorComprar.add(itemRequest);
             }
+            for (InsumoCarritoDTO insumoCarritoDTO: complementosList) {
+                PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
+                        .id(insumoCarritoDTO.getId().toString())
+                        .title(insumoCarritoDTO.getNombre())
+                        .pictureUrl(insumoService.findByID(insumoCarritoDTO.getId()).getUrlIMG())
+                        .categoryId(insumoService.findByID(insumoCarritoDTO.getId()).getCategoria().getNombre())
+                        .quantity(Math.toIntExact(insumoCarritoDTO.getCantidad()))
+                        .currencyId("ARS")
+                        .unitPrice(BigDecimal.valueOf(precioTotal))
+                        .build();
+            }
+            List<PreferenceItemRequest> result = Stream.concat(productosPorComprar.stream(), complementosPorComprar.stream())
+                    .distinct()
+                    .collect(Collectors.toList());
             List<PreferencePaymentTypeRequest> excludedPaymentTypes = new ArrayList<>();
             excludedPaymentTypes.add(PreferencePaymentTypeRequest.builder().id("ticket").build());
             PreferencePaymentMethodsRequest paymentMethods = PreferencePaymentMethodsRequest.builder()
@@ -94,7 +124,7 @@ public class CheckoutController {
             Preference preference = client.create(request);
 
             String prefId = preference.getId();
-
+            pedidoService.savePedido(newPedido);
             return ResponseEntity.status(HttpStatus.OK).body("{\"preferenceId\":\""+prefId+"\"}");
         }catch (MPException e){
             log.info("Lo impensable paso "+ e.getMessage());
@@ -127,7 +157,13 @@ public class CheckoutController {
         attributes.addFlashAttribute("site_id",siteId);
         attributes.addFlashAttribute("processing_mode",processingMode);
         attributes.addFlashAttribute("merchant_account_id",merchantAccountId);
-
+        try {
+            Pedido pedido = pedidoService.getPedido(Long.valueOf(externalReference));
+            pedido.setEstadoMP(EstadoMP.APROBADO);
+            pedidoService.savePedido(pedido);
+        }catch (Exception e){
+            log.info(e.getMessage());
+        }
         return new RedirectView(frontEndPath+externalReference +"?success=true");
     }
     @GetMapping("/failure")
@@ -157,7 +193,9 @@ public class CheckoutController {
         attributes.addFlashAttribute("merchant_account_id",merchantAccountId);
 
         try {
-            System.out.println("Entre");
+            Pedido pedido = pedidoService.getPedido(Long.valueOf(externalReference));
+            pedido.setEstadoMP(EstadoMP.RECHAZADO);
+            pedidoService.savePedido(pedido);
         }catch (Exception e){
             System.out.println("No se pudo eliminar la orden");
         }

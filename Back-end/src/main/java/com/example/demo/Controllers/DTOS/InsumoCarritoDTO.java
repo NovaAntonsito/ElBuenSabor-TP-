@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @Slf4j
 public class InsumoCarritoDTO {
-
+    private Long id;
     private String nombre;
     private Long cantidad;
     private Double precioUnitario;
@@ -27,6 +27,7 @@ public class InsumoCarritoDTO {
             boolean existeProducto = false;
             for(InsumoCarritoDTO insumoCarritoDTO : dto){
                 if(insumoCarritoDTO.getNombre().equals(insumo.getNombre())){
+                    insumoCarritoDTO.setId(insumo.getID());
                     insumoCarritoDTO.setCantidad(insumoCarritoDTO.getCantidad() + 1);
                     insumoCarritoDTO.setPrecioUnitario(insumo.getCosto());
                     insumoCarritoDTO.setPrecioTotal(insumo.getCosto());

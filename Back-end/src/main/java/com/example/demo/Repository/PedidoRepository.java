@@ -19,6 +19,10 @@ public interface PedidoRepository extends BaseRepository<Pedido,Long> {
     @Query(value = "SELECT COUNT(p) FROM Pedido p WHERE p.fechaInicio BETWEEN :fechaInicio AND :fechaFinal", nativeQuery = true)
     Integer cuentaDePedidos (@Param("fechaInicio")Date fecha1, @Param("fechaFinal")Date fecha2);
 
+    Pedido findByID (Long id) throws Exception;
+
+    Pedido findByUsuarioPedidoId (String id) throws Exception;
+
 
 
 }
