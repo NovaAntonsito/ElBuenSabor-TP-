@@ -30,7 +30,7 @@ public class InsumoCarritoDTO {
                     insumoCarritoDTO.setId(insumo.getID());
                     insumoCarritoDTO.setCantidad(insumoCarritoDTO.getCantidad() + 1);
                     insumoCarritoDTO.setPrecioUnitario(insumo.getCosto());
-                    insumoCarritoDTO.setPrecioTotal(insumo.getCosto());
+                    insumoCarritoDTO.setPrecioTotal(insumo.getCosto() * insumoCarritoDTO.getCantidad() );
                     existeProducto = true;
                     break;
                 }
@@ -41,6 +41,7 @@ public class InsumoCarritoDTO {
                 newProductoAgregado.setCantidad(1L);
                 newProductoAgregado.setPrecioUnitario(insumo.getCosto());
                 newProductoAgregado.setPrecioTotal(insumo.getCosto());
+                dto.add(newProductoAgregado);
             }
         }
         return dto;
