@@ -19,7 +19,6 @@ import java.util.List;
 public class Usuario {
     @Id
     private String id;
-
     @Column(unique = true)
     private String username;
     private String name;
@@ -32,10 +31,10 @@ public class Usuario {
     @JoinTable(name = "usuario_direccion",
             joinColumns = {@JoinColumn(name = "id_usuario_fk")},
             inverseJoinColumns = {@JoinColumn(name = "id_direccion_fk")})
-    private List<Direccion> direccionList = new ArrayList<>();
+    private List<Direccion> direccionList;
 
-    @Column()
-    private Boolean blocked = false;
+    @Column(columnDefinition="false")
+    private Boolean blocked;
 
     @ManyToOne
     @JoinColumn(nullable = true, name = "RolAsignado")

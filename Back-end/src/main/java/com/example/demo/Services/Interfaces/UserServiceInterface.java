@@ -23,5 +23,7 @@ public interface UserServiceInterface {
 
     Usuario upsertUser(Usuario user) throws Exception;
 
+    void updateLocalDBUser (String id,Usuario user);
+
 
 }

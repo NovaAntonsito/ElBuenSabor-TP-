@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -178,5 +180,25 @@ public class UserService implements UserServiceInterface {
 
         HttpResponse<String> asignar = sendPostRequest(asignarRolURL, JWTActual, newJson);
         log.info("Assigning role response: {}", asignar.getBody());
+    }
+    @Override
+    public void updateLocalDBUser (String id,Usuario user){
+        try {
+            Optional<Usuario> userFound = userRepository.findById(id);
+            if (userFound.isPresent()) {
+                userFound.get().setName(user.getName());
+                userFound.get().setUsername(user.getUsername());
+                userFound.get().setEmail(user.getEmail());
+                userRepository.save(userFound.get());
+            } else {
+                throw new RuntimeException("No existe ese usuario");
+            }
+        } catch (RuntimeException e) {
+            log.error(Map.of(
+                    "Error", e.getMessage(),
+                    "Causa", e.getCause()
+            ).toString());
+        }
+
     }
 }

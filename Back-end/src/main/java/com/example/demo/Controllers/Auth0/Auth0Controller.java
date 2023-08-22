@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,26 +54,20 @@ public class Auth0Controller {
 
     private final RolService rolService;
 
-    private final JWTManager jwtManager = new JWTManager();
+    private final JWTManager jwtManager;
 
-    //SOLO UTILIZABLE EN AUTH0 IDS, No googleIDS o otras redes sociales
+    /*
+    SOLO UTILIZABLE EN AUTH0 IDS, No googleIDS o otras redes sociales
+    Solo cambiara contraseña, no es posible cambiar el username, email
+    atte : Auth0 el peor sistema de seguridad del planeta tierra
+    Documentacion: me la meti en el orto porque no existo
+    */
     @PutMapping("/changeUser/{idUser}")
     public ResponseEntity<?> changeUser(@RequestBody Usuario userAuth0, @PathVariable("idUser") String idUser) throws Exception {
         try {
-            JWTManager newJWT = new JWTManager();
             String newIdUser = idUser.replace('_', '|');
-            String JWTActual = newJWT.getJWTFromAuth0(clientID, clientSecret);
-            String putUserURL = auth0Domain.concat("api/v2/users/" + newIdUser);
-            Gson newJson = new Gson();
-            String jsonBody = newJson.toJson(userAuth0);
-            log.info(putUserURL);
-            HttpResponse<String> response = Unirest.patch(putUserURL)
-                    .header("content-type", "application/json")
-                    .header("accept", "application/json")
-                    .header("authorization", "Bearer " + JWTActual)
-                    .body(jsonBody)
-                    .asString();
-            return ResponseEntity.status(HttpStatus.OK).body(response.getBody());
+            userService.updateLocalDBUser(newIdUser, userAuth0);
+            return ResponseEntity.status(HttpStatus.OK).body("El usuario fue cambiado en la base de datos local");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
@@ -103,7 +98,6 @@ public class Auth0Controller {
     @GetMapping("/ForceBringUsersAuth0")
     public ResponseEntity<?> forceGetUsersAuth0() {
         try {
-            JWTManager jwtManager = new JWTManager();
             String newJWT = jwtManager.getJWTFromAuth0(clientID, clientSecret);
             String getUsersUrl = auth0Domain.concat("api/v2/users");
 
@@ -167,8 +161,7 @@ public class Auth0Controller {
     @PostMapping("/addRole")
     public ResponseEntity<?> createRole(@RequestBody Map<String, String> requestBody) {
         try {
-            JWTManager newJWT = new JWTManager();
-            String JWT = newJWT.getJWTFromAuth0(clientID, clientSecret);
+            String JWT = jwtManager.getJWTFromAuth0(clientID, clientSecret);
             String roleName = requestBody.get("nombre");
             String roleDescription = requestBody.get("desc");
             String getRolesURL = auth0Domain.concat("/api/v2/roles");
@@ -217,4 +210,24 @@ public class Auth0Controller {
 
     }
 
+    @GetMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestParam("userID") String userID) throws Exception{
+        try{
+            String userIDMod = "auth0|".concat(userID);
+            String newJWT = jwtManager.getJWTFromAuth0(clientID, clientSecret);
+            String urlChange = auth0Domain + "/api/v2/tickets/password-change";
+            JSONObject newJson = new JSONObject();
+            newJson.put("user_id", userIDMod);
+            HttpResponse<String> response = Unirest.post(urlChange)
+                    .header("content-type", "application/json")
+                    .header("authorization", "Bearer " + newJWT)
+                    .body(newJson)
+                    .asString();
+            return ResponseEntity.status(HttpStatus.OK).body(response.getBody());
+
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
 }
