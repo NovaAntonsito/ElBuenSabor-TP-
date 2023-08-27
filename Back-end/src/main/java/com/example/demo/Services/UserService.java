@@ -13,6 +13,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.JsonArray;
 import com.nimbusds.jose.shaded.gson.JsonObject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,8 @@ public class UserService implements UserServiceInterface {
 
     private final UserRepository userRepository;
     //http://localhost:9000/api/v1/users
+
+    private final EntityManager entityManager;
 
     private final DireccionService direccionService;
 
@@ -182,14 +185,21 @@ public class UserService implements UserServiceInterface {
         log.info("Assigning role response: {}", asignar.getBody());
     }
     @Override
-    public void updateLocalDBUser (String id,Usuario user){
+    public void updateLocalDBUser(String id, Usuario updatedUser) {
         try {
             Optional<Usuario> userFound = userRepository.findById(id);
             if (userFound.isPresent()) {
-                userFound.get().setName(user.getName());
-                userFound.get().setUsername(user.getUsername());
-                userFound.get().setEmail(user.getEmail());
-                userRepository.save(userFound.get());
+                Usuario existingUser = userFound.get();
+                if (updatedUser.getUsername() != null) {
+                    existingUser.setUsername(updatedUser.getUsername());
+                }
+                if (updatedUser.getName() != null) {
+                    existingUser.setName(updatedUser.getName());
+                }
+                if (updatedUser.getEmail() != null) {
+                    existingUser.setEmail(updatedUser.getEmail());
+                }
+                userRepository.save(existingUser);
             } else {
                 throw new RuntimeException("No existe ese usuario");
             }
@@ -199,6 +209,5 @@ public class UserService implements UserServiceInterface {
                     "Causa", e.getCause()
             ).toString());
         }
-
     }
 }
