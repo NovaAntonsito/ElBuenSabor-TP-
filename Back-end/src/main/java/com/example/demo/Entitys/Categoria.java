@@ -1,14 +1,14 @@
 package com.example.demo.Entitys;
 
 import com.example.demo.Entitys.Enum.Baja_Alta;
+import com.example.demo.Entitys.Enum.TipoCategoria;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import java.util.List;
 
 @Entity
@@ -17,17 +17,22 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
+@ToString
 public class Categoria extends Base{
-    Baja_Alta alta;
+    private Baja_Alta estado;
 
-    String nombre;
+    private String nombre;
+
+    private TipoCategoria tipo;
 
     @ManyToOne()
     @JoinColumn(name = "categoria_padre")
     @JsonBackReference
-    Categoria categoriaPadre;
+    private Categoria categoriaPadre;
 
     @OneToMany(mappedBy = "categoriaPadre", fetch = FetchType.EAGER)
     @JsonManagedReference
-    List<Categoria> subCategoria;
+    @Column(nullable = true)
+    private List<Categoria> subCategoria;
 }

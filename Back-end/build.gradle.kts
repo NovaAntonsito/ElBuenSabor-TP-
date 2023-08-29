@@ -12,6 +12,9 @@ configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
+    tasks.named("compileJava") {
+        inputs.files(tasks.named("processResources"))
+    }
 }
 
 repositories {
@@ -19,19 +22,27 @@ repositories {
 }
 
 dependencies {
+    implementation("com.mercadopago:sdk-java:2.1.11")
+    implementation("jakarta.mail:jakarta.mail-api:2.1.2")
+    implementation("commons-fileupload:commons-fileupload:1.4")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation ("io.springfox:springfox-boot-starter:3.0.0")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    implementation("com.mashape.unirest:unirest-java:1.4.9")
+    implementation ("org.springframework.boot:spring-boot-starter-websocket")
     implementation("org.springframework.security:spring-security-core:6.0.2")
-    implementation("org.springframework.boot:spring-boot-starter-security:3.0.4")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("com.auth0:auth0:2.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.security:spring-security-oauth2-resource-server")
+    implementation("org.springframework.security:spring-security-oauth2-jose")
+    implementation("com.cloudinary:cloudinary-http44:1.24.0")
+    implementation("org.apache.httpcomponents.core5:httpcore5:5.2")
+    implementation("org.apache.httpcomponents.core5:httpcore5:5.2")
+    implementation("org.apache.httpcomponents.core5:httpcore5:5.2")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     compileOnly("org.projectlombok:lombok")
-    compileOnly("javax.servlet:javax.servlet-api:4.0.1")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j")
     annotationProcessor("org.projectlombok:lombok")

@@ -1,17 +1,31 @@
 package com.example.demo;
 
+import com.mercadopago.MercadoPagoConfig;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
-@EnableSwagger2
+
+@SpringBootApplication()
+@EnableScheduling
 public class DemoApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
-    }
 
+    @Value("${MPKeyToken}")
+    private String MPAccessKey;
+
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(DemoApplication.class);
+        app.run(args);
+    }
+    @PostConstruct
+    public void init() {
+        try {
+            MercadoPagoConfig.setAccessToken(MPAccessKey);
+        } catch (Exception e) {
+            throw new IllegalStateException("Error al configurar el token de acceso de MercadoPago.", e);
+        }
+    }
 }

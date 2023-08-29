@@ -13,5 +13,5 @@ import lombok.*;
 @Setter
 @ToString
 public class Estado extends Base {
-    EstadoPedido estado;
+    private EstadoPedido estado;
 }

@@ -6,24 +6,25 @@ import com.example.demo.Entitys.Producto;
 
 import com.example.demo.Repository.CategoriaRepository;
 import com.example.demo.Repository.ProductoRepository;
+import com.example.demo.Services.Interfaces.ProductoServiceInterface;
 import jakarta.transaction.Transactional;
-import lombok.Data;
 
-import lombok.Getter;
+
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
-@Getter
-@Setter
 @Slf4j
 @Service
 @Transactional
-public class ProductoService implements ProductoServiceInterface{
+public class ProductoService implements ProductoServiceInterface {
 
 
     private final ProductoRepository productoRepository;
@@ -33,15 +34,19 @@ public class ProductoService implements ProductoServiceInterface{
     public Page<Producto> getAll(Pageable page) throws Exception {
         return productoRepository.findAllinAlta(page);
     }
-
     @Override
-    public Producto crearProducto(Producto newProducto) throws Exception {
+    public List<Producto> getAllNoPage() throws Exception {
+        return productoRepository.findAllinAltaNoPage();
+    }
+    @Override
+    public Producto crearProducto(Producto newProducto, MultipartFile file) throws Exception {
         Categoria cateFound = categoriaRepository.findByID(newProducto.getProductoCategoria().getID());
-        log.info(cateFound.getNombre());
+
         newProducto.setProductoCategoria(cateFound);
         productoRepository.save(newProducto);
         return newProducto;
     }
+
 
     @Override
     public void deleteSoftProducto(Long ID) throws Exception {
@@ -54,7 +59,7 @@ public class ProductoService implements ProductoServiceInterface{
     public Producto updateProducto(Long ID, Producto newProducto) throws Exception {
         Producto prodFound = productoRepository.findByID(ID);
         prodFound.setNombre(newProducto.getNombre());
-        prodFound.setImagenBlob(newProducto.getImagenBlob());
+        prodFound.setImgURL(newProducto.getImgURL());
         prodFound.setDescripcion(newProducto.getDescripcion());
         prodFound.setTiempoCocina(newProducto.getTiempoCocina());
         prodFound.setAlta(newProducto.getAlta());
@@ -66,5 +71,19 @@ public class ProductoService implements ProductoServiceInterface{
     @Override
     public Page<Producto> getProductosByCategoria(String name) throws Exception {
         return null;
+    }
+
+    @Override
+    public Producto findbyID(Long ID) throws Exception {
+        return productoRepository.findByID(ID);
+    }
+
+    @Override
+    public Page<Producto> findByIDandCategoria(Long ID, String nombre, Pageable page) throws Exception {
+        return productoRepository.findByNameAndCategoria(ID,nombre,page);
+    }
+    @Override
+    public List<Producto> searchByNameAndCategoria(Long ID, String nombre) throws Exception {
+        return productoRepository.searchByNameAndCategoria(ID,nombre);
     }
 }

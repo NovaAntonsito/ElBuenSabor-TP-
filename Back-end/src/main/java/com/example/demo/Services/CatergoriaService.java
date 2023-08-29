@@ -2,11 +2,14 @@ package com.example.demo.Services;
 
 import com.example.demo.Entitys.Categoria;
 import com.example.demo.Repository.CategoriaRepository;
+import com.example.demo.Services.Interfaces.CatergoriaServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,10 +20,10 @@ public class CatergoriaService implements CatergoriaServiceInterface {
 
 
     @Override
-    public Page<Categoria> getAllCategoria(Pageable page) throws Exception {
-        log.info("Entre a Get All");
-        return categoriaRepository.findAll(page);
+    public List<Categoria> getAllCategoriaProductos() throws Exception {
+        return categoriaRepository.findCategoriaProductos();
     }
+
 
     @Override
     public Categoria crearCategoria(Categoria categoria) throws Exception {
@@ -41,7 +44,8 @@ public class CatergoriaService implements CatergoriaServiceInterface {
             throw new Exception("No existe la categoria");
         }
         cateFound.setNombre(categoria.getNombre());
-        cateFound.setAlta(categoria.getAlta());
+        cateFound.setEstado(categoria.getEstado());
+        cateFound.setTipo(categoria.getTipo());
         cateFound.setCategoriaPadre(categoria.getCategoriaPadre());
         cateFound.setSubCategoria(categoria.getSubCategoria());
         categoriaRepository.save(cateFound);
@@ -64,5 +68,9 @@ public class CatergoriaService implements CatergoriaServiceInterface {
         return categoriaRepository.findParentAndName(id, nombre, pageable);
     }
 
+    @Override
+    public List<Categoria> getAllCategoriaList() throws Exception {
+        return categoriaRepository.findAll();
+    }
 
 }
