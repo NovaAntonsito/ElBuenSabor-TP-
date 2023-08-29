@@ -21,6 +21,7 @@ public class PedidoDTO {
 
     private Direccion direccion;
 
+    private Boolean esMercadoPago;
 
     public Pedido toEntity(PedidoDTO pedidoDTO, Usuario userFound, Carrito cartFound){
         Pedido newPedido = new Pedido();
@@ -36,6 +37,7 @@ public class PedidoDTO {
         newPedido.setEstado(pedidoDTO.getEstado());
         newPedido.setCarritoComprado(cartFound);
         newPedido.setFechaInicio(new Date());
+
         newPedido.setTotal(precioTotal * (1 + 0.3));
         return newPedido;
     }

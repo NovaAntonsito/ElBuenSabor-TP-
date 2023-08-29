@@ -20,14 +20,13 @@ public class InsumoCarritoDTO {
     private Long cantidad;
     private Double precioUnitario;
     private Double precioTotal;
-
+    private String urlImg;
     public List<InsumoCarritoDTO> toDTO (List<Insumo> productosAgregados){
         List<InsumoCarritoDTO> dto = new ArrayList<>();
         for (Insumo insumo : productosAgregados){
             boolean existeProducto = false;
             for(InsumoCarritoDTO insumoCarritoDTO : dto){
-                if(insumoCarritoDTO.getNombre().equals(insumo.getNombre())){
-                    insumoCarritoDTO.setId(insumo.getID());
+                if(insumoCarritoDTO.getId().equals(insumo.getID())){
                     insumoCarritoDTO.setCantidad(insumoCarritoDTO.getCantidad() + 1);
                     insumoCarritoDTO.setPrecioUnitario(insumo.getCosto());
                     insumoCarritoDTO.setPrecioTotal(insumo.getCosto() * insumoCarritoDTO.getCantidad() );
@@ -41,6 +40,8 @@ public class InsumoCarritoDTO {
                 newProductoAgregado.setCantidad(1L);
                 newProductoAgregado.setPrecioUnitario(insumo.getCosto());
                 newProductoAgregado.setPrecioTotal(insumo.getCosto());
+                newProductoAgregado.setId(insumo.getID());
+                newProductoAgregado.setUrlImg(insumo.getUrlIMG());
                 dto.add(newProductoAgregado);
             }
         }

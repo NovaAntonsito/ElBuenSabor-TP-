@@ -63,7 +63,7 @@ public class CarritoController {
             Usuario userFound = userService.userbyID(sub);
             Carrito cart = carritoService.getCarritobyUserID(userFound.getId());
             Insumo complemento = insumoService.findByID(complementoID);
-            if (complemento.getEs_complemento()){
+            if (!complemento.getEs_complemento()){
                 throw new RuntimeException("No se puede agregar un insumo que no sea un complemento");
             }
             cart.getProductosAdicionales().add(complemento);

@@ -23,6 +23,7 @@ public class DemoApplication {
     @PostConstruct
     public void init() {
         try {
+            System.out.println("MERCADO PAGO ACCES KEY"+MPAccessKey);
             MercadoPagoConfig.setAccessToken(MPAccessKey);
         } catch (Exception e) {
             throw new IllegalStateException("Error al configurar el token de acceso de MercadoPago.", e);

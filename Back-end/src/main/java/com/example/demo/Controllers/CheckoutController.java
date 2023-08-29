@@ -5,7 +5,6 @@ import com.example.demo.Controllers.DTOS.PedidoDTO;
 import com.example.demo.Controllers.DTOS.ProductosCarritoDTO;
 import com.example.demo.Entitys.Carrito;;
 import com.example.demo.Entitys.Enum.EstadoMP;
-import com.example.demo.Entitys.Enum.EstadoPedido;
 import com.example.demo.Entitys.Pedido;
 import com.example.demo.Entitys.Usuario;
 import com.example.demo.Services.*;
@@ -31,10 +30,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.fasterxml.jackson.databind.type.LogicalType.Collection;
-
 @RestController
-@RequestMapping("/checkout")
+@RequestMapping("v1/api/checkout")
 @RequiredArgsConstructor
 @Slf4j
 public class CheckoutController {
@@ -76,7 +73,7 @@ public class CheckoutController {
             for (ProductosCarritoDTO productosCarritoDTO: dtoList) {
                 PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
                         .id(productosCarritoDTO.getProductoId().toString())
-                        .title(productosCarritoDTO.getProducto())
+                        .title(productosCarritoDTO.getNombre())
                         .description(productoService.findbyID(productosCarritoDTO.getProductoId()).getDescripcion())
                         .pictureUrl(productoService.findbyID(productosCarritoDTO.getProductoId()).getImgURL())
                         .categoryId(productoService.findbyID(productosCarritoDTO.getProductoId()).getProductoCategoria().getNombre())

@@ -35,6 +35,8 @@ public class Pedido extends Base {
 
     private Boolean esDelivery;
 
+    private Boolean esMercadoPago;
+
     private Date fechaInicio;
 
     private Date fechaFinal;

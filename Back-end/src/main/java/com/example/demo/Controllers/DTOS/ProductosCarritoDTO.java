@@ -1,9 +1,6 @@
 package com.example.demo.Controllers.DTOS;
 
-import com.example.demo.Entitys.Insumo;
 import com.example.demo.Entitys.Producto;
-import com.example.demo.Entitys.ProductoInsumos;
-import com.example.demo.Services.ConfigLocalService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,14 +17,14 @@ import java.util.List;
 @Slf4j
 public class ProductosCarritoDTO {
 
-    private String producto;
+    private String nombre;
     private Long productoId;
     private Long cantidad;
     private Double precioUnitario;
     private Double precioTotalSinDescuento;
     private Double precioTotal;
     private Long descuento;
-    private String imgURL;
+    private String urlIMG;
     private Long tiempoCocina;
 
 
@@ -55,13 +52,13 @@ public class ProductosCarritoDTO {
             if (!existeProducto) {
                 // Agregar el producto a la lista si no existe
                 ProductosCarritoDTO nuevoProducto = new ProductosCarritoDTO();
-                nuevoProducto.setProducto(producto.getNombre());
+                nuevoProducto.setNombre(producto.getNombre());
                 nuevoProducto.setCantidad(1L);
                 nuevoProducto.setDescuento(producto.getDescuento());
                 nuevoProducto.setPrecioUnitario(producto.getPrecioUnitario());
                 nuevoProducto.setTiempoCocina(producto.getTiempoCocina());
                 nuevoProducto.setPrecioTotal(producto.getPrecioUnitario());
-                nuevoProducto.setImgURL(producto.getImgURL());
+                nuevoProducto.setUrlIMG(producto.getImgURL());
                 nuevoProducto.setProductoId(producto.getID());
                 productosCarritoDTOList.add(nuevoProducto);
             }
