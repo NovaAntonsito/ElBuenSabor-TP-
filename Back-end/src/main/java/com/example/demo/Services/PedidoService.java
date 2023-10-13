@@ -30,6 +30,7 @@ public class PedidoService implements PedidoServiceInterface {
         return pedidoRepository.save(pedido);
     }
 
+
     @Override
     public Page<Pedido> getAllPedidos(Pageable page) throws Exception {
         return pedidoRepository.findAll(page);
@@ -43,6 +44,11 @@ public class PedidoService implements PedidoServiceInterface {
     @Override
     public Pedido getPedidoByUsuario(String id) throws Exception {
         return pedidoRepository.findByUsuarioPedidoId(id);
+    }
+
+    @Override
+    public List<Pedido> getPedidosUsuario(String id) throws Exception {
+        return pedidoRepository.findPedidosByUsuarioPedidoId(id);
     }
 
     @Override

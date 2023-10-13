@@ -1,6 +1,7 @@
 package com.example.demo.Controllers.DTOS;
 
-import com.example.demo.Entitys.Carrito;
+import com.example.demo.Entitys.Insumo;
+import com.example.demo.Entitys.Producto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,9 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class CarritoDTO {
-    private List<ProductosCarritoDTO> productosManufacturados;
-    private List<InsumoCarritoDTO> insumosAgregados;
-    private Double totalCompra;
-
+public class RespuestaCarrito {
+    private List<Producto> productosComprados;
+    private List<Insumo> productosAdicionales;
 }

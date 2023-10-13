@@ -29,9 +29,9 @@ public class Pedido extends Base {
     @JoinColumn
     private Carrito carritoComprado;
 
-    private EstadoPedido estado;
-
     private EstadoMP estadoMP;
+
+    private EstadoPedido estado;
 
     private Boolean esDelivery;
 

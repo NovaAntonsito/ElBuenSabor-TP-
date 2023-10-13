@@ -1,10 +1,7 @@
 package com.example.demo.Controllers;
 
 
-import com.example.demo.Controllers.DTOS.CarritoDTO;
-import com.example.demo.Controllers.DTOS.InsumoCarritoDTO;
-import com.example.demo.Controllers.DTOS.ProductoDTO;
-import com.example.demo.Controllers.DTOS.ProductosCarritoDTO;
+import com.example.demo.Controllers.DTOS.*;
 import com.example.demo.Entitys.Carrito;
 import com.example.demo.Entitys.Insumo;
 import com.example.demo.Entitys.Producto;
@@ -35,7 +32,7 @@ public class CarritoController {
     private final UserService userService;
     private final ConfigLocalService configService;
 
-    @PutMapping("/addProduct/{productoId}")
+    @PutMapping("/editProduct/{productoId}")
     public ResponseEntity<?> addProduct(@PathVariable("productoId") Long productoId, @RequestHeader("Authorization") String token) throws Exception {
         String jwtToken = token.substring(7);
         try {
@@ -46,15 +43,24 @@ public class CarritoController {
             Producto nuevoProducto = productoService.findbyID(productoId);
             cart.getProductosComprados().add(nuevoProducto);
             carritoService.cartSave(cart);
-            CarritoDTO carritoDTO = generarCarrito(cart);
-            return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
+            RespuestaCarrito respuestaCarrito =
+                    new RespuestaCarrito(cart.getProductosComprados(),
+                            cart.getProductosAdicionales());
+            return ResponseEntity.status(HttpStatus.OK).body(respuestaCarrito);
+//            CarritoDTO _carritoDTO = null;
+//            if (carritoDTO != null  ){
+//                _carritoDTO = carritoService.editarCarrito(carritoDTO,productoId);
+//            }else {
+//                _carritoDTO = carritoService.generarCarrito(cart);
+//            }
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
 
-    @PutMapping("/addComplemento/{productoAgregadoID}")
+    @PutMapping("/editCompleto/{productoAgregadoID}")
     public ResponseEntity<?> addComplemento(@PathVariable("productoAgregadoID") Long complementoID, @RequestHeader("Authorization")String token) throws Exception{
         String jwtToken = token.substring(7);
         try {
@@ -68,14 +74,61 @@ public class CarritoController {
             }
             cart.getProductosAdicionales().add(complemento);
             carritoService.cartSave(cart);
-            CarritoDTO carritoDTO = generarCarrito(cart);
-            return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
+            RespuestaCarrito respuestaCarrito =
+                    new RespuestaCarrito(cart.getProductosComprados(),
+                            cart.getProductosAdicionales());
+            return ResponseEntity.status(HttpStatus.OK).body(respuestaCarrito);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
-    @PutMapping("/delProduct/{productoId}")
+    @DeleteMapping("/delComplemento/{productoAgregadoID}")
+    public ResponseEntity<?> delComplemento(@PathVariable("productoAgregadoID") Long complementoID, @RequestHeader("Authorization")String token) throws Exception{
+        String jwtToken = token.substring(7);
+        try {
+            JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
+            String sub = decodedJWT.getSubject();
+            Usuario userFound = userService.userbyID(sub);
+            Carrito cart = carritoService.getCarritobyUserID(userFound.getId());
+            Insumo complemento = insumoService.findByID(complementoID);
+            if (!complemento.getEs_complemento()){
+                throw new RuntimeException("No se puede agregar un insumo que no sea un complemento");
+            }
+            cart.getProductosAdicionales().remove(complemento);
+            carritoService.cartSave(cart);
+            RespuestaCarrito respuestaCarrito =
+                    new RespuestaCarrito(cart.getProductosComprados(),
+                            cart.getProductosAdicionales());
+            return ResponseEntity.status(HttpStatus.OK).body(respuestaCarrito);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/delComplementoCompleto/{productoAgregadoID}")
+    public ResponseEntity<?> delComplementoCompleto(@PathVariable("productoAgregadoID") Long complementoID, @RequestHeader("Authorization")String token) throws Exception{
+        String jwtToken = token.substring(7);
+        try {
+            JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
+            String sub = decodedJWT.getSubject();
+            Usuario userFound = userService.userbyID(sub);
+            Carrito cart = carritoService.getCarritobyUserID(userFound.getId());
+            Insumo complemento = insumoService.findByID(complementoID);
+            cart.getProductosAdicionales().removeIf(producto -> producto.getID().equals(complementoID));
+            carritoService.cartSave(cart);
+            RespuestaCarrito respuestaCarrito =
+                    new RespuestaCarrito(cart.getProductosComprados(),
+                            cart.getProductosAdicionales());
+            return ResponseEntity.status(HttpStatus.OK).body(respuestaCarrito);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/editProduct/{productoId}")
     public ResponseEntity<?> delProduct(@PathVariable("productoId") Long productoId, @RequestHeader("Authorization") String token) throws Exception {
         String jwtToken = token.substring(7);
         try {
@@ -87,16 +140,43 @@ public class CarritoController {
             Producto nuevoProducto = productoService.findbyID(productoId);
             cart.getProductosComprados().remove(nuevoProducto);
             carritoService.cartSave(cart);
-            CarritoDTO carritoDTO = generarCarrito(cart);
+            RespuestaCarrito respuestaCarrito =
+                    new RespuestaCarrito(cart.getProductosComprados(),
+                    cart.getProductosAdicionales());
+            return ResponseEntity.status(HttpStatus.OK).body(respuestaCarrito);
+//            CarritoDTO carritoDTO = carritoService.generarCarrito(cart);
+//
+//            return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
 
-            return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
+    @DeleteMapping("/editCompleto/{productoId}")
+    public ResponseEntity<?> delProductCompleto(@PathVariable("productoId") Long productoId, @RequestHeader("Authorization") String token) throws Exception {
+        String jwtToken = token.substring(7);
+        try {
+            JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
+            String sub = decodedJWT.getSubject();
+            Usuario userFound = userService.userbyID(sub);
+            Carrito cart = carritoService.getCarritobyUserID(userFound.getId());
+
+            cart.getProductosComprados().removeIf(producto -> producto.getID().equals(productoId));
+            carritoService.cartSave(cart);
+            RespuestaCarrito respuestaCarrito =
+                    new RespuestaCarrito(cart.getProductosComprados(),
+                            cart.getProductosAdicionales());
+            return ResponseEntity.status(HttpStatus.OK).body(respuestaCarrito);
+//            CarritoDTO carritoDTO = carritoService.generarCarrito(cart);
+//
+//            return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
     @PutMapping("/clearCart")
-
     public ResponseEntity<?> clearCart(@RequestHeader("Authorization") String token) throws Exception {
         String jwtToken = token.substring(7);
         try {
@@ -105,14 +185,12 @@ public class CarritoController {
             Usuario userFound = userService.userbyID(sub);
             Carrito cart = carritoService.getCarritobyUserID(userFound.getId());
             cart.getProductosComprados().clear();
+            cart.getProductosAdicionales().clear();
             carritoService.cartSave(cart);
-            ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
-            List<ProductosCarritoDTO> dtoList = new ArrayList<ProductosCarritoDTO>();
-            Double precioTotal = 0D;
-            CarritoDTO carritoDTO = new CarritoDTO();
-            carritoDTO.setProductosComprados(dtoList);
-            carritoDTO.setTotalCompra(precioTotal);
-            return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
+            RespuestaCarrito respuestaCarrito =
+                    new RespuestaCarrito(cart.getProductosComprados(),
+                            cart.getProductosAdicionales());
+            return ResponseEntity.status(HttpStatus.OK).body(respuestaCarrito);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
@@ -134,14 +212,16 @@ public class CarritoController {
                 carritoFound.setProductosComprados(productos);
                 carritoFound.setUsuarioAsignado(userService.userbyID(sub));
                 carritoService.cartSave(carritoFound);
-                List<ProductosCarritoDTO> dtoList = new ArrayList<ProductosCarritoDTO>();
-
-                CarritoDTO carritoDTO = new CarritoDTO();
-                carritoDTO.setTotalCompra(0D);
-                return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
+                return ResponseEntity.status(HttpStatus.OK).body(carritoFound);
+//                List<ProductosCarritoDTO> dtoList = new ArrayList<ProductosCarritoDTO>();
+//
+//                CarritoDTO carritoDTO = new CarritoDTO();
+//                carritoDTO.setTotalCompra(0D);
             }else{
-                CarritoDTO carritoDTO = generarCarrito(carritoFound);
-                return ResponseEntity.status(HttpStatus.OK).body(carritoDTO);
+//                CarritoDTO carritoDTO = carritoService.generarCarrito(carritoFound);
+                RespuestaCarrito respuestaCarrito = new RespuestaCarrito(carritoFound.getProductosComprados(), carritoFound.getProductosAdicionales());
+                return ResponseEntity.status(HttpStatus.OK).body(respuestaCarrito);
+
             }
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -149,30 +229,5 @@ public class CarritoController {
         }
     }
 
-    public CarritoDTO generarCarrito (Carrito carrito){
 
-        try {
-            ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
-            List<Producto> productosCart = carrito.getProductosComprados();
-            List<ProductosCarritoDTO> dtoList = newDTO.toDTO(productosCart);
-            InsumoCarritoDTO complementosDTO = new InsumoCarritoDTO();
-            List<InsumoCarritoDTO> complementosList = complementosDTO.toDTO(carrito.getProductosAdicionales());
-            Double precioTotal = 0D;
-            for (ProductosCarritoDTO productosCarritoDTO : dtoList) {
-                precioTotal +=  productosCarritoDTO.getPrecioTotal();
-
-            }
-            for(InsumoCarritoDTO insumoComplemento : complementosList){
-                precioTotal += insumoComplemento.getPrecioTotal();
-            }
-            CarritoDTO carritoDTO = new CarritoDTO();
-            carritoDTO.setProductosAgregados(complementosList);
-            carritoDTO.setProductosComprados(dtoList);
-            carritoDTO.setTotalCompra(precioTotal);
-            return carritoDTO;
-        }catch (Exception e) {
-            return null;
-        }
-
-    }
 }

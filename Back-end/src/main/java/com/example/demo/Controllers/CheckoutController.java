@@ -1,10 +1,12 @@
 package com.example.demo.Controllers;
 
+import com.example.demo.Controllers.DTOS.CarritoDTO;
 import com.example.demo.Controllers.DTOS.InsumoCarritoDTO;
-import com.example.demo.Controllers.DTOS.PedidoDTO;
+import com.example.demo.Controllers.DTOS.DetallesCompra;
 import com.example.demo.Controllers.DTOS.ProductosCarritoDTO;
 import com.example.demo.Entitys.Carrito;;
 import com.example.demo.Entitys.Enum.EstadoMP;
+import com.example.demo.Entitys.Enum.EstadoPedido;
 import com.example.demo.Entitys.Pedido;
 import com.example.demo.Entitys.Usuario;
 import com.example.demo.Services.*;
@@ -42,93 +44,112 @@ public class CheckoutController {
     private final ConfigLocalService configService;
     private final PedidoService pedidoService;
     private final InsumoService insumoService;
+    private final DireccionService direccionService;
     @Value("${front.end.checkout.path}")
     private String frontEndPath;
 
 
     @SneakyThrows
     @PostMapping()
-    public ResponseEntity<?> pagarPedido (@RequestHeader("Authorization") String token, @RequestBody(required = false) PedidoDTO pedidoDTO) throws MPException{
+    public ResponseEntity<?> pagarPedido (@RequestHeader("Authorization") String token, @RequestBody(required = false) DetallesCompra detallesCompra) throws MPException{
         String jwtToken = token.substring(7);
         PreferenceClient client = new PreferenceClient();
         try {
-            ProductosCarritoDTO newDTO = new ProductosCarritoDTO();
-            InsumoCarritoDTO complementosDTO = new InsumoCarritoDTO();
+            detallesCompra.setDireccionService(direccionService);
             JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
             String sub = decodedJWT.getSubject();
             Usuario userFound = userService.userbyID(sub);
             Carrito carritoFound = carritoService.getCarritobyUserID(sub);
+            CarritoDTO carritoDTO = carritoService.generarCarrito(carritoFound);
             List<PreferenceItemRequest> productosPorComprar = new ArrayList<>();
             List<PreferenceItemRequest> complementosPorComprar = new ArrayList<>();
-            Pedido newPedido = pedidoDTO.toEntity(pedidoDTO, userFound, carritoFound);
-            List<ProductosCarritoDTO> dtoList = newDTO.toDTO(carritoFound.getProductosComprados());
-            List<InsumoCarritoDTO> complementosList = complementosDTO.toDTO(carritoFound.getProductosAdicionales());
-            int precioTotal = 0;
-            if(pedidoDTO.getEsDelivery()){
-                precioTotal += configService.getPrecioPorDelivery();
+            Pedido newPedido = detallesCompra.toEntity(detallesCompra, userFound, carritoFound,carritoDTO.getTotalCompra());
+
+            if(detallesCompra.getEsDelivery()){
+                carritoDTO.setTotalCompra(carritoDTO.getTotalCompra() + configService.getPrecioPorDelivery());
+                detallesCompra.setEsMercadoPago(true);
+                newPedido.setEsMercadoPago(true);
+
             }
-            for (ProductosCarritoDTO productosCarritoDTO : dtoList) {
-                precioTotal += productosCarritoDTO.getPrecioTotal();
-            }
-            for (ProductosCarritoDTO productosCarritoDTO: dtoList) {
-                PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
-                        .id(productosCarritoDTO.getProductoId().toString())
-                        .title(productosCarritoDTO.getNombre())
-                        .description(productoService.findbyID(productosCarritoDTO.getProductoId()).getDescripcion())
-                        .pictureUrl(productoService.findbyID(productosCarritoDTO.getProductoId()).getImgURL())
-                        .categoryId(productoService.findbyID(productosCarritoDTO.getProductoId()).getProductoCategoria().getNombre())
-                        .quantity(Math.toIntExact(productosCarritoDTO.getCantidad()))
-                        .currencyId("ARS")
-                        .unitPrice(BigDecimal.valueOf(precioTotal))
+
+            /////////////
+            //MercadoPago
+            /////////////
+            if (detallesCompra.getEsMercadoPago()){
+                for (ProductosCarritoDTO productosCarritoDTO: carritoDTO.getProductosManufacturados()) {
+                    PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
+                            .id(productosCarritoDTO.getProductoId().toString())
+                            .title(productosCarritoDTO.getNombre())
+                            .description(productoService.findbyID(productosCarritoDTO.getProductoId()).getDescripcion())
+                            .pictureUrl(productoService.findbyID(productosCarritoDTO.getProductoId()).getImgURL())
+                            .categoryId(productoService.findbyID(productosCarritoDTO.getProductoId()).getProductoCategoria().getNombre())
+                            .quantity(Math.toIntExact(productosCarritoDTO.getCantidad()))
+                            .currencyId("ARS")
+                            .unitPrice(BigDecimal.valueOf(carritoDTO.getTotalCompra()))
+                            .build();
+                    productosPorComprar.add(itemRequest);
+                }
+                for (InsumoCarritoDTO insumoCarritoDTO:  carritoDTO.getInsumosAgregados()) {
+                    PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
+                            .id(insumoCarritoDTO.getId().toString())
+                            .title(insumoCarritoDTO.getNombre())
+                            .pictureUrl(insumoService.findByID(insumoCarritoDTO.getId()).getUrlIMG())
+                            .categoryId(insumoService.findByID(insumoCarritoDTO.getId()).getCategoria().getNombre())
+                            .quantity(Math.toIntExact(insumoCarritoDTO.getCantidad()))
+                            .currencyId("ARS")
+                            .unitPrice(BigDecimal.valueOf(carritoDTO.getTotalCompra()))
+                            .build();
+                    complementosPorComprar.add(itemRequest);
+                }
+                List<PreferenceItemRequest> result = Stream.concat(productosPorComprar.stream(), complementosPorComprar.stream())
+                        .distinct()
+                        .collect(Collectors.toList());
+                List<PreferencePaymentTypeRequest> excludedPaymentTypes = new ArrayList<>();
+                excludedPaymentTypes.add(PreferencePaymentTypeRequest.builder().id("ticket").build());
+                PreferencePaymentMethodsRequest paymentMethods = PreferencePaymentMethodsRequest.builder()
+                        .excludedPaymentTypes(excludedPaymentTypes)
+                        .installments(1)
                         .build();
-                productosPorComprar.add(itemRequest);
+                String urlSuccess = "https://localhost:9000/checkout/success";
+                String urlFailure = "http://localhost:5173";
+                PreferenceBackUrlsRequest bu = PreferenceBackUrlsRequest
+                        .builder()
+                        .success(urlSuccess)
+                        .failure(urlFailure)
+                        .pending(urlFailure).
+                        build();
+                PreferenceRequest request = PreferenceRequest.builder()
+                        .items(productosPorComprar)
+                        .paymentMethods(paymentMethods)
+                        .autoReturn("approved")
+                        .backUrls(bu).build();
+
+
+                Preference preference = client.create(request);
+
+                String prefId = preference.getId();
+                pedidoService.savePedido(newPedido);
+                return ResponseEntity.status(HttpStatus.OK).body("{\"preferenceId\":\""+prefId+"\"}");
+            }else {
+                newPedido.setEstado(EstadoPedido.EN_PROCESO);
+                pedidoService.savePedido(newPedido);
+                carritoFound.getProductosComprados().clear();
+                carritoFound.getProductosAdicionales().clear();
+                carritoService.cartSave(carritoFound);
+
+                return ResponseEntity.status(HttpStatus.OK).body("{\"exito\":\""+true+"\"}");
             }
-            for (InsumoCarritoDTO insumoCarritoDTO: complementosList) {
-                PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
-                        .id(insumoCarritoDTO.getId().toString())
-                        .title(insumoCarritoDTO.getNombre())
-                        .pictureUrl(insumoService.findByID(insumoCarritoDTO.getId()).getUrlIMG())
-                        .categoryId(insumoService.findByID(insumoCarritoDTO.getId()).getCategoria().getNombre())
-                        .quantity(Math.toIntExact(insumoCarritoDTO.getCantidad()))
-                        .currencyId("ARS")
-                        .unitPrice(BigDecimal.valueOf(precioTotal))
-                        .build();
-            }
-            List<PreferenceItemRequest> result = Stream.concat(productosPorComprar.stream(), complementosPorComprar.stream())
-                    .distinct()
-                    .collect(Collectors.toList());
-            List<PreferencePaymentTypeRequest> excludedPaymentTypes = new ArrayList<>();
-            excludedPaymentTypes.add(PreferencePaymentTypeRequest.builder().id("ticket").build());
-            PreferencePaymentMethodsRequest paymentMethods = PreferencePaymentMethodsRequest.builder()
-                    .excludedPaymentTypes(excludedPaymentTypes)
-                    .installments(1)
-                    .build();
-            String urlSuccess = "https://localhost:9000/checkout/success";
-            String urlFailure = "https://localhost:9000/checkout/failure";
-            PreferenceBackUrlsRequest bu = PreferenceBackUrlsRequest
-                    .builder()
-                    .success(urlSuccess)
-                    .failure(urlFailure)
-                    .pending(urlFailure).
-                    build();
-            PreferenceRequest request = PreferenceRequest.builder()
-                    .items(productosPorComprar)
-                    .paymentMethods(paymentMethods)
-                    .autoReturn("approved")
-                    .backUrls(bu).build();
 
 
-            Preference preference = client.create(request);
-
-            String prefId = preference.getId();
-            pedidoService.savePedido(newPedido);
-            return ResponseEntity.status(HttpStatus.OK).body("{\"preferenceId\":\""+prefId+"\"}");
         }catch (MPException e){
             log.info("Lo impensable paso "+ e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Algo muy malo paso LPM");
         }
 
     }
+
+
+
     @GetMapping("/success")
     public RedirectView success(
             HttpServletRequest request,
@@ -192,6 +213,7 @@ public class CheckoutController {
         try {
             Pedido pedido = pedidoService.getPedido(Long.valueOf(externalReference));
             pedido.setEstadoMP(EstadoMP.RECHAZADO);
+            pedido.setEstado(EstadoPedido.CANCELADO);
             pedidoService.savePedido(pedido);
         }catch (Exception e){
             System.out.println("No se pudo eliminar la orden");

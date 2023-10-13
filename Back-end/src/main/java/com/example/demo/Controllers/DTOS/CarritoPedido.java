@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class CarritoDTO {
+public class CarritoPedido {
     private List<ProductosCarritoDTO> productosManufacturados;
     private List<InsumoCarritoDTO> insumosAgregados;
     private Double totalCompra;

@@ -1,5 +1,6 @@
 package com.example.demo.Repository;
 
+import com.example.demo.Entitys.Carrito;
 import com.example.demo.Entitys.Pedido;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Query;
@@ -21,8 +22,9 @@ public interface PedidoRepository extends BaseRepository<Pedido,Long> {
 
     Pedido findByID (Long id) throws Exception;
 
+
     Pedido findByUsuarioPedidoId (String id) throws Exception;
 
-
-
+    @Query(nativeQuery = true, value = "Select * from pedido where (:id is null or id_usuario_fk like :id)")
+    List<Pedido> findPedidosByUsuarioPedidoId (@Param("id")String id);
 }
