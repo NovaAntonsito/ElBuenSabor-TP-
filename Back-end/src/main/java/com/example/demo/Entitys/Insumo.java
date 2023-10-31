@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,4 +30,6 @@ public class Insumo extends Base{
    private Boolean es_complemento;
    @ManyToOne(fetch = FetchType.EAGER)
    private UnidadMedida unidad_medida;
+
+
 }

@@ -25,8 +25,9 @@ public class PedidoDTO {
     private Boolean esDelivery;
 
     private Boolean esMercadoPago;
+    private Double costeEnvio;
+    private Double descuentoAplicado;
     private Double total;
     private Date fechaInicio;
 
-    private Date fechaFinal;
 }

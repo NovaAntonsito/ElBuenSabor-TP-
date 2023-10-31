@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,15 +34,18 @@ public class DetallesCompra {
         newPedido.setUsuarioPedido(userFound);
 
         newPedido.setEstado(detallesCompra.getEstado());
-        newPedido.setCarritoComprado(carrito);
+
+
         newPedido.setFechaInicio(new Date());
         newPedido.setEsDelivery(detallesCompra.getEsDelivery());
         newPedido.setEsMercadoPago(detallesCompra.esMercadoPago);
         if (detallesCompra.esDelivery){
             totalCompra += 500;
+            newPedido.setCostoEnvio(500D);
         }
         if (!detallesCompra.esMercadoPago) {
             totalCompra -= totalCompra*0.15;
+            newPedido.setDescuentoTotal(totalCompra*0.15);
         }
 
         newPedido.setTotal(totalCompra);

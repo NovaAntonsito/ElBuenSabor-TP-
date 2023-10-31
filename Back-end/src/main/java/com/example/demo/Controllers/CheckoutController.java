@@ -4,11 +4,9 @@ import com.example.demo.Controllers.DTOS.CarritoDTO;
 import com.example.demo.Controllers.DTOS.InsumoCarritoDTO;
 import com.example.demo.Controllers.DTOS.DetallesCompra;
 import com.example.demo.Controllers.DTOS.ProductosCarritoDTO;
-import com.example.demo.Entitys.Carrito;;
+import com.example.demo.Entitys.*;;
 import com.example.demo.Entitys.Enum.EstadoMP;
 import com.example.demo.Entitys.Enum.EstadoPedido;
-import com.example.demo.Entitys.Pedido;
-import com.example.demo.Entitys.Usuario;
 import com.example.demo.Services.*;
 import com.mercadopago.client.preference.*;
 import com.mercadopago.exceptions.MPException;
@@ -65,6 +63,15 @@ public class CheckoutController {
             List<PreferenceItemRequest> complementosPorComprar = new ArrayList<>();
             Pedido newPedido = detallesCompra.toEntity(detallesCompra, userFound, carritoFound,carritoDTO.getTotalCompra());
 
+            List<Producto> productoList = new ArrayList<>();
+
+            productoList.addAll(carritoFound.getProductosComprados());
+
+            List<Insumo> insumoList = new ArrayList<>();
+            insumoList.addAll(carritoFound.getProductosAdicionales());
+
+            newPedido.setProductosManufacturados(productoList);
+            newPedido.setProductosAdicionales(insumoList);
             if(detallesCompra.getEsDelivery()){
                 carritoDTO.setTotalCompra(carritoDTO.getTotalCompra() + configService.getPrecioPorDelivery());
                 detallesCompra.setEsMercadoPago(true);
