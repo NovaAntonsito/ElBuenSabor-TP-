@@ -1,9 +1,6 @@
 package com.example.demo.Controllers;
 
-import com.example.demo.Controllers.DTOS.CarritoDTO;
-import com.example.demo.Controllers.DTOS.InsumoCarritoDTO;
-import com.example.demo.Controllers.DTOS.DetallesCompra;
-import com.example.demo.Controllers.DTOS.ProductosCarritoDTO;
+import com.example.demo.Controllers.DTOS.*;
 import com.example.demo.Entitys.*;;
 import com.example.demo.Entitys.Enum.EstadoMP;
 import com.example.demo.Entitys.Enum.EstadoPedido;
@@ -49,7 +46,7 @@ public class CheckoutController {
 
     @SneakyThrows
     @PostMapping()
-    public ResponseEntity<?> pagarPedido (@RequestHeader("Authorization") String token, @RequestBody(required = false) DetallesCompra detallesCompra) throws MPException{
+    public ResponseEntity<?> pagarPedido (@RequestHeader("Authorization") String token, @RequestPart("pedido") DetallesCompra detallesCompra,@RequestPart("carrito") CarritoDTO carritoDTO) throws MPException{
         String jwtToken = token.substring(7);
         PreferenceClient client = new PreferenceClient();
         try {
@@ -57,18 +54,18 @@ public class CheckoutController {
             JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();
             String sub = decodedJWT.getSubject();
             Usuario userFound = userService.userbyID(sub);
-            Carrito carritoFound = carritoService.getCarritobyUserID(sub);
-            CarritoDTO carritoDTO = carritoService.generarCarrito(carritoFound);
             List<PreferenceItemRequest> productosPorComprar = new ArrayList<>();
             List<PreferenceItemRequest> complementosPorComprar = new ArrayList<>();
-            Pedido newPedido = detallesCompra.toEntity(detallesCompra, userFound, carritoFound,carritoDTO.getTotalCompra());
+            Carrito carrito = carritoDTO.toCarrito(productoService,insumoService);
+            carrito.setUsuarioAsignado(userFound);
+            Pedido newPedido = detallesCompra.toEntity(detallesCompra, userFound, carrito,carritoDTO.getTotalCompra());
 
             List<Producto> productoList = new ArrayList<>();
 
-            productoList.addAll(carritoFound.getProductosComprados());
+            productoList.addAll(carrito.getProductosComprados());
 
             List<Insumo> insumoList = new ArrayList<>();
-            insumoList.addAll(carritoFound.getProductosAdicionales());
+            insumoList.addAll(carrito.getProductosAdicionales());
 
             newPedido.setProductosManufacturados(productoList);
             newPedido.setProductosAdicionales(insumoList);
@@ -96,7 +93,7 @@ public class CheckoutController {
                             .build();
                     productosPorComprar.add(itemRequest);
                 }
-                for (InsumoCarritoDTO insumoCarritoDTO:  carritoDTO.getInsumosAgregados()) {
+                for (InsumoCarritoDTO insumoCarritoDTO:  carritoDTO.getProductosAgregados()) {
                     PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
                             .id(insumoCarritoDTO.getId().toString())
                             .title(insumoCarritoDTO.getNombre())
@@ -137,12 +134,16 @@ public class CheckoutController {
                 String prefId = preference.getId();
                 pedidoService.savePedido(newPedido);
                 return ResponseEntity.status(HttpStatus.OK).body("{\"preferenceId\":\""+prefId+"\"}");
-            }else {
+            }
+            /////////////
+            //Efectivo
+            /////////////
+            else {
                 newPedido.setEstado(EstadoPedido.EN_PROCESO);
                 pedidoService.savePedido(newPedido);
-                carritoFound.getProductosComprados().clear();
-                carritoFound.getProductosAdicionales().clear();
-                carritoService.cartSave(carritoFound);
+                carrito.getProductosComprados().clear();
+                carrito.getProductosAdicionales().clear();
+                carritoService.cartSave(carrito);
 
                 return ResponseEntity.status(HttpStatus.OK).body("{\"exito\":\""+true+"\"}");
             }

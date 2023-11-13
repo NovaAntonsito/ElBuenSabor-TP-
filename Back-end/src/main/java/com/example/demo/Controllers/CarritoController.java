@@ -177,7 +177,7 @@ public class CarritoController {
         }
     }
     @PutMapping("/clearCart")
-    public ResponseEntity<?> clearCart(@RequestHeader("Authorization") String token) throws Exception {
+        public ResponseEntity<?> clearCart(@RequestHeader("Authorization") String token) throws Exception {
         String jwtToken = token.substring(7);
         try {
             JWTClaimsSet decodedJWT = JWTParser.parse(jwtToken).getJWTClaimsSet();

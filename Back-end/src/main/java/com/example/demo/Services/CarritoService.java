@@ -57,7 +57,7 @@ public class CarritoService implements CarritoServiceInterface {
             for(InsumoCarritoDTO insumoComplemento : complementosList){
                 precioTotal += insumoComplemento.getPrecioTotal();
             }
-            carritoDTO.setInsumosAgregados(complementosList);
+            carritoDTO.setProductosAgregados(complementosList);
             carritoDTO.setProductosManufacturados(dtoList);
             carritoDTO.setTotalCompra(precioTotal);
 
