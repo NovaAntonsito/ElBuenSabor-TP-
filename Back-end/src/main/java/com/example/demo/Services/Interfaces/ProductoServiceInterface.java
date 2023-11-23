@@ -23,6 +23,6 @@ public interface ProductoServiceInterface {
     Producto findbyID (Long ID) throws Exception;
 
     Page<Producto> findByIDandCategoria (Long ID, String nombre, Pageable page) throws Exception;
-    List<Producto> searchByNameAndCategoria (Long ID, String nombre) throws Exception;
+    List<Producto> searchProductsWithFilters(Long ID, String nombre, double precioMin, double precioMax, boolean descuento) throws Exception;
 
 }

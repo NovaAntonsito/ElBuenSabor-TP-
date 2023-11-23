@@ -1,18 +1,13 @@
 package com.example.demo.Controllers;
 
 import com.example.demo.Controllers.DTOS.ProductoDTO;
-import com.example.demo.Controllers.DTOS.ProductosCarritoDTO;
 import com.example.demo.Entitys.Categoria;
-import com.example.demo.Entitys.Insumo;
 import com.example.demo.Entitys.Producto;
 import com.example.demo.Entitys.ProductoInsumos;
 import com.example.demo.Services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -162,12 +156,15 @@ public class ProductoController {
     }
     @GetMapping("/search")
     public ResponseEntity<?> searchProducto
-            (@RequestParam(required = false, value = "id") Long id,
+            (@RequestParam(required = false, value = "idCategoria") Long id,
              @RequestParam(required = false, value = "nombre") String nombre,
+             @RequestParam( value = "precioMin") double precioMin,
+             @RequestParam( value = "precioMax") double precioMax,
+             @RequestParam( value = "descuento") boolean descuento,
              Pageable page) throws Exception{
         try {
             List<Producto> productoPage;
-            productoPage = productoService.searchByNameAndCategoria(id, nombre);
+            productoPage = productoService.searchProductsWithFilters(id, nombre,precioMin,precioMax,descuento);
 
             List<ProductoDTO> prodsDto = new ArrayList<>();
             for (Producto p : productoPage){

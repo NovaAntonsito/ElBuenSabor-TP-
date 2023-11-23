@@ -83,7 +83,7 @@ public class ProductoService implements ProductoServiceInterface {
         return productoRepository.findByNameAndCategoria(ID,nombre,page);
     }
     @Override
-    public List<Producto> searchByNameAndCategoria(Long ID, String nombre) throws Exception {
-        return productoRepository.searchByNameAndCategoria(ID,nombre);
+    public List<Producto> searchProductsWithFilters(Long ID, String nombre, double precioMin, double precioMax, boolean descuento) throws Exception {
+        return productoRepository.searchByNameAndCategoria(ID,nombre,precioMin,precioMax,descuento);
     }
 }
