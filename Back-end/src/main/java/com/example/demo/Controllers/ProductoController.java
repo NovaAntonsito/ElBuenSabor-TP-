@@ -59,25 +59,11 @@ public class ProductoController {
         try {
             Producto productoFound = productoService.findbyID(id);
             ProductoDTO pDto = new ProductoDTO();
-            pDto = pDto.toDTO(productoFound);
-            Double precioTotalProducto = 0D;
-            precioTotalProducto +=   pDto.getPrecio();
-            if (precioTotalProducto == 0D){
-                return ResponseEntity.status(HttpStatus.OK).body(pDto);
+            if (productoFound.getPrecioUnitario() == 0 || productoFound.getPrecioUnitario() == null ){
+                pDto = pDto.toDTO(calcularProductoPrecio(productoFound));
+            }else {
+                pDto = pDto.toDTO(productoFound);
             }
-            Double valorAgregadoPorCocinar = configService.getPrecioPorTiempo((double) pDto.getTiempoCocina());
-            precioTotalProducto += valorAgregadoPorCocinar;
-            // Supongamos que tienes un valor productoDescuento (long) que contiene el descuento en un rango de 0 a 100.
-            long productoDescuento = pDto.getDescuento();
-
-            // Dividimos el valor de productoDescuento entre 100 para obtener la fracción.
-            double productoDividido = (double) productoDescuento / 100.0;
-
-
-            // Calculamos el descuento aplicando la fracción productoDividido al precioTotal.
-            precioTotalProducto *= (1 - productoDividido);
-
-            pDto.setPrecio(precioTotalProducto);
             return ResponseEntity.status(HttpStatus.OK).body(pDto);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

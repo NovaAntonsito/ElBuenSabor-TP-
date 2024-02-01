@@ -21,7 +21,7 @@ import java.util.List;
 @Getter
 @Setter
 @Slf4j
-public class ProductoDTO {
+public class  ProductoDTO {
 
     private Long id;
     private String nombre;

@@ -65,6 +65,7 @@ public class ProductosCarritoDTO {
         }
 
         for (ProductosCarritoDTO productosCarritoDTO : productosCarritoDTOList){
+
             Double precioTotalProducto = productosCarritoDTO.getPrecioTotal();
             Double precioTotalSinDescuento = productosCarritoDTO.getPrecioTotal();
 
@@ -75,8 +76,8 @@ public class ProductosCarritoDTO {
             long productoDescuento = productosCarritoDTO.getDescuento();
 
             // Dividimos el valor de productoDescuento entre 100 para obtener la fracción.
-            double productoDividido = (double) productoDescuento / 100.0;
-
+            double productoDividido =  (double) productoDescuento / 100.0;
+            productoDividido = Math.round(productoDividido);
 
             // Calculamos el descuento aplicando la fracción productoDividido al precioTotal.
             precioTotalProducto *= (1 - productoDividido);
