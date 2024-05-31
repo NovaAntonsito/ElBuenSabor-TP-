@@ -76,23 +76,8 @@ public class ProductoController {
     public ResponseEntity<?> createProducto(@RequestPart("producto") ProductoDTO productoDTO, @RequestPart(value = "imagen", required = false) MultipartFile file) throws Exception {
 
         try {
-            List<ProductoInsumos> insumoList = new ArrayList<>();
-            Categoria cateFound = catergoriaService.findbyID(productoDTO.getProductoCategoria());
-            String url = null;
-
-            if (file != null) {
-                BufferedImage imgActual = ImageIO.read(file.getInputStream());
-                var result = cloudServices.UploadIMG(file);
-                url = (String) result.get("url");
-            }
-
-            for(ProductoInsumos insumos: productoDTO.getInsumos()){
-                productoInsumosService.save(insumos);
-                insumoList.add(insumos);
-            }
-
-            Producto newProd = productoDTO.toEntity(productoDTO,cateFound,insumoList,url);
-            newProd = productoService.crearProducto(newProd,file);
+            Producto newProd = productoService.createProduct(productoDTO,file);
+            newProd = productoService.saveProduct(newProd);
             return ResponseEntity.status(HttpStatus.OK).body(newProd);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -104,7 +89,7 @@ public class ProductoController {
     public ResponseEntity<?> updateProducto(@PathVariable("id") Long ID, @RequestPart("producto") ProductoDTO productoDTO, @RequestPart("file") MultipartFile file) throws Exception {
         try {
             ProductoDTO newProdDTO = new ProductoDTO();
-            List<ProductoInsumos> insumoSet = new ArrayList<>();
+            List<ProductoInsumos> insumoList = new ArrayList<>();
             Categoria cateFound = catergoriaService.findbyID(productoDTO.getProductoCategoria());
             String url = null;
 
@@ -114,11 +99,15 @@ public class ProductoController {
                 url = (String) result.get("url");
             }
 
-            for(ProductoInsumos insumos: productoDTO.getInsumos()){
-                productoInsumosService.save(insumos);
-                insumoSet.add(insumos);
+            for(var i: productoDTO.getInsumos()){
+                var insumoFound = insumoService.findByID(i.getInsumo());
+                if (insumoFound == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("succes", false, "message", "Insumo not found"));
+                var productoInsumo =  productoInsumosService.save(new ProductoInsumos(insumoFound,i.getCantidad()));
+                insumoList.add(productoInsumo);
             }
-            Producto updatedProducto = productoService.updateProducto(ID, newProdDTO.toEntity(productoDTO, catergoriaService.findbyID(productoDTO.getProductoCategoria()),insumoSet,url));
+
+            Producto updatedProducto = productoService.updateProducto(ID, newProdDTO.toEntity(productoDTO, catergoriaService.findbyID(productoDTO.getProductoCategoria()),insumoList,url));
             return ResponseEntity.status(HttpStatus.OK).body(updatedProducto);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -12,7 +12,7 @@ public interface ProductoServiceInterface {
     Page<Producto> getAll (Pageable pageable) throws Exception;
     List<Producto> getAllNoPage () throws Exception;
 
-    Producto crearProducto (Producto newProducto, MultipartFile file) throws Exception;
+    Producto saveProduct(Producto newProducto) throws Exception;
 
     void deleteSoftProducto (Long ID) throws Exception;
 

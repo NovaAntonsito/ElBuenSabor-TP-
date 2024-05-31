@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,7 +35,7 @@ public class  ProductoDTO {
     private Double precio;
     private Double valoracion;
     private Long descuento;
-    private List<ProductoInsumos> insumos;
+    private List<ProductoInsumosDTO> insumos;
 
 
     public ProductoDTO toDTO(Producto producto) {
@@ -52,7 +53,11 @@ public class  ProductoDTO {
             dto.setProductoCategoria(producto.getProductoCategoria().getID());
         }
         dto.setPrecio(producto.getPrecioUnitario());
-        dto.setInsumos(producto.getInsumos());
+        List<ProductoInsumosDTO> productoInsumosDTOList = new ArrayList<>();
+        for (var pI : producto.getInsumos()){
+            productoInsumosDTOList.add(new ProductoInsumosDTO(pI.getID(),pI.getCantidad()));
+        }
+        dto.setInsumos(productoInsumosDTOList);
         return dto;
     }
     public Producto toEntity(ProductoDTO dto, Categoria categoria, List<ProductoInsumos> insumos, String URL) {
@@ -66,6 +71,8 @@ public class  ProductoDTO {
         producto.setAlta(dto.getEstado());
         producto.setDescuento(dto.getDescuento());
         producto.setValoracion(dto.getValoracion());
+        producto.setPrecioUnitario(dto.getPrecio());
+        producto.setDescuento(dto.getDescuento());
         if(dto.getProductoCategoria() != null){
             producto.setProductoCategoria(categoria);
         }
