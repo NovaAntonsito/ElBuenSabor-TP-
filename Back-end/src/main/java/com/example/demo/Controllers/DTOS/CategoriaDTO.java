@@ -18,8 +18,8 @@ public class CategoriaDTO {
     private String nombre;
     private Baja_Alta estado;
     private TipoCategoria tipo;
-    private Categoria categoriaPadre;
-    private List<Categoria> subCategoria;
+    private CategoriaNestedDTO categoriaPadre; // Use a nested DTO for categoriaPadre
+    private List<CategoriaNestedDTO> subCategoria;
 
     public static CategoriaDTO toDTO(Categoria categoria) {
         CategoriaDTO dto = new CategoriaDTO();
@@ -27,9 +27,10 @@ public class CategoriaDTO {
         dto.setEstado(categoria.getEstado());
         dto.setTipo(categoria.getTipo());
         dto.setId(categoria.getID());
-        dto.setSubCategoria(categoria.getSubCategoria());
+       // dto.setSubCategoria(categoria.getSubCategoria().stream().map(CategoriaNestedDTO::toDTO).toList());
+
         if (categoria.getCategoriaPadre() != null) {
-            dto.setCategoriaPadre(categoria.getCategoriaPadre());
+            dto.setCategoriaPadre(CategoriaNestedDTO.toDTO(categoria.getCategoriaPadre()));
         }
         /*if (categoria.getCategoriaPadre() != null) {
             dto.setCategoriaPadre(categoria.getCategoriaPadre().getID());
@@ -43,7 +44,7 @@ public class CategoriaDTO {
         categoria.setEstado(dto.getEstado());
         categoria.setTipo(dto.getTipo());
         if (dto.getCategoriaPadre() != null) {
-            categoria.setCategoriaPadre(categoriaPadre);
+            categoria.setCategoriaPadre(dto.getCategoriaPadre().toEntity());
         }
         return categoria;
     }
@@ -58,5 +59,26 @@ public class CategoriaDTO {
                 ", categoriaPadre=" + categoriaPadre +
                 ", subCategoria=" + subCategoria +
                 '}';
+    }
+}
+
+@Getter
+@Setter
+class CategoriaNestedDTO {
+    private Long id;
+    private String nombre;
+
+    public static CategoriaNestedDTO toDTO(Categoria categoriaPadre) {
+        CategoriaNestedDTO dto = new CategoriaNestedDTO();
+        dto.setId(categoriaPadre.getID());
+        dto.setNombre(categoriaPadre.getNombre());
+        return dto;
+    }
+
+    public Categoria toEntity() {
+        Categoria categoria = new Categoria();
+        categoria.setID(this.id);
+        categoria.setNombre(this.nombre);
+        return categoria;
     }
 }

@@ -1,6 +1,8 @@
 package com.example.demo.Services;
 
 import com.example.demo.Entitys.Categoria;
+import com.example.demo.Entitys.Enum.Baja_Alta;
+import com.example.demo.Entitys.Enum.TipoCategoria;
 import com.example.demo.Repository.CategoriaRepository;
 import com.example.demo.Services.Interfaces.CatergoriaServiceInterface;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,8 +34,11 @@ public class CatergoriaService implements CatergoriaServiceInterface {
     }
 
     @Override
-    public void deleteCategoria( Long ID) throws Exception {
+    public void deleteCategoria(Long ID) throws Exception {
         Categoria cateFound = categoriaRepository.findByID(ID);
+        if(cateFound == null){
+            throw new Exception("No existe la categoria");
+        }
         log.info("Se borro la categoria");
         categoriaRepository.delete(cateFound);
     }
@@ -64,13 +70,14 @@ public class CatergoriaService implements CatergoriaServiceInterface {
     }
 
     @Override
-    public Page<Categoria> findParentAndName(Long id, String nombre, Pageable pageable) throws Exception {
-        return categoriaRepository.findParentAndName(id, nombre, pageable);
+    public Page<Categoria> filterCategories(Long id, String nombre, TipoCategoria tipoCategoria, Baja_Alta estado, Pageable pageable) throws Exception {
+        return categoriaRepository.filterCategories(id, nombre, tipoCategoria, estado, pageable);
     }
 
     @Override
-    public List<Categoria> getAllCategoriaList() throws Exception {
-        return categoriaRepository.findAll();
+    @Transactional()
+    public List<Categoria> getAllCategoriaList(Long parentId, String parentType) throws Exception {
+        return categoriaRepository.findAllExcludingDescendants(parentId, parentType);
     }
 
 }

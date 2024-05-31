@@ -1,6 +1,8 @@
 package com.example.demo.Services.Interfaces;
 
 import com.example.demo.Entitys.Categoria;
+import com.example.demo.Entitys.Enum.Baja_Alta;
+import com.example.demo.Entitys.Enum.TipoCategoria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,7 +22,7 @@ public interface CatergoriaServiceInterface {
 
     Categoria findbyID (Long id);
 
-    Page<Categoria> findParentAndName (Long id, String nombre, Pageable pageable) throws Exception;
+    Page<Categoria> filterCategories(Long id, String nombre, TipoCategoria tipoCategoria, Baja_Alta estado, Pageable page) throws Exception;
 
-    List<Categoria> getAllCategoriaList () throws Exception;
+    List<Categoria> getAllCategoriaList(Long parentId, String parentType) throws Exception;
 }

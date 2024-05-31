@@ -3,12 +3,10 @@ package com.example.demo.Entitys;
 import com.example.demo.Entitys.Enum.Baja_Alta;
 import com.example.demo.Entitys.Enum.TipoCategoria;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.List;
 
 @Entity
@@ -24,6 +22,7 @@ public class Categoria extends Base{
 
     private String nombre;
 
+    @Enumerated(EnumType.STRING)
     private TipoCategoria tipo;
 
     @ManyToOne()
@@ -33,6 +32,6 @@ public class Categoria extends Base{
 
     @OneToMany(mappedBy = "categoriaPadre", fetch = FetchType.EAGER)
     @JsonManagedReference
-    @Column(nullable = true)
+    @Column()
     private List<Categoria> subCategoria;
 }
