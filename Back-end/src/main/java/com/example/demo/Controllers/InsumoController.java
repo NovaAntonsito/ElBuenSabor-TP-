@@ -2,6 +2,8 @@ package com.example.demo.Controllers;
 
 import com.example.demo.Controllers.DTOS.InsumosDTO;
 import com.example.demo.Entitys.Categoria;
+import com.example.demo.Entitys.Enum.Baja_Alta;
+import com.example.demo.Entitys.Enum.TipoCategoria;
 import com.example.demo.Entitys.Insumo;
 
 import com.example.demo.Services.CatergoriaService;
@@ -91,6 +93,13 @@ public class InsumoController {
         return ResponseEntity.status(HttpStatus.OK).body(insumoService.getAllInsumosWOPage());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getInsumoById(@PathVariable("id") Long ID) throws Exception {
+        var insumoFound = insumoService.findByID(ID);
+        if (insumoFound == null) return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(insumoFound);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateInsumo(@RequestPart(value = "insumo", required = true) InsumosDTO insumosDTO,@RequestPart(value = "img", required = false) MultipartFile img, @PathVariable("id") Long ID) throws Exception {
         try {
@@ -127,10 +136,10 @@ public class InsumoController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<?> getInsumoByName(@RequestParam(value = "nombre", required = false) String name,
+    public ResponseEntity<?> getInsumoByName(@RequestParam(required = false) Long id, @RequestParam(required = false) String nombre, @RequestParam(value="es_complemento", required = false) Boolean esComplemento, @RequestParam(required = false) Baja_Alta estado,
                                              @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable page) throws Exception {
         try {
-            Page<Insumo> insumoPage = insumoService.getInsumoByName(name, page);
+            Page<Insumo> insumoPage = insumoService.filterSupplies(id, nombre, esComplemento, estado, page);
             return ResponseEntity.status(HttpStatus.OK).body(insumoPage);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

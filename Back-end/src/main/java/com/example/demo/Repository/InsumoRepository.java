@@ -1,5 +1,8 @@
 package com.example.demo.Repository;
 
+import com.example.demo.Entitys.Categoria;
+import com.example.demo.Entitys.Enum.Baja_Alta;
+import com.example.demo.Entitys.Enum.TipoCategoria;
 import com.example.demo.Entitys.Insumo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +30,15 @@ public interface InsumoRepository extends BaseRepository<Insumo, Long> {
     @Query(value = "SELECT * FROM insumo WHERE es_complemento = TRUE", nativeQuery = true)
      List<Insumo> findByIndividual ();
 
-
+    @Query("SELECT i FROM Insumo i " +
+            "WHERE (:nombre IS NULL OR i.nombre LIKE CONCAT('%', :nombre, '%')) " +
+            "AND (:id IS NULL OR i.ID = :id) " +
+            "AND (:esComplemento IS NULL OR i.es_complemento = :esComplemento) " +
+            "AND (:estado IS NULL OR i.estado = :estado)")
+    Page<Insumo> filterSupplies(@Param("id") Long id,
+                                     @Param("nombre") String nombre,
+                                     @Param("esComplemento") Boolean esComplemento,
+                                     @Param("estado") Baja_Alta estado,
+                                     Pageable pageable);
 
 }

@@ -1,5 +1,6 @@
 package com.example.demo.Services.Interfaces;
 
+import com.example.demo.Entitys.Enum.Baja_Alta;
 import com.example.demo.Entitys.Insumo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,7 @@ public interface InsumoServiceInterface {
     Insumo createInsumo(Insumo insumo) throws Exception;
     void deleteInsumo(Long ID) throws Exception;
     Insumo updateInsumo (Long ID, Insumo insumo) throws Exception;
-    Page<Insumo> getInsumoByName (String name, Pageable page) throws Exception;
+    Page<Insumo> filterSupplies(Long id, String nombre, Boolean esComplemento, Baja_Alta estado, Pageable page) throws Exception;
     Insumo findByID (Long ID) throws Exception;
     Boolean verificarAsociacion (Insumo insumo) throws Exception;
 }

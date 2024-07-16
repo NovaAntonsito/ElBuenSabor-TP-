@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -69,8 +70,8 @@ public class InsumoService implements InsumoServiceInterface {
     }
 
     @Override
-    public Page<Insumo> getInsumoByName(String name, Pageable page) throws Exception {
-        return insumoRepository.getInsumoByName(name, page);
+    public Page<Insumo> filterSupplies(Long id, String nombre, Boolean esComplemento, Baja_Alta estado, Pageable page) throws Exception {
+        return insumoRepository.filterSupplies(id, nombre, esComplemento, estado, page);
     }
 
     @Override
