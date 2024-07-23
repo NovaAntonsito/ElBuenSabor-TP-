@@ -70,8 +70,8 @@ public class InsumoService implements InsumoServiceInterface {
     }
 
     @Override
-    public Page<Insumo> filterSupplies(Long id, String nombre, Boolean esComplemento, Baja_Alta estado, Pageable page) throws Exception {
-        return insumoRepository.filterSupplies(id, nombre, esComplemento, estado, page);
+    public Page<Insumo> filterSupplies(Long id, String nombre, Boolean esComplemento, Baja_Alta estado, Long umId, Pageable page) throws Exception {
+        return insumoRepository.filterSupplies(id, nombre, esComplemento, estado, umId, page);
     }
 
     @Override
@@ -80,14 +80,7 @@ public class InsumoService implements InsumoServiceInterface {
     }
 
     @Override
-    public Boolean verificarAsociacion(Insumo insumo) throws Exception {
-        List<ProductoInsumos> productosAsociados = productosInsumosRepository.getProductoInsumosAsociados(insumo.getID());
-        if (!productosAsociados.isEmpty()) {
-            // El insumo está asociado a algún producto, no se puede cambiar el estado
-            return true;
-        } else {
-            // El insumo no está asociado a ningún producto, se puede cambiar el estado
-            return false;
-        }
+    public Boolean verificarAsociacion(Long id) throws Exception {
+        return productosInsumosRepository.getProductoInsumosAsociados(id) > 0;
     }
 }

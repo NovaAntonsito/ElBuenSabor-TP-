@@ -15,6 +15,7 @@ import java.util.List;
 @Repository
 public interface InsumoRepository extends BaseRepository<Insumo, Long> {
     Insumo findByID(Long ID);
+    Insumo findInsumoByID(Long ID);
 
     @Query(value = "Select * from insumo where estado = 0", nativeQuery = true)
     Page<Insumo> getAllInsumosInAlta(Pageable page);
@@ -28,17 +29,19 @@ public interface InsumoRepository extends BaseRepository<Insumo, Long> {
     Page<Insumo> getInsumoByName(@Param("nombre") String name, Pageable page);
 
     @Query(value = "SELECT * FROM insumo WHERE es_complemento = TRUE", nativeQuery = true)
-     List<Insumo> findByIndividual ();
+    List<Insumo> findByIndividual();
 
     @Query("SELECT i FROM Insumo i " +
             "WHERE (:nombre IS NULL OR i.nombre LIKE CONCAT('%', :nombre, '%')) " +
             "AND (:id IS NULL OR i.ID = :id) " +
             "AND (:esComplemento IS NULL OR i.es_complemento = :esComplemento) " +
-            "AND (:estado IS NULL OR i.estado = :estado)")
+            "AND (:estado IS NULL OR i.estado = :estado)" +
+            "AND (:umId IS NULL OR i.unidad_medida.ID = :umId)")
     Page<Insumo> filterSupplies(@Param("id") Long id,
-                                     @Param("nombre") String nombre,
-                                     @Param("esComplemento") Boolean esComplemento,
-                                     @Param("estado") Baja_Alta estado,
-                                     Pageable pageable);
+                                @Param("nombre") String nombre,
+                                @Param("esComplemento") Boolean esComplemento,
+                                @Param("estado") Baja_Alta estado,
+                                @Param("umId") Long umId,
+                                Pageable pageable);
 
 }

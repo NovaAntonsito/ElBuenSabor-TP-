@@ -3,7 +3,6 @@ package com.example.demo.Services;
 import com.example.demo.Controllers.DTOS.ProductoDTO;
 import com.example.demo.Entitys.Categoria;
 import com.example.demo.Entitys.Enum.Baja_Alta;
-import com.example.demo.Entitys.Insumo;
 import com.example.demo.Entitys.Producto;
 
 import com.example.demo.Entitys.ProductoInsumos;
@@ -12,14 +11,10 @@ import com.example.demo.Repository.ProductoRepository;
 import com.example.demo.Services.Interfaces.ProductoServiceInterface;
 import jakarta.transaction.Transactional;
 
-
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,7 +22,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -47,19 +41,21 @@ public class ProductoService implements ProductoServiceInterface {
     public Page<Producto> getAll(Pageable page) throws Exception {
         return productoRepository.findAllinAlta(page);
     }
+
     @Override
     public List<Producto> getAllNoPage() throws Exception {
         return productoRepository.findAllinAltaNoPage();
     }
+
     @Override
     public Producto saveProduct(Producto newProducto) throws Exception {
         productoRepository.save(newProducto);
         return newProducto;
     }
 
-    public Producto createProduct(ProductoDTO productoDTO,MultipartFile file) throws Exception {
+    public Producto createProduct(ProductoDTO productoDTO, MultipartFile file) throws Exception {
         List<ProductoInsumos> insumoList = new ArrayList<>();
-        Categoria cateFound = catergoriaService.findbyID(productoDTO.getProductoCategoria());
+        Categoria cateFound = catergoriaService.findbyID(productoDTO.getProductoCategoria().getId());
         String url = null;
         Double precio = 0D;
         if (file != null) {
@@ -68,10 +64,10 @@ public class ProductoService implements ProductoServiceInterface {
             url = (String) result.get("url");
         }
 
-        for(var i: productoDTO.getInsumos()){
-            var insumoFound = insumoService.findByID(i.getInsumo());
+        for (var i : productoDTO.getInsumos()) {
+            var insumoFound = insumoService.findByID(i.getId());
             if (insumoFound == null) throw new Exception("Insumo not found");
-            var productoInsumo =  productoInsumosService.save(new ProductoInsumos(insumoFound,i.getCantidad()));
+            var productoInsumo = productoInsumosService.save(new ProductoInsumos(insumoFound, i.getCantidad()));
             insumoList.add(productoInsumo);
             precio += insumoFound.getCosto() * 1.2;
         }
@@ -82,15 +78,15 @@ public class ProductoService implements ProductoServiceInterface {
         // Calcular el precio con descuento
         double precioConDescuento = precio - (precio * descuentoDecimal);
         productoDTO.setPrecio(precioConDescuento);
-        Producto newProd = productoDTO.toEntity(productoDTO,cateFound,insumoList,url);
+        Producto newProd = productoDTO.toEntity(productoDTO, cateFound, insumoList, url);
         return newProd;
     }
 
     @Override
     public void deleteSoftProducto(Long ID) throws Exception {
-       Producto prodFound = productoRepository.findByID(ID);
-       prodFound.setAlta(Baja_Alta.NO_DISPONIBLE);
-       log.info("El objeto fue borrado de forma logica");
+        Producto prodFound = productoRepository.findByID(ID);
+        prodFound.setEstado(Baja_Alta.NO_DISPONIBLE);
+        log.info("El objeto fue borrado de forma logica");
     }
 
     @Override
@@ -100,7 +96,7 @@ public class ProductoService implements ProductoServiceInterface {
         prodFound.setImgURL(newProducto.getImgURL());
         prodFound.setDescripcion(newProducto.getDescripcion());
         prodFound.setTiempoCocina(newProducto.getTiempoCocina());
-        prodFound.setAlta(newProducto.getAlta());
+        prodFound.setEstado(newProducto.getEstado());
         prodFound.setReceta(newProducto.getReceta());
         productoRepository.save(prodFound);
         return prodFound;
@@ -117,11 +113,14 @@ public class ProductoService implements ProductoServiceInterface {
     }
 
     @Override
-    public Page<Producto> findByIDandCategoria(Long ID, String nombre, Pageable page) throws Exception {
-        return productoRepository.findByNameAndCategoria(ID,nombre,page);
+    public Page<Producto> filterProducts(Long ID, String nombre, Baja_Alta estado, Pageable page) throws Exception {
+        return productoRepository.filterProducts(ID, nombre, estado, page);
     }
+
     @Override
     public List<Producto> searchProductsWithFilters(Long ID, String nombre, double precioMin, double precioMax, boolean descuento) throws Exception {
-        return productoRepository.searchByNameAndCategoria(ID,nombre,precioMin,precioMax,descuento);
+        return productoRepository.searchByNameAndCategoria(ID, nombre, precioMin, precioMax, descuento);
     }
+
+
 }

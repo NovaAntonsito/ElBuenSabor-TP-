@@ -22,6 +22,7 @@ public class InsumosDTO {
     private Double stock_minimo;
     private Double stock_actual;
     private Baja_Alta estado;
+    private String urlIMG;
     private Double costo;
     private CategoriaDTO categoria;
     private UnidadMedida unidad_medida;
@@ -44,6 +45,7 @@ public class InsumosDTO {
 
     public Insumo toEntity (InsumosDTO dto){
         Insumo newInsumo = new Insumo();
+        newInsumo.setID(dto.getID());
         newInsumo.setNombre(dto.getNombre());
         newInsumo.setStock_minimo(dto.getStock_minimo());
         newInsumo.setStock_actual(dto.getStock_actual());
@@ -56,6 +58,7 @@ public class InsumosDTO {
         }
         newInsumo.setUnidad_medida(dto.getUnidad_medida());
         newInsumo.setEs_complemento(dto.getEs_complemento());
+        newInsumo.setUrlIMG(dto.getUrlIMG());
         return newInsumo;
     }
 }

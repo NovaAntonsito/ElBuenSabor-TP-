@@ -8,12 +8,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductosInsumosRepository extends BaseRepository<ProductoInsumos, Long>{
+public interface ProductosInsumosRepository extends BaseRepository<ProductoInsumos, Long> {
 
-    @Query(value = "SELECT p.*\n" +
-            "FROM Producto p\n" +
-            "JOIN ProductoInsumos pi ON p.id_producto = pi.producto_id\n" +
-            "JOIN Insumo i ON pi.insumo_id = i.id_insumo\n" +
-            "WHERE i.id_insumo = :id", nativeQuery = true)
-    List<ProductoInsumos> getProductoInsumosAsociados (@Param("id") Long id);
+    @Query(value = "SELECT COUNT(pm.id) " +
+            "FROM producto_manufacturado pm " +
+            "JOIN producto_manufacturado_insumos pmi ON pm.id = pmi.producto_id " +
+            "JOIN producto_insumo pi ON pmi.insumos_id = pi.id " +
+            "WHERE pi.insumo_id = :id", nativeQuery = true)
+    Integer getProductoInsumosAsociados(@Param("id") Long id);
 }

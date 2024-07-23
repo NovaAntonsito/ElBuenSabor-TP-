@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @Slf4j
 public class ProductoInsumosDTO {
-    private Long insumo;
+    private Long id;
+    private String nombre;
     private Double cantidad;
 }

@@ -6,6 +6,7 @@ import com.example.demo.Entitys.Enum.Baja_Alta;
 import com.example.demo.Entitys.Enum.TipoCategoria;
 import com.example.demo.Entitys.Insumo;
 
+import com.example.demo.Repository.InsumoRepository;
 import com.example.demo.Services.CatergoriaService;
 import com.example.demo.Services.CloudinaryServices;
 import com.example.demo.Services.InsumoService;
@@ -36,23 +37,25 @@ public class InsumoController {
     private final InsumoService insumoService;
     private final CatergoriaService catergoriaService;
     private final CloudinaryServices cloudServices;
+    private final InsumoRepository insumoRepository;
 
     @PostMapping(value = "")
     public ResponseEntity<?> crearInsumo(@RequestPart(value = "insumo", required = true) InsumosDTO insumosDTO, @RequestPart(value = "img", required = false) MultipartFile img) throws Exception {
         try {
             Categoria cateFound = catergoriaService.findbyID(insumosDTO.getCategoria().getId());
-            if(insumosDTO.getCategoria() != null && cateFound == null) throw new RuntimeException("No existe esa categoria");
+            if (insumosDTO.getCategoria() != null && cateFound == null)
+                throw new RuntimeException("No existe esa categoria");
             Insumo newInsumo = insumosDTO.toEntity(insumosDTO);
-            if(img == null && insumosDTO.getEs_complemento()){
+            if (img == null && insumosDTO.getEs_complemento()) {
                 throw new RuntimeException("Si el insumo es un complemento, es necesario una foto");
-            }else{
+            } else if (img != null) {
                 BufferedImage imgActual = ImageIO.read(img.getInputStream());
                 var result = cloudServices.UploadIMG(img);
                 newInsumo.setUrlIMG((String) result.get("url"));
             }
-            insumoService.createInsumo(newInsumo);
-            return ResponseEntity.status(HttpStatus.OK).body(newInsumo);
-        }catch (Exception e){
+
+            return ResponseEntity.status(HttpStatus.OK).body(insumoService.createInsumo(newInsumo));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
                             "success", false,
@@ -62,13 +65,13 @@ public class InsumoController {
     }
 
     @GetMapping("/getAgregados")
-    public ResponseEntity<?> getAllInsumosAgregados () throws Exception{
+    public ResponseEntity<?> getAllInsumosAgregados() throws Exception {
         try {
-            if(insumoService.getAllInsumosByIndividual().size() == 0){
+            if (insumoService.getAllInsumosByIndividual().size() == 0) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body(insumoService.getAllInsumosByIndividual());
             }
             return ResponseEntity.status(HttpStatus.OK).body(insumoService.getAllInsumosByIndividual());
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
                             "success", false,
@@ -82,7 +85,7 @@ public class InsumoController {
         try {
             Page<Insumo> allInsumos = insumoService.getAllInsumos(page);
             return ResponseEntity.status(HttpStatus.OK).body(allInsumos);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
@@ -101,23 +104,33 @@ public class InsumoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateInsumo(@RequestPart(value = "insumo", required = true) InsumosDTO insumosDTO,@RequestPart(value = "img", required = false) MultipartFile img, @PathVariable("id") Long ID) throws Exception {
+    public ResponseEntity<?> updateInsumo(@RequestPart(value = "insumo", required = true) InsumosDTO insumosDTO, @RequestPart(value = "img", required = false) MultipartFile img, @PathVariable("id") Long ID) throws Exception {
         try {
-            Insumo insumo = insumosDTO.toEntity(insumosDTO);
-            if (insumosDTO.getEstado() != null && insumoService.verificarAsociacion(insumo)){
-                throw new RuntimeException("No se puede modificar un insumo asociado");
+            Insumo newInsumo = insumosDTO.toEntity(insumosDTO);
+
+            if (newInsumo.getEstado().equals(Baja_Alta.NO_DISPONIBLE) && insumoService.verificarAsociacion(ID)) {
+                throw new RuntimeException("No se puede dar de baja un insumo que esta asociado a un producto.");
             }
 
-            if(img == null && insumosDTO.getEs_complemento()){
-                throw new RuntimeException("Si el insumo es un complemento, es necesario una foto");
-            }else{
-                BufferedImage imgActual = ImageIO.read(img.getInputStream());
-                var result = cloudServices.UploadIMG(img);
-                insumo.setUrlIMG((String) result.get("url"));
+            String insumoImg = insumoRepository.findInsumoByID(ID).getUrlIMG();
+            if (insumosDTO.getEs_complemento().equals(false) && insumoImg != null) {
+                String publicId = insumoImg.substring(insumoImg.indexOf("imgs/"), insumoImg.lastIndexOf("."));
+                var result = cloudServices.delete(publicId);
+
+                System.out.println(result);
             }
-            insumo = insumoService.updateInsumo(ID, insumo);
-            return ResponseEntity.status(HttpStatus.OK).body(insumo);
-        }catch (Exception e){
+
+            if ((img == null && newInsumo.getUrlIMG() == null) && insumosDTO.getEs_complemento()) {
+                throw new RuntimeException("Si el insumo es un complemento, es necesario una foto.");
+            } else if (img != null) {
+                ImageIO.read(img.getInputStream());
+                var result = cloudServices.UploadIMG(img);
+                newInsumo.setUrlIMG((String) result.get("url"));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(insumoService.updateInsumo(ID, newInsumo));
+        } catch (
+                Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
@@ -129,19 +142,20 @@ public class InsumoController {
         try {
             insumoService.deleteInsumo(ID);
             return ResponseEntity.status(HttpStatus.OK).body("Se borro el elemento correctamente");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<?> getInsumoByName(@RequestParam(required = false) Long id, @RequestParam(required = false) String nombre, @RequestParam(value="es_complemento", required = false) Boolean esComplemento, @RequestParam(required = false) Baja_Alta estado,
+    public ResponseEntity<?> getInsumoByName(@RequestParam(required = false) Long id, @RequestParam(required = false) String nombre, @RequestParam(value = "es_complemento", required = false) Boolean esComplemento,
+                                             @RequestParam(required = false) Baja_Alta estado, @RequestParam(value = "um", required = false) Long umId,
                                              @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable page) throws Exception {
         try {
-            Page<Insumo> insumoPage = insumoService.filterSupplies(id, nombre, esComplemento, estado, page);
+            Page<Insumo> insumoPage = insumoService.filterSupplies(id, nombre, esComplemento, estado, umId, page);
             return ResponseEntity.status(HttpStatus.OK).body(insumoPage);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("success", false, "message", e.getMessage()));
         }

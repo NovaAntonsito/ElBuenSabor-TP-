@@ -1,5 +1,6 @@
 package com.example.demo.Services;
 
+import com.example.demo.Entitys.Enum.Baja_Alta;
 import com.example.demo.Entitys.UnidadMedida;
 import com.example.demo.Repository.UnidadMedidaRepository;
 import com.example.demo.Services.Interfaces.UnidadMedidaServiceInterface;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UnidadMedidaService implements UnidadMedidaServiceInterface {
     private final UnidadMedidaRepository unidadMedidaRepository;
+
     @Override
     public void save(UnidadMedida unidadMedida) throws Exception {
         unidadMedidaRepository.save(unidadMedida);
@@ -24,12 +26,13 @@ public class UnidadMedidaService implements UnidadMedidaServiceInterface {
 
     @Override
     public UnidadMedida findbyID(Long id) throws Exception {
-        if(!unidadMedidaRepository.findByID(id).equals(null)){
+        if (!unidadMedidaRepository.findByID(id).equals(null)) {
             return unidadMedidaRepository.findByID(id);
-        }else{
+        } else {
             throw new RuntimeException("No existe ese objeto");
         }
     }
+
     @Override
     public UnidadMedida updateUnidadMedida(Long id, UnidadMedida medidaUpdate) throws Exception {
         UnidadMedida medidaFound = this.findbyID(id);
@@ -49,8 +52,8 @@ public class UnidadMedidaService implements UnidadMedidaServiceInterface {
     }
 
     @Override
-    public Page<UnidadMedida> filterByName(String nombre, Pageable pageable) throws Exception {
-        return unidadMedidaRepository.filterByName(nombre, pageable);
+    public Page<UnidadMedida> filterUnidadesDeMedida(Long id, String nombre, Baja_Alta estado, Pageable pageable) throws Exception {
+        return unidadMedidaRepository.filterUnidadesDeMedida(id, nombre, estado, pageable);
     }
 
     @Override

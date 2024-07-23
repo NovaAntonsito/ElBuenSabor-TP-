@@ -1,5 +1,6 @@
 package com.example.demo.Services.Interfaces;
 
+import com.example.demo.Entitys.Enum.Baja_Alta;
 import com.example.demo.Entitys.UnidadMedida;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +16,9 @@ public interface UnidadMedidaServiceInterface {
 
     UnidadMedida updateUnidadMedida(Long id, UnidadMedida medidaUpdate) throws Exception;
 
-    List<UnidadMedida> findAll () throws Exception;
+    List<UnidadMedida> findAll() throws Exception;
 
-    Page<UnidadMedida> filterByName(String nombre, Pageable pageable) throws Exception;
+    Page<UnidadMedida> filterUnidadesDeMedida(Long id, String nombre, Baja_Alta estado, Pageable pageable) throws Exception;
 
     List<UnidadMedida> findAllByEstadoDisponible() throws Exception;
 }

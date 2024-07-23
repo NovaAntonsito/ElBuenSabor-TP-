@@ -16,20 +16,20 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties("hibernateLazyInitializer")
-public class Insumo extends Base{
-   private String nombre;
-   @Column(name = "stockMinimo")
-   private Double stock_minimo;
-   private String urlIMG;
-   @Column(name = "stockActual")
-   private Double stock_actual;
-   private Baja_Alta estado;
-   private Double costo;
-   @ManyToOne(fetch = FetchType.EAGER)
-   private Categoria categoria;
-   private Boolean es_complemento;
-   @ManyToOne(fetch = FetchType.EAGER)
-   private UnidadMedida unidad_medida;
+public class Insumo extends Base {
+    private String nombre;
+    @Column(name = "stockMinimo")
+    private Double stock_minimo;
+    private String urlIMG;
+    @Column(name = "stockActual")
+    private Double stock_actual;
+    private Baja_Alta estado;
+    private Double costo;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Categoria categoria;
+    private Boolean es_complemento;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private UnidadMedida unidad_medida;
 
 
 }

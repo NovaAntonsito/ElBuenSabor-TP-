@@ -38,7 +38,7 @@ public class CategoriaController {
 
     @GetMapping("/filter")
     public ResponseEntity<?> findByIDandName(
-                    //OPTIONAL PARAMS
+            //OPTIONAL PARAMS
             @RequestParam(required = false) Long id, @RequestParam(required = false) String nombre, @RequestParam(required = false) TipoCategoria tipoCategoria, @RequestParam(required = false) Baja_Alta estado
             , @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable page) throws Exception {
         try {
@@ -48,7 +48,6 @@ public class CategoriaController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("success", false, "message", e.getMessage()));
         }
-
     }
 
     //GET ALL CATEGORIAS WITHOUT pagination

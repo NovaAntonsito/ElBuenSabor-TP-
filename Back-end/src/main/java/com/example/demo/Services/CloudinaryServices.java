@@ -53,10 +53,11 @@ public class CloudinaryServices {
         return result;
     }
 
-    public Map delete (String id) throws IOException{
-        Map result = cloudService.uploader().destroy(id,ObjectUtils.emptyMap());
+    public Map delete(String id) throws IOException {
+        Map result = cloudService.uploader().destroy(id, ObjectUtils.emptyMap());
         return result;
     }
+
     public File convert(MultipartFile file) throws IOException {
         File fileIMG = new File(file.getOriginalFilename());
         FileOutputStream convertor = new FileOutputStream(fileIMG);
@@ -64,7 +65,6 @@ public class CloudinaryServices {
         convertor.close();
         return fileIMG;
     }
-
 
 
 }

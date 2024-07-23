@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.List;
 
 
@@ -17,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Producto extends Base{
+public class Producto extends Base {
     private String nombre;
     @Column(nullable = true)
     private String imgURL;
@@ -26,11 +27,11 @@ public class Producto extends Base{
     private Long descuento;
     private Double valoracion;
     private String receta;
-    private Baja_Alta alta;
+    private Baja_Alta estado;
     private Double precioUnitario;
 
     @ManyToOne
-    @JsonIgnoreProperties({"subCategoria","hibernateLazyInitializer"})
+    @JsonIgnoreProperties({"subCategoria", "hibernateLazyInitializer"})
     private Categoria productoCategoria;
     @OneToMany(fetch = FetchType.EAGER)
     private List<ProductoInsumos> insumos;
